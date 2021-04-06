@@ -1,5 +1,3 @@
-import jiuchet from "@/utils/jiuchet";
-
 let Method = function () {
     var that = this;
     that.config = {
@@ -18,7 +16,7 @@ let Method = function () {
  * 和本地websocket环境建立通讯
  */
 Method.prototype.connectServer = function (params) {
-    params = jiuchet.extend(true, {
+    params = that.extend(true, {
         onmessage: {},
         onopen: {}
     }, params);
@@ -164,7 +162,7 @@ Method.prototype.execStringCommand = function (strCommand) {
 Method.prototype.runReadIDCard = function (params) {
     var that = this;
     let socketStatus = that.getSocketStatus();
-    params = jiuchet.extend(true, {
+    params = that.extend(true, {
         onmessage: {},
         onopen: (that) => {
             if (socketStatus === '1' || socketStatus === '0') that.execStringCommand('ReadIdBuffer');
@@ -186,6 +184,118 @@ Method.prototype.closeConnection = function () {
     var that = this;
     that.execStringCommand('CloseConnection');
 }
+
+Method.prototype.isFunction = function (obj) {
+
+    // Support: Chrome <=57, Firefox <=52
+    // In some browsers, typeof returns "function" for HTML <object> elements
+    // (i.e., `typeof document.createElement( "object" ) === "function"`).
+    // We don't want to classify *any* DOM node as a function.
+    return typeof obj === "function" && typeof obj.nodeType !== "number";
+};
+
+Method.prototype.isArray = function (arr) {
+    return Object.prototype.toString.call(arr) === '[object Array]';
+};
+
+Method.prototype.isPlainObject = function (obj) {
+    var proto, Ctor;
+
+    // Detect obvious negatives
+    // Use toString instead of jQuery.type to catch host objects
+    // 使用 toString 而不是jQuery.type来捕获宿主对象，这是因为type也是调用了toString方法，参见jQuery.type()
+    //jQuery.type = toType; //line 10291 toType方法前面已经介绍过
+    if (!obj || toString.call(obj) !== "[object Object]") {
+        return false;
+    }
+
+    //获取对象的原型
+    proto = getProto(obj);
+
+    // Objects with no prototype (e.g., `Object.create( null )`) are plain
+    // 如果一个对象是通过Object.create( null )来创建的话，那么它的原型为空，相比于用{}来创建的对象，它的开销也就更小。
+    // 所以如果我们需要一个 json对象仅用来存储参数，可以使用这个方法
+    if (!proto) {
+        return true;
+    }
+
+    // Objects with prototype are plain iff they were constructed by a global Object function
+    // 如果一个对象是是由全局的Object函数来创建的，那么它是纯粹对象
+    Ctor = hasOwn.call(proto, "constructor") && proto.constructor;
+    return typeof Ctor === "function" && fnToString.call(Ctor) === ObjectFunctionString;
+};
+
+Method.prototype.extend = function () {
+    var that = this
+        , src, copyIsArray, copy, name, options, clone,
+        target = arguments[0] || {},
+        i = 1,
+        length = arguments.length,
+        deep = false;
+
+    // Handle a deep copy situation
+    if (typeof target === "boolean") {
+        deep = target;
+
+        // skip the boolean and the target
+        target = arguments[i] || {};
+        i++;
+    }
+
+    // Handle case when target is a string or something (possible in deep copy)
+    if (typeof target !== "object" && !that.isFunction(target)) {
+        target = {};
+    }
+
+    // extend jQuery itself if only one argument is passed
+    if (i === length) {
+        target = this;
+        i--;
+    }
+
+    for (; i < length; i++) {
+
+        // Only deal with non-null/undefined values
+        if ((options = arguments[i]) != null) {
+
+            // Extend the base object
+            for (name in options) {
+                src = target[name];
+                copy = options[name];
+
+                // Prevent never-ending loop
+                if (target === copy) {
+                    continue;
+                }
+
+                // Recurse if we're merging plain objects or arrays
+                if (deep && copy && (that.isPlainObject(copy) ||
+                    (copyIsArray = that.isArray(copy)))) {
+
+                    if (copyIsArray) {
+                        copyIsArray = false;
+                        clone = src && that.isArray(src) ? src : [];
+
+                    } else {
+                        clone = src && that.isPlainObject(src) ? src : {};
+                    }
+
+                    // Never move original objects, clone them
+                    target[name] = that.extend(deep, clone, copy);
+
+                    // Don't bring in undefined values
+                } else if (copy !== undefined) {
+                    target[name] = copy;
+                }
+            }
+        }
+    }
+
+    // Return the modified object
+    return target;
+};
+
+
 
 let lotussmart = {
     sfz: new Method()

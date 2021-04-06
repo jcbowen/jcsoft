@@ -16,12 +16,14 @@ let Method = function () {
  * 和本地websocket环境建立通讯
  */
 Method.prototype.connectServer = function (params) {
+    var that = this
+        , protocolStr = document.location.protocol;
+
     params = that.extend(true, {
         onmessage: {},
         onopen: {}
     }, params);
-    var that = this
-        , protocolStr = document.location.protocol;
+
     try {
         that.nCommandIndex = 0;
         if (protocolStr === "https:") {

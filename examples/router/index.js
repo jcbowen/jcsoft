@@ -23,6 +23,16 @@ const constantRoutes = [
             icon: 'home',
             affix: true,
         },
+    },
+    {
+        path: '/test2',
+        name: 'Test2',
+        component: () => import('@/views/test2/index'),
+        meta: {
+            title: 'test2',
+            icon: 'home',
+            affix: true,
+        },
     }
 
 ];

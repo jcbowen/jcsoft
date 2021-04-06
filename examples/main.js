@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from "./router";
 
-import jiuchet from '@/utils/jiuchet'
+import jiuchet from '../packages/util'
 import {lotussmart} from "../packages/lotussmart";
 
 Vue.prototype.$jiuchet = jiuchet;

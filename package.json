@@ -1,6 +1,6 @@
 {
     "name": "jcsoft",
-    "version": "0.1.3",
+    "version": "0.2.0",
     "description": "test version",
     "private": false,
     "main": "index.js",

@@ -2,10 +2,10 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from "./router";
 
-import jiuchet from '../packages/util'
+import util from '../packages/util'
 import {lotussmart} from "../packages/lotussmart";
 
-Vue.prototype.$jiuchet = jiuchet;
+Vue.prototype.$util = util;
 
 Vue.config.productionTip = false
 

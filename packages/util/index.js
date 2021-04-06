@@ -7,6 +7,8 @@
 
 import axios from "axios";
 import qs from 'qs';
+
+// 全局允许跨域携带cookie信息
 axios.defaults.withCredentials = true
 
 var getProto = Object.getPrototypeOf
@@ -14,12 +16,18 @@ var getProto = Object.getPrototypeOf
     , toString = class2type.toString
     , hasOwn = class2type.hasOwnProperty
     , fnToString = hasOwn.toString
-    , ObjectFunctionString = fnToString.call(Object);
+    , ObjectFunctionString = fnToString.call(Object)
+
+    , error = function (msg, type) {
+    type = type || 'log';
+    window.console && console[type] && console[type]('jcSoft error hint: ' + msg);
+    return msg;
+};
 
 let Util = function () {
     var that = this;
     that.config = {
-        base:  ''
+        base: ''
         , version: true
         , modules: {}
         , timeout: 10
@@ -39,6 +47,13 @@ Util.prototype.set = function (options) {
     util.extend(true, that.config, options);
 
     return that;
+};
+
+//提示
+Util.prototype.hint = function (msg, type = 'error') {
+    return {
+        error: error(msg, type)
+    }
 };
 
 /**
@@ -74,7 +89,7 @@ Util.prototype.require = function (params = {}) {
         , success = params.success
         , error = params.error
         , fail = params.fail
-        , progress = params.progress;
+        , progress = params.progress
 
     delete params.error;
     delete params.success;
@@ -85,11 +100,13 @@ Util.prototype.require = function (params = {}) {
         url: ''
         , data: {}
         , header: {'X-Requested-With': 'XMLHttpRequest'} //{'X-Requested-With': 'XMLHttpRequest'}
-        , method: 'GET'
+        , method: 'get'
         , timeout: 60000
         , dataType: 'JSON'
         , is_fg: false
         , transformData: true
+        , isUploadProgress: false // 允许为上传处理进度事件
+        , isDownloadProgress: false // 允许为下载处理进度事件
         // , paramsSerializer: function (data) { // 序列化数据
         //     return qs.stringify(data)
         // }
@@ -107,38 +124,46 @@ Util.prototype.require = function (params = {}) {
     delete params.is_fg;
 
     // 兼容$ajax的写法
-    if (params.type) params.method = params.type.toUpperCase();
+    if (params.type) params.method = params.type.toLowerCase();
     if (params.transformData === false) {
         delete params.transformRequest;
         delete params.transformData;
     }
-
-    //POST时，自动给 Headers 传入 Content-Type
-    // params.header['Content-Type'] =
-    //     'Content-Type' in params.header ? params.header['Content-Type'] : (params.method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json');
 
     let options = that.extend(true, {
         headers: params.header,
         responseType: params.dataType
     }, params);
 
-    if (params.method === 'GET') {
+    if (params.method === 'get') {
         options.params = options.data;
         delete options.data;
         delete params.transformRequest;
         delete options.transformRequest;
     } else {
         delete options.params;
-        // options.data = {jsonGPC: util.base64_encode(JSON.stringify(options.data))};
+        // options.data = {jsonGPC: that.base64_encode(JSON.stringify(options.data))};
     }
 
-    // options.responseType = options.responseType.toUpperCase();
+    options.responseType = options.responseType.toLowerCase();
     delete options.url;
     delete options.dataType;
     delete options.header;
 
     axios.interceptors.request.use((configs) => { // 添加请求拦截器(如有多个先添加的后执行)
         typeof progress === 'function' && progress(50);
+        if (configs.isUploadProgress) {
+            configs.onUploadProgress = (progressEvent) => {
+                if (progressEvent.lengthComputable) {
+                    typeof configs.getProcess === 'function' && configs.getProcess(progressEvent);
+                }
+            }
+        }
+        if (configs.isDownloadProgress) {
+            configs.onDownloadProgress = (progressEvent) => {
+
+            }
+        }
         return configs;
     }, (error) => Promise.reject(error));
 
@@ -146,6 +171,9 @@ Util.prototype.require = function (params = {}) {
         typeof progress === 'function' && progress(75);
         return response;
     }, (error) => {
+        if (error.status === 413) {
+            util.vm.$baseMessage('传输文件过大，请重试', 'error');
+        }
         return Promise.reject(error)
     });
 
@@ -153,53 +181,86 @@ Util.prototype.require = function (params = {}) {
 
     return axios(params.url, options).then((d) => {
         let res = d.data;
-        if (!res) return;
-
+        if (!res) console.error('不规范的数据结构');
         // 只有当类型是json的时候才做状态判断
         if (options.responseType === 'JSON' || options.responseType === 'json') {
-            if (res.errno == 0) {
+            if (res.errcode == 0) {
                 typeof params.done === 'function' && params.done(res);
             }
 
             //登录状态失效，清除本地 access_token，并强制跳转到登入页
-            else if (res.errno === '1001') {
-                location.hash = '/login';
+            else if (res.errcode == '1001') {
+                const errmsg = res.errmsg || res.msg || res.message;
+                that.vm.$baseConfirm(errmsg, '登录失效', () => {
+                    typeof fail === 'function' && fail(res);
+                    that.vm.$store.dispatch('user/logout')
+                    that.vm.$router.push('/user/login')
+                }, () => {
+                }, {
+                    showClose: false,
+                    showCancelButton: false,
+                    closeOnClickModal: false,
+                    closeOnPressEscape: false,
+                    type: 'error'
+                });
+            } else if ((String(res.errcode)) === '1002') {
+                const errmsg = res.errmsg || res.msg || res.message;
+                const data = res.data;
+                that.vm.$baseConfirm(errmsg, '页面刷新提示', () => {
+                    window.location.reload();
+
+                    util.data(proTableName, {
+                        key: 'curProject',
+                        value: {
+                            title: data.project.title,
+                            info: data.project,
+                            uniacid: data.project.uniacid
+                        }
+                    });
+                }, () => {
+                }, { // 确认弹窗配置
+                    showClose: false,
+                    showCancelButton: false,
+                    closeOnClickModal: false,
+                    closeOnPressEscape: false
+                })
             }
 
             //其它异常
             else { // 异常提示
-                let errmsg = res.message
-                    , errno = res.errno;
+                let errmsg = res.errmsg
+                    , errcode = res.errcode;
 
                 if (typeof errmsg === 'object') {
                     errmsg = errmsg.message;
-                    errno = errmsg.errno
+                    errcode = errmsg.errno
                 }
 
-                if (errno == 0) {
+                if (errcode == 0) {
                     typeof params.done === 'function' && params.done(res);
                 } else if (typeof errmsg === 'string') {
                     // 外来接口不弹窗错误信息
-                    /*if (!is_fg) {
-                        that.vm.$dialog.alert({
-                            title: '信息提示',
-                            message: errmsg,
-                            messageAlign: 'fail',
-                            showConfirmButton: true,
-                            overlay: true,
-                            lockScroll: true,
-                            closeOnClickOverlay: false,
-                        }).then(() => {
+                    if (!is_fg) {
+                        console.log(998, res);
+                        that.vm.$baseConfirm(errmsg, '信息提示', () => {
                             typeof fail === 'function' && fail(res);
                             if (res.re_hash) {
-                                window.location.hash = res.re_hash;
+                                // window.location.hash = res.re_hash;
+                                that.vm.$router.push(res.re_hash)
                             } else if (res.re_href) {
                                 window.location.href = res.re_href;
                             }
+                        }, () => {
+                        }, {
+                            showClose: false,
+                            showCancelButton: false,
+                            closeOnClickModal: false,
+                            closeOnPressEscape: false,
+                            type: 'error'
                         });
-                    } else {*/
-                    typeof fail === 'function' && fail(res);
-                    // }
+                    } else {
+                        typeof fail === 'function' && fail(res);
+                    }
                 }
 
             }
@@ -207,8 +268,8 @@ Util.prototype.require = function (params = {}) {
             typeof params.done === 'function' && params.done(res);
         }
         //只要 http 状态码正常，无论 response 的 code 是否正常都执行 success
-        typeof progress === 'function' && progress(100);
         typeof success === 'function' && success(res);
+        typeof progress === 'function' && progress(100);
     }).catch((result) => {
         typeof error === 'function' && error(result);
     });
@@ -674,7 +735,8 @@ Util.prototype.data = function (table, settings, storage) {
 Util.prototype.numberToChinese = function (str, isInt = true, isFloat = false, replace = '') {
     str = str + '';
     let len = str.length - 1
-        , chineseArray = isInt ? ['', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千', '万', '十', '百', '千', '亿'] : ['分', '角']
+        ,
+        chineseArray = isInt ? ['', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千', '万', '十', '百', '千', '亿'] : ['分', '角']
         , numArray = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
 
     if (!str) return '';
@@ -687,9 +749,9 @@ Util.prototype.numberToChinese = function (str, isInt = true, isFloat = false, r
         isFloat = true;
         str = '' + this.$baseLodash.round(str, 2);
         let intNumber = str.split('.')[0], decimalNumber = str.split('.')[1], hasPoint = true;
-        hasPoint = str.lastIndexOf('.') === -1 ? false: true;
+        hasPoint = str.lastIndexOf('.') === -1 ? false : true;
         return util.numberToChinese(intNumber, true, hasPoint)
-            + (hasPoint ? util.numberToChinese(decimalNumber, isInt, isFloat): '')
+            + (hasPoint ? util.numberToChinese(decimalNumber, isInt, isFloat) : '')
     }
     return str.replace(/([1-9]|0+)/g, function ($, $1, idx, full) {
         var pos = 0;

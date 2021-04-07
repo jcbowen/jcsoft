@@ -55,17 +55,17 @@ Method.prototype.connectServer = function (params) {
         if ('ReadId' == arrString[0]) {
             if (arrString.length > 11) {
                 that.data = '' +
-                    // arrString[0] + ';' +
-                    // arrString[1] + ';' +
-                    // arrString[2] + ';' +
-                    arrString[3] + ';' +
-                    arrString[4] + ';' +
-                    arrString[5] + ';' +
-                    arrString[6] + ';' +
-                    arrString[7] + ';' +
-                    arrString[8] + ';' +
-                    arrString[9] + ';' +
-                    arrString[10] + ';' +
+                    // arrString[0] + '|' +
+                    // arrString[1] + '|' +
+                    // arrString[2] + '|' +
+                    arrString[3] + '|' +
+                    arrString[4] + '|' +
+                    arrString[5] + '|' +
+                    arrString[6] + '|' +
+                    arrString[7] + '|' +
+                    arrString[8] + '|' +
+                    arrString[9] + '|' +
+                    arrString[10] + '|' +
                     'data:image/jpg;base64,' + arrString[11];
                 // console.log(that.data);
                 // that.data.photo = 'data:image/jpg;base64,' + arrString[11];
@@ -75,17 +75,17 @@ Method.prototype.connectServer = function (params) {
         } else if ('ReadIdBuffer' == arrString[0]) {
             if (arrString.length > 11) {
                 that.data = '' +
-                    // arrString[0] + ';' +
-                    // arrString[1] + ';' +
-                    // arrString[2] + ';' +
-                    arrString[3] + ';' +
-                    arrString[4] + ';' +
-                    arrString[5] + ';' +
-                    arrString[6] + ';' +
-                    arrString[7] + ';' +
-                    arrString[8] + ';' +
-                    arrString[9] + ';' +
-                    arrString[10] + ';' +
+                    // arrString[0] + '|' +
+                    // arrString[1] + '|' +
+                    // arrString[2] + '|' +
+                    arrString[3] + '|' +
+                    arrString[4] + '|' +
+                    arrString[5] + '|' +
+                    arrString[6] + '|' +
+                    arrString[7] + '|' +
+                    arrString[8] + '|' +
+                    arrString[9] + '|' +
+                    arrString[10] + '|' +
                     'data:image/jpg;base64,' + arrString[11];
                 // console.log(that.data);
                 // that.data.photo = 'data:image/jpg;base64,' + arrString[11];

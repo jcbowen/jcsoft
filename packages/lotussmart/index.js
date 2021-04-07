@@ -43,7 +43,7 @@ Method.prototype.connectServer = function (params) {
     }
     that.socket.onopen = function () {
         console.log('#msg: 服务器连接成功');
-        typeof params.onopen === 'function' && params.onopen(that);
+        typeof params.onopen === 'function' && params.onopen.call(that);
     };
     that.socket.onclose = function (event) {
         console.log('#断开连接:' + event.wasClean);
@@ -106,7 +106,7 @@ Method.prototype.connectServer = function (params) {
         } else {
             console.log('#收到数据:' + event.data);
         }
-        typeof params.onmessage === 'function' && params.onmessage(that.data);
+        typeof params.onmessage === 'function' && params.onmessage.call(that, that.data);
     };
     that.socket.onerror = function (event) {
         console.log('#disconnected:' + event.message);
@@ -168,7 +168,7 @@ Method.prototype.runReadIDCard = function (params) {
     let socketStatus = that.getSocketStatus();
     params = util.extend(true, {
         onmessage: {},
-        onopen: (that) => {
+        onopen: (res) => {
             if (socketStatus === '1' || socketStatus === '0') that.execStringCommand('ReadIdBuffer');
         }
     }, params);

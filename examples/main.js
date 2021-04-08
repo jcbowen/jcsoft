@@ -1,16 +1,16 @@
 import Vue from 'vue'
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import App from './App.vue'
 import router from "./router";
 
 import util from '../packages/util'
-import {lotussmart} from "../packages/lotussmart";
 
 Vue.prototype.$util = util;
 
 Vue.config.productionTip = false
 
-Vue.prototype.$lotussmart = lotussmart;
-
+Vue.use(ElementUI);
 
 window.VM = new Vue({
     el: '#app',

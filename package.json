@@ -1,6 +1,6 @@
 {
   "name": "jcsoft",
-  "version": "0.2.7",
+  "version": "0.3.1",
   "description": "test version",
   "private": false,
   "main": "index.js",
@@ -27,7 +27,13 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^7.21.0",
     "eslint-plugin-vue": "^7.7.0",
-    "vue-template-compiler": "^2.6.12"
+    "fibers": "^5.0.0",
+    "node-sass": "^5.0.0",
+    "sass": "^1.32.8",
+    "sass-loader": "^10.1.1",
+    "style-loader": "^2.0.0",
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "^5.31.0"
   },
   "eslintConfig": {
     "root": false,

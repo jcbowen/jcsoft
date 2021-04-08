@@ -23,6 +23,7 @@ module.exports = {
             errors: true,
         }
     },
+    publicPath: './',
     configureWebpack() {
         return {
             resolve: {

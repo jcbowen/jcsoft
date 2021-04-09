@@ -1,8 +1,8 @@
 import JcEditor from './JcEditor'
 
-// 存储组件列表
+// 存储组件列表（不支持直接注册为组件使用的，不在此处进行注册）
 const components = [
-    JcEditor // TinymceHook 不支持直接注册为组件使用，则不在此处进行注册
+    JcEditor
 ]
 
 // 定义 install 方法，接收 Vue 作为参数。如果使用 use 注册插件，则所有的组件都将被注册

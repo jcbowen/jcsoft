@@ -249,7 +249,6 @@ export default {
         this.$emit('Editor', tinymce);
     },
     created() {
-
         // 增加图片选择器插件
         /*tinymce.PluginManager.add('image2', function (editor, url) {
             // 注册一个工具栏按钮名称

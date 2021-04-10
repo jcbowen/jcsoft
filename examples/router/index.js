@@ -15,9 +15,9 @@ const constantRoutes = [
         },
     },
     {
-        path: '/editor-demo',
+        path: '/editor',
         name: 'EditorDemo',
-        component: () => import('@/views/editor-demo/index'),
+        component: () => import('@/views/editor/index'),
         meta: {
             title: 'EditorDemo',
             icon: 'home',

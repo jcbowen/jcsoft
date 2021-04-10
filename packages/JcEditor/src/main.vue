@@ -85,9 +85,19 @@ export default {
                 return 'directionality lists image table wordcount';
             }
         },
+        menubar: {
+            type: [String, Boolean]
+            // 'file edit view insert format tools table'
+            , default: false
+        },
         toolbar: {
             type: [String, Array],
-            default: 'code undo redo restoredraft | formatpainter removeformat | bold italic underline strikethrough hr forecolor backcolor link | alignleft aligncenter alignright alignjustify | outdent indent indent2em lineheight bullist numlist | blockquote subscript superscript | table image media2 codesample pageembed | styleselect fontselect fontsizeselect | cut copy paste pastetext | axupimgs preview print | help2'
+            default: () => {
+                //code undo redo restoredraft | formatpainter removeformat | bold italic underline strikethrough hr forecolor backcolor link | alignleft aligncenter alignright alignjustify | outdent indent indent2em lineheight bullist numlist | blockquote subscript superscript | table image media2 codesample pageembed | styleselect fontselect fontsizeselect | cut copy paste pastetext | axupimgs preview print | help2'
+                return [
+                    'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
+                ];
+            }
         },
         toolbar_mode: {
             type: String,
@@ -147,8 +157,11 @@ export default {
         images_upload_url: {
             type: String
             , default: ''
-        }
-
+        },
+        images_upload_credentials: {
+            type: Boolean
+            , default: true
+        },
     },
     data() {
         return {
@@ -170,7 +183,7 @@ export default {
                 // , my_toolbar_sticky_top: 0 // 工具栏粘连顶部时，和顶部的间距
 
                 branding: false, // 品牌化显示
-                menubar: false, // 顶部工具栏
+                menubar: this.menubar, // 顶部工具栏
                 entity_encoding: this.entity_encoding, //处理实体/字符的转换方式
                 fontsize_formats: this.fontsize_formats,
                 powerpaste_allow_local_images: true,
@@ -186,7 +199,7 @@ export default {
                 typeahead_urls: true, // 输入网址判断
 
                 images_upload_url: this.images_upload_url,
-                images_upload_credentials: true, // 是否携带cookie
+                images_upload_credentials: this.images_upload_credentials, // 是否携带cookie
                 images_upload_handler: (blobInfo, success, failure) => {
                     if (this.images_upload_url === '') {
                         // 直接转换为base64图片输出
@@ -207,13 +220,13 @@ export default {
                                 if (codeVerificationArray.includes(res.code)) {
                                     success(res.data['url']);
                                 } else {
-                                    console.error('tinymce: ' + res.msg);
+                                    // console.error('tinymce: ' + res.msg);
                                     failure(res.msg);
                                 }
 
                             },
                             error: function (res) {
-                                console.log(res)
+                                // console.log(res)
                                 failure("网络错误：" + res.msg);
                             }
                         });

@@ -1,4 +1,4 @@
-import util from '../util/index';
+import util from '../utils/jiuchet';
 
 let Method = function () {
     var that = this;

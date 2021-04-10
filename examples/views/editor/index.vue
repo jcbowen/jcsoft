@@ -1,10 +1,15 @@
 <template>
     <div class="jc-editor">
         <h2>编辑器单独引入演示</h2>
-<!--        <el-row>-->
-<!--            <el-button type="primary">主要按钮</el-button>-->
-<!--        </el-row>-->
-        <my-editor :toolbar="toolbar" :plugins="plugins" @Editor="getEditor"/>
+        <!--        <el-row>-->
+        <!--            <el-button type="primary">主要按钮</el-button>-->
+        <!--        </el-row>-->
+        <my-editor
+            :plugins="plugins"
+            :menubar="menubar"
+            :toolbar="toolbar"
+            :images_upload_url="images_upload_url"
+            @Editor="getEditor"/>
     </div>
 </template>
 
@@ -16,25 +21,20 @@ export default {
     components: {MyEditor},
     data() {
         return {
-            tinyMce: null,
             plugins: ['directionality codesample imagetools textpattern autosave indent2em autoresize lineheight formatpainter'
                 , 'advlist autolink link lists charmap print preview hr pagebreak'
                 , 'searchreplace wordcount visualblocks visualchars insertdatetime media2 nonbreaking'
                 , 'table template advcode powerpaste pageembed image help2 wptadv'
                 , 'image2'
             ],
-            toolbar: 'code | image2'
+            menubar: 'file edit view insert format tools table',
+            toolbar: 'code undo redo restoredraft | formatpainter removeformat | bold italic underline strikethrough hr forecolor backcolor link | alignleft aligncenter alignright alignjustify | outdent indent indent2em lineheight bullist numlist | blockquote subscript superscript | table image media2 codesample pageembed | styleselect fontselect fontsizeselect | cut copy paste pastetext | axupimgs preview print | help2',
+            images_upload_url: ''
         };
     },
-    created() {
-
-    },
-    mounted() {
-
-    },
     methods: {
-        getEditor: (tinymce) => {
-            let that =this;
+        getEditor: function (tinymce) {
+            var that = this;
             // 增加图片选择器插件
             tinymce.PluginManager.add('image2', function (editor, url) {
                 // 注册一个工具栏按钮名称
@@ -83,11 +83,11 @@ export default {
                 };
             });
         }
-    },
+    }
 }
 </script>
 <style lang="scss" scoped>
-.el-row{
+.el-row {
     margin-bottom: 10px;
 }
 

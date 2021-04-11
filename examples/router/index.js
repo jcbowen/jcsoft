@@ -25,11 +25,31 @@ const constantRoutes = [
         },
     },
     {
-        path: '/test-script',
-        name: 'TestScript',
-        component: () => import('@/views/test-script/index'),
+        path: '/script',
+        name: 'Script',
+        component: () => import('@/views/script/index'),
         meta: {
             title: 'TestScript',
+            icon: 'home',
+            affix: true,
+        },
+    },
+    {
+        path: '/readIdCard',
+        name: 'readIdCard',
+        component: () => import('@/views/readIdCard/index'),
+        meta: {
+            title: 'readIdCard',
+            icon: 'home',
+            affix: true,
+        },
+    },
+    {
+        path: '/layui',
+        name: 'layui',
+        component: () => import('@/views/layui/index'),
+        meta: {
+            title: 'layui',
             icon: 'home',
             affix: true,
         },

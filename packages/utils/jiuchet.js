@@ -560,6 +560,7 @@ Util.prototype.loadjs = function (apps, callback) {
 
 //css外部加载器
 Util.prototype.link = function (href, fn, cssname) {
+    if (!href) return false;
     var that = this
         , link = document.createElement('link')
         , head = document.getElementsByTagName('head')[0];

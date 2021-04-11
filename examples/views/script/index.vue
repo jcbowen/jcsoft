@@ -4,14 +4,12 @@
         <h3>本页面将引入包中的各个脚本，暴露到window全局变量中，可在控制器中进行测试</h3>
         <p>已暴露变量如下：</p>
         <pre>
-            VM.$lotussmart
             VM.$jiuchet
         </pre>
     </div>
 </template>
 
 <script>
-import {lotussmart} from "../../../packages/lotussmart";
 
 export default {
     name: 'Test',
@@ -24,9 +22,6 @@ export default {
     created() {
     },
     mounted() {
-        this.$lotussmart = lotussmart;
-        this.$jiuchet = this.$jiuchet;
-
         window.VM = this;
     },
     methods: {},

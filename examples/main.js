@@ -12,7 +12,10 @@ Vue.use(ElementUI);
 Vue.prototype.$jiuchet = jiuchet;
 Vue.use(jcsoft);
 
-if (process.env.NODE_ENV === 'development') Vue.config.productionTip = true;
+if (process.env.NODE_ENV === 'development'){
+    Vue.config.devtools = true
+    Vue.config.productionTip = true;
+}
 
 new Vue({
     el: '#app',

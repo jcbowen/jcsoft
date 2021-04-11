@@ -2,7 +2,8 @@
     <div class="headerNav">
         <p>
             路由：
-            <el-link v-for="item in navs" @click="go(item.path)"
+            <el-link v-for="(item, ind) in navs" @click="go(item.path)"
+                     :key="ind"
                      class="aItem" type="primary">
                 {{ item.title }}
             </el-link>

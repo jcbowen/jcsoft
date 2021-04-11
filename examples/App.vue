@@ -16,6 +16,9 @@ export default {
 }
 </script>
 <style lang="scss">
+body{
+    background-color: #FAFAFA;
+}
 #app{
     max-width: 750px;
     margin: 0 auto;

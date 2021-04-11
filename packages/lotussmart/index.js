@@ -5,14 +5,35 @@ let Method = function () {
     that.config = {
         strIp: '127.0.0.1'
         , strPort: '31213'
-        , wsUrl: ''
-        , version: '0.0.1'
+        , logs: ''
     };
+    that.wsUrl = ''
     that.socket = null;
     that.nCommandIndex = 0;
     // that.strLastResult = '';
     that.data = '';
 };
+
+// 修改配置信息
+Method.prototype.set = function (options) {
+    var that = this;
+    // 引入vueModel
+    options.vm && (that.vm = options.vm);
+    that.config = util.extend(true, that.config, options);
+
+    return that;
+}
+
+// 设置
+Method.prototype.setLog = function (...data) {
+    let that = this;
+
+    if (typeof that.config.setLog === 'function') {
+        return that.config.setLog.call(that, ...data);
+    } else {
+        return console.log(...data);
+    }
+}
 
 /**
  * 和本地websocket环境建立通讯
@@ -22,37 +43,38 @@ Method.prototype.connectServer = function (params) {
         , protocolStr = document.location.protocol;
 
     params = util.extend(true, {
+        onopen: {},
+        onclose: {},
         onmessage: {},
-        onopen: {}
-    }, params);
+        onerror: {}
+    }, that.config, params);
 
     try {
         that.nCommandIndex = 0;
         if (protocolStr === "https:") {
-            that.config.wsUrl = 'wss://' + that.config.strIp + ':' + that.config.strPort;
+            that.wsUrl = 'wss://' + that.config.strIp + ':' + that.config.strPort;
         } else {
-            that.config.wsUrl = 'ws://' + that.config.strIp + ':' + that.config.strPort;
+            that.wsUrl = 'ws://' + that.config.strIp + ':' + that.config.strPort;
         }
-        that.socket = new WebSocket(that.config.wsUrl);
+        that.socket = new WebSocket(that.wsUrl);
     } catch (evt) {
-        console.log('#new WebSocket error:' + evt.data);
+        that.setLog('#new WebSocket error:' + evt.data);
         that.socket = null;
-        if (typeof (connCb) != "undefined" && connCb != null)
-            connCb("-1", "connect error!");
         return;
     }
-    that.socket.onopen = function () {
-        console.log('#msg: 服务器连接成功');
-        typeof params.onopen === 'function' && params.onopen.call(that);
+    that.socket.onopen = function (event) {
+        that.setLog('#msg: 服务器连接成功');
+        typeof params.onopen === 'function' && params.onopen.call(that, event);
     };
     that.socket.onclose = function (event) {
-        console.log('#断开连接:' + event.wasClean);
+        that.setLog('#断开连接:' + event.wasClean);
+        typeof params.onclose === 'function' && params.onclose.call(that, event);
     };
     that.socket.onmessage = function (event) {
         var arrString = [];
         that.strLastResult = event.data;
         arrString = that.strLastResult.split(',');
-        if ('ReadId' == arrString[0]) {
+        if ('ReadId' === arrString[0]) {
             if (arrString.length > 11) {
                 that.data = '' +
                     // arrString[0] + '|' +
@@ -70,9 +92,9 @@ Method.prototype.connectServer = function (params) {
                 // console.log(that.data);
                 // that.data.photo = 'data:image/jpg;base64,' + arrString[11];
             } else {
-                console.log('#收到数据:' + event.data);
+                that.setLog('#收到数据:' + event.data);
             }
-        } else if ('ReadIdBuffer' == arrString[0]) {
+        } else if ('ReadIdBuffer' === arrString[0]) {
             if (arrString.length > 11) {
                 that.data = '' +
                     // arrString[0] + '|' +
@@ -88,28 +110,28 @@ Method.prototype.connectServer = function (params) {
                     arrString[10] + '|' +
                     'data:image/jpg;base64,' + arrString[11];
                 // console.log(that.data);
-                // that.data.photo = 'data:image/jpg;base64,' + arrString[11];
             } else {
-                console.log('#收到数据:' + event.data);
+                that.setLog('#收到数据:' + event.data);
             }
-        } else if ('ReadIdJpeg' == arrString[0]) {
+        } else if ('ReadIdJpeg' === arrString[0]) {
 
             if (arrString.length > 3) {
                 if (arrString[3].length > 200) {
                     that.data.photo = 'data:image/jpg;base64,' + arrString[3];
                 } else {
-                    console.log('#收到数据:' + event.data);
+                    that.setLog('#收到数据:' + event.data);
                 }
             } else {
-                console.log('#收到数据:' + event.data);
+                that.setLog('#收到数据:' + event.data);
             }
         } else {
-            console.log('#收到数据:' + event.data);
+            that.setLog('#收到数据:' + event.data);
         }
-        typeof params.onmessage === 'function' && params.onmessage.call(that, that.data);
+        typeof params.onmessage === 'function' && params.onmessage.call(that, event, that.data);
     };
     that.socket.onerror = function (event) {
-        console.log('#disconnected:' + event.message);
+        that.setLog('#disconnected:' + (event.message || '服务未启用或服务地址错误'));
+        typeof params.onerror === 'function' && params.onerror.call(that, event);
     };
 }
 
@@ -120,27 +142,27 @@ Method.prototype.connectServer = function (params) {
 Method.prototype.getSocketStatus = function () {
     var that = this;
     if (null == that.socket) {
-        console.log('未连接websocket服务');
+        that.setLog('未连接websocket服务');
         return '0';
     }
     switch (that.socket.readyState) {
         case that.socket.CONNECTING:
-            console.log("websocket服务连接中");
+            that.setLog("websocket服务连接中");
             return '1';
 
         case that.socket.OPEN:
-            console.log("websocket服务连接成功");
+            that.setLog("websocket服务连接成功");
             return '2';
 
         case that.socket.CLOSING:
-            console.log("websocket服务关闭中");
+            that.setLog("websocket服务关闭中");
             return '3';
 
         case that.socket.CLOSED:
-            console.log('websocket服务已关闭');
+            that.setLog('websocket服务已关闭');
             return '4';
         default:
-            console.log("未知错误");
+            that.setLog("未知错误");
             return '-1';
     }
 }
@@ -156,8 +178,9 @@ Method.prototype.execStringCommand = function (strCommand) {
     if (that.getSocketStatus() === '2') {
         that.socket.send(strCommand + ',' + that.nCommandIndex);
     } else {
-        console.log('#send failed. websocket not open. please check.');
+        that.setLog('#send failed. websocket not open. please check.');
     }
+    return that;
 }
 
 /**
@@ -166,12 +189,18 @@ Method.prototype.execStringCommand = function (strCommand) {
 Method.prototype.runReadIDCard = function (params) {
     var that = this;
     let socketStatus = that.getSocketStatus();
-    params = util.extend(true, {
-        onmessage: {},
-        onopen: (res) => {
+
+    // 在open方法中加入重新唤起读卡操作的动作
+    if (typeof params.onopen === 'function') {
+        params.onopen = (event) => {
+            params.onopen.call(that, event);
             if (socketStatus === '1' || socketStatus === '0') that.execStringCommand('ReadIdBuffer');
         }
-    }, params);
+    } else {
+        params.onopen = (event) => {
+            if (socketStatus === '1' || socketStatus === '0') that.execStringCommand('ReadIdBuffer');
+        }
+    }
 
     if (socketStatus !== '2') {
         return that.connectServer(params);

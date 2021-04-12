@@ -89,8 +89,8 @@ Method.prototype.connectServer = function (params) {
                     arrString[9] + '|' +
                     arrString[10] + '|' +
                     'data:image/jpg;base64,' + arrString[11];
-                // console.log(that.data);
-                // that.data.photo = 'data:image/jpg;base64,' + arrString[11];
+                that.setLog('#收到数据:' + that.data)
+                // that.photo = 'data:image/jpg;base64,' + arrString[11];
             } else {
                 that.setLog('#收到数据:' + event.data);
             }
@@ -109,15 +109,15 @@ Method.prototype.connectServer = function (params) {
                     arrString[9] + '|' +
                     arrString[10] + '|' +
                     'data:image/jpg;base64,' + arrString[11];
-                // console.log(that.data);
+                that.setLog('#收到数据:' + that.data);
             } else {
                 that.setLog('#收到数据:' + event.data);
             }
         } else if ('ReadIdJpeg' === arrString[0]) {
-
             if (arrString.length > 3) {
                 if (arrString[3].length > 200) {
-                    that.data.photo = 'data:image/jpg;base64,' + arrString[3];
+                    that.data = that.photo = 'data:image/jpg;base64,' + arrString[3];
+                    that.setLog('#收到数据:' + that.photo);
                 } else {
                     that.setLog('#收到数据:' + event.data);
                 }
@@ -168,7 +168,7 @@ Method.prototype.getSocketStatus = function () {
 }
 
 /**
- * 根据字符串执行方法
+ * 通过websocket发送字符串命令
  * @param strCommand
  */
 Method.prototype.execStringCommand = function (strCommand) {

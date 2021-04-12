@@ -52,11 +52,24 @@
                                 <el-tag :type="form.state.type">{{ form.state.msg }}</el-tag>
                             </el-form-item>
                             <el-form-item label="照片">
-                                <el-button>默认按钮</el-button>
+                                <el-image
+                                    :src="form.photo"
+                                    :preview-src-list="[form.photo]"
+                                    style="width: 102px; height: 126px"
+                                >
+                                    <div slot="error" class="image-slot">
+                                        <i class="el-icon-picture-outline"></i>
+                                    </div>
+                                </el-image>
                             </el-form-item>
                             <el-form-item v-if="form.log" label="日志">
-                                <div style="background-color: #393D49; color: #fff;padding: 0 1rem">
-                                    <pre>{{ form.log }}</pre>
+                                <div class="showLog">
+                                    <el-input
+                                        type="textarea"
+                                        v-model="form.log"
+                                        :rows="15"
+                                        :size="'medium'"
+                                    />
                                 </div>
                             </el-form-item>
                         </el-form>
@@ -103,6 +116,7 @@ export default {
                     type: 'info',
                     msg: '未连接'
                 },
+                photo: '',
                 log: ''
             },
             commands: [
@@ -156,19 +170,19 @@ export default {
         window.lotussmart = lotussmart;
     },
     methods: {
+        setLog(...res) {
+            if (typeof res[0] === 'string') {
+                let log = '';
+                log += php.date('Y-m-d H:i:s') + '\n';
+                log += res[0] + '\n\n';
+                this.form.log = log + this.form.log;
+            }
+        },
         execStringCommand(strCommand) {
             let ltsSfz = lotussmart.sfz.set({
                 strIp: this.form.ip,
                 strPort: this.form.port,
-                setLog: (...res) => {
-                    if (typeof res[0] === 'string') {
-                        let log = '';
-                        if (this.form.log !== '') log += '\n\n';
-                        log += php.date('Y-m-d H:i:s') + '\n';
-                        log += res[0];
-                        this.form.log = this.form.log + log;
-                    }
-                },
+                setLog: this.setLog,
                 onopen: () => {
                     this.form.state = {
                         type: 'success',
@@ -201,12 +215,59 @@ export default {
                         background: 'rgba(0, 0, 0, 0.7)'
                     });
                     return ltsSfz.connectServer();
+                case 'CloseConnection':
+                    ltsSfz.socket.close();
+                    return this.form.state = {
+                        type: 'warning',
+                        msg: 'Socket 服务已关闭'
+                    };
+                case 'ConnectionStatus':
+                    let status = ltsSfz.getSocketStatus();
+                    switch (true) {
+                        case status === '0':
+                            this.form.state = {
+                                type: 'info',
+                                msg: '未连接'
+                            };
+                            break;
+                        case (status === '1' || status === '2'):
+                            this.form.state = {
+                                type: 'success',
+                                msg: 'Socket 服务连接成功'
+                            };
+                            break;
+                        case (status === '3' || status === '4'):
+                            this.form.state = {
+                                type: 'warning',
+                                msg: 'Socket 服务已关闭'
+                            };
+                            break;
+                        default:
+                            this.form.state = {
+                                type: 'danger',
+                                msg: 'Socket Error'
+                            };
+                    }
+                    return true;
+                case 'ReadIdJpeg':
+                    ltsSfz.set({
+                        onmessage: (event, data) => {
+                            this.setLog(event.data)
+                            let arrString = event.data.split(',');
+                            if (arrString.length > 3) {
+                                if (arrString[3].length > 200) {
+                                    this.form.photo = 'data:image/jpg;base64,' + arrString[3];
+                                } else {
+                                    this.$message.error(arrString[3])
+                                }
+                            }
+                        }
+                    })
+                    break;
                 case 'ClearLog':
                     return this.form.log = '';
-                default:
-                    return ltsSfz.execStringCommand(strCommand);
             }
-
+            return ltsSfz.execStringCommand(strCommand);
         }
     },
 }
@@ -241,10 +302,15 @@ export default {
         margin-top: 28px;
     }
 
-    pre {
-        line-height: 1rem;
-        padding: 10px;
+    .image-slot {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        background: #f5f7fa;
+        color: #909399;
+        font-size: 14px;
     }
-
 }
 </style>

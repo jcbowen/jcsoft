@@ -55,11 +55,21 @@ const constantRoutes = [
         },
     },
     {
+        path: '/test',
+        name: 'test',
+        component: () => import('@/views/test/index'),
+        meta: {
+            title: 'test',
+            icon: 'home',
+            affix: true,
+        },
+    },
+    {
         path: '*',
         name: '*',
         component: () => import('@/views/error/404'),
         meta: {
-            title: 'TestScript',
+            title: '404',
             icon: 'home',
             affix: true,
         },

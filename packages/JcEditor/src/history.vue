@@ -103,6 +103,10 @@ export default {
             type: String,
             default: 'sliding'
         },
+        toolbar_sticky: {
+            type: Boolean
+            , default: false
+        },
         entity_encoding: {
             type: String,
             default: 'named'
@@ -178,6 +182,7 @@ export default {
                 plugins: this.plugins,
                 toolbar: this.toolbar,
                 toolbar_mode: this.toolbar_mode, // 工具栏模式
+                toolbar_sticky: this.toolbar_sticky,
                 // , toolbar_sticky: false // 工具栏粘连顶部(官方的，不确认是否兼容的情况下，保持关闭)
                 // , my_toolbar_sticky: true // 工具栏粘连顶部（自主封装的写法）
                 // , my_toolbar_sticky_top: 0 // 工具栏粘连顶部时，和顶部的间距

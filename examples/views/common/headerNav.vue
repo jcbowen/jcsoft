@@ -37,6 +37,14 @@ export default {
                     path: '/readIdCard',
                     title: '身份证读卡器'
                 },
+                {
+                    path: '/websocket',
+                    title: 'WebSocket测试'
+                },
+                {
+                    path: '/test',
+                    title: '其他测试'
+                },
             ]
         }
     },

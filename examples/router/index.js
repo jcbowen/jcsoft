@@ -45,6 +45,16 @@ const constantRoutes = [
         },
     },
     {
+        path: '/websocket',
+        name: 'WebSocket',
+        component: () => import('@/views/websocket/index'),
+        meta: {
+            title: 'WebSocket',
+            icon: 'home',
+            affix: true,
+        },
+    },
+    {
         path: '/layui',
         name: 'layui',
         component: () => import('@/views/layui/index'),

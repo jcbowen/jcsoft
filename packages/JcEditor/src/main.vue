@@ -75,6 +75,10 @@ export default {
             type: [Number, String],
             default: '300'
         },
+        min_height: {
+            type: [Number, String],
+            default: '300'
+        },
         width: {
             type: [Number, String],
             default: '100%'
@@ -178,7 +182,7 @@ export default {
                 skin_url: `${this.baseUrl}/skins/ui/oxide`,
                 height: this.height,
                 width: this.width,
-                min_height: 300,
+                min_height: this.min_height,
                 plugins: this.plugins,
                 toolbar: this.toolbar,
                 toolbar_mode: this.toolbar_mode, // 工具栏模式

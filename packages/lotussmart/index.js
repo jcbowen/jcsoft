@@ -6,6 +6,7 @@ let Method = function () {
         strIp: '127.0.0.1'
         , strPort: '31213'
         , logs: ''
+        , setLog: false
     };
     that.wsUrl = ''
     that.socket = null;
@@ -30,9 +31,12 @@ Method.prototype.setLog = function (...data) {
 
     if (typeof that.config.setLog === 'function') {
         return that.config.setLog.call(that, ...data);
-    } else {
+    } else if (that.config.setLog) {
+        // 打开setLog，不预设的清空下输出到控制台
         return console.log(...data);
     }
+
+    return false;
 }
 
 /**

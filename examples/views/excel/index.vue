@@ -9,6 +9,8 @@
     </div>
 </template>
 <script>
+
+import Spreadsheet from "x-data-spreadsheet";
 export default {
     name: 'Test',
     components: {},

@@ -65,6 +65,16 @@ const constantRoutes = [
         },
     },
     {
+        path: '/excel',
+        name: 'Excel',
+        component: () => import('@/views/excel/index'),
+        meta: {
+            title: 'Excel',
+            icon: 'home',
+            affix: true,
+        },
+    },
+    {
         path: '/test',
         name: 'test',
         component: () => import('@/views/test/index'),

@@ -65,11 +65,11 @@ const constantRoutes = [
         },
     },
     {
-        path: '/excel',
-        name: 'Excel',
-        component: () => import('@/views/excel/index'),
+        path: '/xspreadsheet',
+        name: 'Xspreadsheet',
+        component: () => import('@/views/xspreadsheet/index'),
         meta: {
-            title: 'Excel',
+            title: '电子表格',
             icon: 'home',
             affix: true,
         },

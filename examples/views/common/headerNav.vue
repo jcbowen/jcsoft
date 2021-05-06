@@ -34,6 +34,10 @@ export default {
                     title: '富文本编辑器'
                 },
                 {
+                    path: '/xspreadsheet',
+                    title: '电子表格'
+                },
+                {
                     path: '/readIdCard',
                     title: '身份证读卡器'
                 },

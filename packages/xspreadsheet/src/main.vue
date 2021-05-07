@@ -99,6 +99,9 @@ export default {
         on(eventName, callback) {
             this.spreadsheet.on(eventName, callback);
         },
+        /**
+         * 获取数据表格数据
+         */
         getData() {
             return this.spreadsheet.getData()
         },

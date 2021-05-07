@@ -6,16 +6,16 @@
         <input type="file" @change="inputChage">
         <el-button @click="getData">console表格数据</el-button>
         <el-button @click="exportExcel">导出Excel</el-button>
-        <xs ref="xs" :on-change="onChange" @spreadsheet="getSpreadsheet"></xs>
+        <x-spreadsheet ref="xs" :on-change="onChange" @spreadsheet="getSpreadsheet"></x-spreadsheet>
     </div>
 </template>
 <script>
-import xs from '../../../packages/xspreadsheet';
+import xSpreadsheet from '../../../packages/xspreadsheet';
 
 export default {
     name: 'Test',
     components: {
-        xs
+        xSpreadsheet
     },
     data() {
         return {};

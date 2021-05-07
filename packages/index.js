@@ -1,11 +1,11 @@
 import JcEditor from './JcEditor'
-import xs from "./xspreadsheet";
+import xSpreadsheet from "./xspreadsheet";
 import layui from './layui'
 
 // 存储组件列表（不支持直接注册为组件使用的，不在此处进行注册）
 const components = [
     JcEditor,
-    xs,
+    xSpreadsheet,
     ...layui
 ]
 
@@ -31,6 +31,6 @@ export default {
     install,
     // 以下是具体的组件列表
     JcEditor,
-    xs,
+    xSpreadsheet,
     ...layui
 }

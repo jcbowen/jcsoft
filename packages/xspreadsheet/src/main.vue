@@ -13,7 +13,7 @@ import xlsx from 'xlsx';
 Spreadsheet.locale('zh-cn', zhCN);
 
 export default {
-    name: 'xs',
+    name: 'xSpreadsheet',
     props: {
         id: {
             type: String,
@@ -27,23 +27,7 @@ export default {
                 return {}
             }
         },
-        defData: {
-            type: Array,
-            default: () => {
-                return [
-                    {
-                        name: "Sheet1",
-                        freeze: "A1",
-                        styles: [],
-                        merges: [],
-                        rows: {"len": 100},
-                        cols: {"len": 26},
-                        validations: [],
-                        autofilter: {}
-                    },
-                ]
-            }
-        },
+        defData: Array,
         onChange: {
             type: Function,
         }
@@ -96,8 +80,8 @@ export default {
         init() {
             this.xsConfig = jiuchet.extend(true, this.xsConfig, this.config);
             this.spreadsheet = new Spreadsheet(`#${this.spreadsheetId}`, this.xsConfig)
-            .loadData(this.defData)
-            .change(data => {
+            if (typeof this.defData === 'object') this.spreadsheet.loadData(this.defData)
+            this.spreadsheet.change(data => {
                 typeof this.onChange === 'function' && this.onChange(data);
             });
             this.$emit('spreadsheet', this.spreadsheet);
@@ -170,12 +154,6 @@ export default {
             return this.spreadsheet.cellText(ri, ci, text, sheetIndex);
         },
         /**
-         * 删除当前表
-         */
-        deleteSheet() {
-            return this.spreadsheet.deleteSheet();
-        },
-        /**
          * 刷新表格
          */
         reRender() {
@@ -205,20 +183,22 @@ export default {
             let out = xlsx.utils.book_new();
 
             jiuchet.each(sdata, (ind, xws) => {
-                var aoa = [[]];
-                var rowobj = xws.rows;
-                for (var ri = 0; ri < rowobj.len; ++ri) {
-                    var row = rowobj[ri];
+                let aoa = [[]]
+                    , rowobj = xws.rows;
+
+                for (let ri = 0; ri < rowobj.len; ++ri) {
+                    let row = rowobj[ri];
                     if (!row) continue;
                     aoa[ri] = [];
 
                     jiuchet.each(Object.keys(row.cells), (i, k) => {
                         let idx = +k;
-                        if (isNaN(idx)) return;
+                        if (isNaN(idx)) return true;
                         aoa[ri][idx] = row.cells[k].text;
                     })
                 }
-                var ws = xlsx.utils.aoa_to_sheet(aoa);
+
+                let ws = xlsx.utils.aoa_to_sheet(aoa);
 
                 /** 读取在线中的合并单元格，并写入导出的数据中
                  * merges: Array(19)

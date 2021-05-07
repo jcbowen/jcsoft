@@ -28,9 +28,8 @@ export default {
             }
         },
         defData: Array,
-        onChange: {
-            type: Function,
-        }
+        onChange: Function,
+        afterInit: Function,
     },
     data() {
         return {
@@ -85,7 +84,7 @@ export default {
                 typeof this.onChange === 'function' && this.onChange(data);
             });
             this.$emit('spreadsheet', this.spreadsheet);
-            window.qqq = this;
+            typeof this.afterInit === 'function' && this.afterInit(this.spreadsheet);
         },
         /**
          * 监听事件

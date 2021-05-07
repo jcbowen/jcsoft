@@ -1,5 +1,38 @@
 <template>
-    <div :id="spreadsheetId"></div>
+    <div class="xSpreadsheet">
+        <div class="xSpreadsheet-hook-button" v-show="xSpreadsheetHookButton">
+            <el-button size="mini" @click="openRenameDialog">修改表名</el-button>
+            <el-button size="mini" @click="choseFile" type="primary">
+                加载文件
+                <input ref="fileInput" type="file" v-show="false" @change="getWorkbook">
+            </el-button>
+        </div>
+
+        <div :id="spreadsheetId"></div>
+
+        <el-dialog title="修改表单名称" :visible.sync="renameDialog">
+
+            <el-form ref="form" :model="renameSheetForm" label-width="80px">
+
+                <el-form-item label="表单">
+                    <el-select v-model="renameSheetForm.ind" placeholder="请选择操作的表单" required="true">
+                        <div v-for="(item, ind) in xsData" :key="ind">
+                            <el-option :label="item.name" :value="ind"></el-option>
+                        </div>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="表格名称">
+                    <el-input v-model="renameSheetForm.name"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="renameSubmit">修改</el-button>
+                    <el-button @click="renameDialog = false">取消</el-button>
+                </el-form-item>
+
+            </el-form>
+
+        </el-dialog>
+    </div>
 </template>
 <script>
 
@@ -21,12 +54,22 @@ export default {
                 return 'xSpreadsheet-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '')
             }
         },
+        fileName: {
+            type: String,
+            default: 'jcSpreadsheet'
+        },
+        // 是否显示扩展按钮（修改表名及加载文件）
+        xSpreadsheetHookButton: {
+            type: Boolean,
+            default: true
+        },
         config: {
             type: Object,
             default: () => {
                 return {}
             }
         },
+        // 渲染时加载的初始数据
         defData: Array,
         onChange: Function,
         afterInit: Function,
@@ -39,8 +82,8 @@ export default {
                 showGrid: true,
                 showContextmenu: true,
                 view: {
-                    height: () => 500,
-                    width: () => 750,
+                    height: () => document.documentElement.clientHeight,
+                    width: () => document.documentElement.clientWidth,
                 },
                 row: {
                     len: 100,
@@ -70,12 +113,23 @@ export default {
             },
             spreadsheetId: this.id,
             spreadsheet: null,
+
+            xsData: [],
+            renameDialog: false,
+            renameSheetForm: {
+                ind: '',
+                name: ''
+            }
+
         }
     },
     mounted() {
         this.init()
     },
     methods: {
+        /**
+         * 初始化
+         */
         init() {
             this.xsConfig = jiuchet.extend(true, this.xsConfig, this.config);
             this.spreadsheet = new Spreadsheet(`#${this.spreadsheetId}`, this.xsConfig)
@@ -161,11 +215,30 @@ export default {
         reRender() {
             return this.spreadsheet.reRender()
         },
+
+        //----------- 修改表名称，Begin  -----------/
+        choseFile() {
+            this.$refs.fileInput.dispatchEvent(new MouseEvent('click'))
+        },
+        /** 打开编辑名称的弹窗 */
+        openRenameDialog() {
+            this.xsData = this.getData();
+            this.renameDialog = true;
+        },
+        /** 提交表名修改 */
+        renameSubmit() {
+            this.xsData[this.renameSheetForm.ind].name = this.renameSheetForm.name;
+            this.loadData(this.xsData);
+            this.renameDialog = false;
+        },
+        //----------- 修改表名称，End  -----------/
+
+        //----------- 导入/导出，Begin  -----------/
         /** 导出excel */
         exportExcel() {
             var new_wb = this.xtos(this.getData());
             /* generate download */
-            xlsx.writeFile(new_wb, "SheetJS.xlsx");
+            xlsx.writeFile(new_wb, `${this.fileName}.xlsx`);
         },
         /**
          * 上传excel
@@ -284,6 +357,19 @@ export default {
             o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)))
             return o
         },
+        //----------- 导入/导出，End  -----------/
+
+    },
+    watch: {
+        'renameSheetForm.ind'(val, oldVal) {
+            this.renameSheetForm.name = this.xsData[val].name;
+            console.log("renameSheetForm.ind: " + val, oldVal);
+        }
     }
 }
 </script>
+<style lang="scss">
+.xSpreadsheet-hook-button {
+    float: right;
+}
+</style>

@@ -18,7 +18,7 @@ export default {
         id: {
             type: String,
             default: () => {
-                return 'vue-xspreadsheet-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '')
+                return 'xSpreadsheet-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '')
             }
         },
         config: {

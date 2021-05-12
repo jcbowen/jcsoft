@@ -75,11 +75,21 @@ const constantRoutes = [
         },
     },
     {
-        path: '/test',
-        name: 'test',
-        component: () => import('@/views/test/index'),
+        path: '/test/barcode',
+        name: 'testbarcode',
+        component: () => import('@/views/test/barcode'),
         meta: {
-            title: 'test',
+            title: 'barcode',
+            icon: 'home',
+            affix: true,
+        },
+    },
+    {
+        path: '/test/elTable',
+        name: 'testElTable',
+        component: () => import('@/views/test/elTable'),
+        meta: {
+            title: 'elTable',
             icon: 'home',
             affix: true,
         },

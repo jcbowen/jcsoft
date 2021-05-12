@@ -258,55 +258,9 @@ export default {
         this.$emit('Editor', tinymce);
     },
     created() {
-        // 增加图片选择器插件
-        /*tinymce.PluginManager.add('image2', function (editor, url) {
-            // 注册一个工具栏按钮名称
-            editor.ui.registry.addButton('image2', {
-                // text: '<i class="fa fa-home" title="图片选择器" aria-hidden="true" ></i>',
-                // text: '图片选择器',
-                icon: 'image',
-                onAction: function () {
-                    selector.image(function (res) {
-                        if (typeof res !== 'object') return;
-                        if (0 != res.length) {
-                            var e = "";
-                            for (let i in res) e += '<p><img src="' + res[i].url + '" _src="' + res[i].attachment + '" alt="' + res[i].filename + '" style="max-width: 100%"/></p>';
-                            editor.insertContent(e);
-                        }
-                    }, {isedit: 2})
-
-                }
-            });
-
-            // 注册一个菜单项名称 menu/menubar
-            /!*editor.ui.registry.addMenuItem('image2', {
-                text: '图片选择器',
-                icon: 'image',
-                onAction: function () {
-                    selector.image(function (res) {
-                        if (typeof res !== 'object') return;
-                        if (0 != res.length) {
-                            var e = "";
-                            for (let i in res) e += '<p><img src="' + res[i].url + '" _src="' + res[i].attachment + '" alt="' + res[i].filename + '" style="max-width: 100%"/></p>';
-                            editor.insertContent(e);
-                        }
-                    }, {isedit: 2})
-                }
-            });*!/
-
-            return {
-                getMetadata: function () {
-                    return {
-                        //插件名和链接会显示在“帮助”→“插件”→“已安装的插件”中
-                        name: "玖祺图片选择器",
-                        url: "http://www.jiuchet.com"
-                    };
-                }
-            };
-        });*/
     },
     mounted() {
-        tinymce.init({});
+        tinymce.init();
     },
     methods: {
         // 添加相关的事件，可用的事件参照文档=> https://github.com/tinymce/tinymce-vue => All available events
@@ -320,11 +274,11 @@ export default {
         }
     },
     watch: {
-        value(newValue) {
-            this.myValue = newValue
+        value(value, oldValue) {
+            this.myValue = value
         },
-        myValue(newValue) {
-            this.$emit('input', newValue)
+        myValue(value, oldValue) {
+            this.$emit('input', value)
         }
     }
 }

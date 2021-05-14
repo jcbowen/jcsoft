@@ -34,7 +34,7 @@
                                                :disabled="protocolStr === 'https:'"></el-option>
                                     <el-option label="wss://" value="wss"></el-option>
                                 </el-select>
-                                <el-tag v-if="protocolStr === 'https:'" type="danger">通过https访问本站，仅能使用wss://发送请求</el-tag>
+                                <el-tag v-if="protocolStr === 'https:'" type="danger">https下仅能使用wss://连接</el-tag>
                             </el-form-item>
                             <el-form-item label="服务端口">
                                 <el-input v-model="form.port"></el-input>
@@ -134,7 +134,7 @@ export default {
     },
     created() {
         this.protocolStr = document.location.protocol;
-        this.make_wsUrl();
+        this.make_wsUrl(true);
 
         this.onWS = {
             onopen: () => {

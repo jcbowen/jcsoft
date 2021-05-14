@@ -1,43 +1,6 @@
 <template>
     <div class="readIdCard">
         <h2>WebSocket</h2>
-
-        <!--        <el-card class="box-card" shadow="hover">
-                    <div slot="header" class="clearfix">
-                        <span>基础描述</span>
-                    </div>
-                    <div class="text item">
-                        <p><strong>硬件设备：</strong>诺塔斯 NTS-L7-2IN1 二合一读卡器</p>
-                        <p><strong>exe软件见引用资源：</strong>LocalWsServer20200706.zip</p>
-                        <p><strong>电脑系统：</strong>win7/10</p>
-                        <p style="margin-top: 2rem"><strong>说明：</strong></p>
-                        <p style="text-indent: 2em;">先将硬件设备插入电脑，然后打开LocalWsServer软件，在软件配置中配置账号密码，并勾选自动读取，接着保存参数即可。</p>
-                        <p style="text-indent: 2em;">测试账号：20002</p>
-                        <p style="text-indent: 2em;">测试密码：123456</p>
-                        <p style="text-indent: 2em;">
-                            正式账号在<a href="http://www.shenfenshibie.com/" target="_blank"
-                                    rel="noopener">http://www.shenfenshibie.com/</a>&nbsp;申请，并联系设备商审核
-                        </p>
-                    </div>
-                </el-card>-->
-
-
-        <!--        <el-card class="box-card" shadow="hover">
-                    <div slot="header" class="clearfix">
-                        <span>本页面将把lotussmart，暴露到window变量中，调用方法示例：</span>
-                    </div>
-                    <div class="text item">
-                        <layui-code
-                            :code="'// 该方法仅适用于自动读卡\n' +
-                             'lotussmart.sfz.runReadIDCard({\n'+
-        '    onmessage: (cardInfo)=&gt;{\n'+
-        '        console.log(cardInfo)\n'+
-        '    }\n'+
-        '})'"
-                            :title="'自动读取身份证信息'"
-                        />
-                    </div>
-                </el-card>-->
         <el-card class="box-card" shadow="hover">
             <div slot="header" class="clearfix">
                 <span>直接测试</span>
@@ -46,7 +9,7 @@
                 <p style="text-align: center">使用本控制台测试时，请先配置WebSocket</p>
                 <el-divider></el-divider>
                 <el-row :gutter="25">
-                    <el-col :xs="24" :sm="24" :md="15" :lg="15" :xl="15">
+                    <el-col :xs="24" :sm="24" :md="13" :lg="13" :xl="13">
                         <el-form label-position="top" ref="form" :model="form" label-width="100px">
                             <el-form-item label="服务状态">
                                 <el-tag :type="form.state.type">{{ form.state.msg }}</el-tag>
@@ -63,8 +26,16 @@
                             </el-form-item>
                         </el-form>
                     </el-col>
-                    <el-col :xs="24" :sm="24" :md="9" :lg="9" :xl="9">
+                    <el-col :xs="24" :sm="24" :md="11" :lg="11" :xl="11">
                         <el-form label-position="left" ref="form" :model="form" label-width="100px">
+                            <el-form-item label="协议类型">
+                                <el-select v-model="WS_type" placeholder="请选择协议类型">
+                                    <el-option label="ws://" value="ws"
+                                               :disabled="protocolStr === 'https:'"></el-option>
+                                    <el-option label="wss://" value="wss"></el-option>
+                                </el-select>
+                                <el-tag v-if="protocolStr === 'https:'" type="danger">通过https访问本站，仅能使用wss://发送请求</el-tag>
+                            </el-form-item>
                             <el-form-item label="服务端口">
                                 <el-input v-model="form.port"></el-input>
                             </el-form-item>
@@ -74,15 +45,27 @@
                             <el-form-item label="服务路径">
                                 <el-input v-model="form.path"></el-input>
                             </el-form-item>
-                            <el-input placeholder="请输入内容" v-model="form.msg" class="input-with-select">
-                                <el-button slot="append" @click="execStringCommand('Send')" icon="el-icon-s-promotion"></el-button>
-                            </el-input>
+                            <el-form-item label="消息内容">
+                                <el-input type="textarea"
+                                          placeholder="请输入消息内容
+
+输入内容后【发送】按钮将会出现"
+                                          v-model="form.msg"
+                                          rows="5"
+                                          class="input-with-select">
+                                </el-input>
+                            </el-form-item>
                             <el-divider content-position="center">命令模拟</el-divider>
 
                             <el-form-item v-for="(item, ind) in commands" :key="ind"
                                           :label="item.title"
+                                          v-show="item.command === 'Send' ? (form.msg?true:false) : true"
                             >
-                                <el-button @click="execStringCommand(item.command)">{{ item.command }}</el-button>
+                                <el-button
+                                    :type="item.command === 'Send'?'primary':''"
+                                    @click="execStringCommand(item.command)"
+                                >{{ item.command }}
+                                </el-button>
                             </el-form-item>
 
                         </el-form>
@@ -104,8 +87,8 @@ export default {
     data() {
         return {
             form: {
-                domain: '127.0.0.1',
-                port: '10215',
+                domain: '192.168.56.4',
+                port: '9410',
                 path: '/',
                 state: {
                     type: 'info',
@@ -115,6 +98,8 @@ export default {
                 msg: ''
             },
             wsUrl: '',
+            WS_type: 'ws://',
+            protocolStr: 'https:',
             onWS: {
                 onopen: {},
                 onclose: {},
@@ -122,6 +107,10 @@ export default {
                 onerror: {}
             },
             commands: [
+                {
+                    title: '发送消息',
+                    command: 'Send'
+                },
                 {
                     title: '连接服务',
                     command: 'ConnectServer'
@@ -144,6 +133,9 @@ export default {
         }
     },
     created() {
+        this.protocolStr = document.location.protocol;
+        this.make_wsUrl();
+
         this.onWS = {
             onopen: () => {
                 return this.setLog('#msg: 服务器连接成功');
@@ -152,7 +144,7 @@ export default {
                 return this.setLog('#断开连接:' + event.wasClean);
             },
             onmessage: (event) => {
-                return this.setLog('#收到消息:' + event.data);
+                return this.setLog('#服务器消息:' + event.data);
             },
             onerror: (event) => {
                 this.form.state = {
@@ -162,7 +154,8 @@ export default {
                 return this.setLog('#disconnected:' + (event.message || '服务未启用或服务地址错误'));
             }
         };
-        window.VM = this;
+
+        window.WS = this;
     },
     methods: {
         setLog(...res) {
@@ -186,10 +179,10 @@ export default {
                     });
                     return this.connectServer();
                 case 'Send':
-                        this.socket.send(this.form.msg);
-                        break;
+                    this.socket.send(this.form.msg);
+                    break;
                 case 'CloseConnection':
-                    this.socket.close();
+                    if (this.socket) this.socket.close();
                     return this.form.state = {
                         type: 'warning',
                         msg: 'Socket 服务已关闭'
@@ -226,19 +219,22 @@ export default {
                     return this.form.log = '';
             }
         },
-        connectServer() {
-            let that = this
-                , protocolStr = document.location.protocol;
-
-            try {
-                if (protocolStr === "https:") {
-                    this.wsUrl = 'wss://';
+        make_wsUrl(auto = false) {
+            if (auto) {
+                if (this.protocolStr === "https:") {
+                    this.WS_type = 'wss://';
                 } else {
-                    this.wsUrl = 'ws://';
+                    this.WS_type = 'ws://';
                 }
-                this.wsUrl += this.form.domain + ':' + this.form.port + this.form.path;
+            }
+            this.wsUrl += this.WS_type + this.form.domain + ':' + this.form.port + this.form.path;
+        },
+        connectServer() {
+            let that = this;
+            this.wsUrl = '';
+            try {
+                if (this.wsUrl === '') this.make_wsUrl();
                 this.socket = new WebSocket(this.wsUrl);
-
             } catch (evt) {
                 this.loading.close()
                 this.form.state = {
@@ -311,6 +307,13 @@ export default {
             }
         }
     },
+    watch: {
+        WS_type() {
+            let socketStatus = this.getSocketStatus();
+            if (socketStatus === '1' || socketStatus === '2') this.execStringCommand('CloseConnection');
+            this.make_wsUrl();
+        }
+    }
 }
 </script>
 

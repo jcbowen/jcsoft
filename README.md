@@ -2,28 +2,15 @@
 
 ## Project setup
 ```
-npm install
+npm install jcsoft
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Demo Page
+See [Jcsoft Demo Page](http://jcsoft.jiuqikeji.cn/).
 
 ### 当前功能
 1.tinymce
 
 2.诺塔斯 二代身份证读卡器
+
+3.WebSocket 测试

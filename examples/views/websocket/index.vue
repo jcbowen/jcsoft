@@ -30,9 +30,9 @@
                         <el-form label-position="left" ref="form" :model="form" label-width="100px">
                             <el-form-item label="协议类型">
                                 <el-select v-model="WS_type" placeholder="请选择协议类型">
-                                    <el-option label="ws://" value="ws"
+                                    <el-option label="ws" value="ws://"
                                                :disabled="protocolStr === 'https:'"></el-option>
-                                    <el-option label="wss://" value="wss"></el-option>
+                                    <el-option label="wss" value="wss://"></el-option>
                                 </el-select>
                                 <el-tag v-if="protocolStr === 'https:'" type="danger">https下仅能使用wss://连接</el-tag>
                             </el-form-item>

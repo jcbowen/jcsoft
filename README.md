@@ -6,7 +6,7 @@ npm install jcsoft
 ```
 
 ### Demo Page
-See [Jcsoft Demo Page](http://jcsoft.jiuqikeji.cn/).
+See [Jcsoft Demo Page](http://jcsoft.jiuqikeji.cn/dist/).
 
 ### 当前功能
 1.tinymce

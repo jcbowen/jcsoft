@@ -493,11 +493,16 @@ Util.prototype.in_array = function (find, Object, argStrict = false) {
     let result = false;
     that.each(Object, function (ind, item) {
         if (argStrict) {
-            if (find === item) result = true;
+            if (find === item) {
+                result = true;
+                return false;
+            }
         } else {
-            if (find == item) result = true;
+            if (find == item) {
+                result = true;
+                return false;
+            }
         }
-
     });
     return result;
 }

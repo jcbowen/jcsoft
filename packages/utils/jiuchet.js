@@ -481,6 +481,27 @@ Util.prototype.each = function (obj, fn) {
     return that;
 };
 
+/**
+ *
+ * @param find
+ * @param Object
+ * @param argStrict 严格模式，默认关闭
+ * @returns {boolean}
+ */
+Util.prototype.in_array = function (find, Object, argStrict = false) {
+    const that = this;
+    let result = false;
+    that.each(Object, function (ind, item) {
+        if (argStrict) {
+            if (find === item) result = true;
+        } else {
+            if (find == item) result = true;
+        }
+
+    });
+    return result;
+}
+
 Util.prototype.loadjs = function (apps, callback) {
     var that = this
         , config = that.config

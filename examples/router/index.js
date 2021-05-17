@@ -75,6 +75,16 @@ const constantRoutes = [
         },
     },
     {
+        path: '/test',
+        name: 'Test',
+        component: () => import('@/views/test/index'),
+        meta: {
+            title: 'Test',
+            icon: 'home',
+            affix: true,
+        },
+    },
+    {
         path: '/test/barcode',
         name: 'testbarcode',
         component: () => import('@/views/test/barcode'),

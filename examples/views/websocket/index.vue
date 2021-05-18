@@ -133,11 +133,14 @@ export default {
         }
     },
     created() {
+        // 根据地址栏中的参数，修改表单中的默认信息
+        this.onChangeQuery(this.$route)
+
         this.protocolStr = document.location.protocol;
         this.make_wsUrl(true);
 
         this.onWS = {
-            onopen: () => {
+            onopen: (event) => {
                 return this.setLog('#msg: 服务器连接成功');
             },
             onclose: (event) => {
@@ -305,6 +308,16 @@ export default {
                     that.setLog("未知错误");
                     return '-1';
             }
+        },
+        onChangeQuery(route) {
+            const queryDomain = route.query.domain;
+            const queryPort = route.query.port;
+            if (queryDomain) {
+                this.form.domain = queryDomain
+            }
+            if (queryPort) {
+                this.form.port = queryPort
+            }
         }
     },
     watch: {
@@ -312,6 +325,9 @@ export default {
             let socketStatus = this.getSocketStatus();
             if (socketStatus === '1' || socketStatus === '2') this.execStringCommand('CloseConnection');
             this.make_wsUrl();
+        },
+        $route(route) {
+            this.onChangeQuery(route)
         }
     }
 }

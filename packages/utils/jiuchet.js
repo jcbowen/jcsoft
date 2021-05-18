@@ -394,6 +394,20 @@ Util.prototype.isPlainObject = function (obj) {
     return typeof Ctor === "function" && fnToString.call(Ctor) === ObjectFunctionString;
 };
 
+Util.prototype.isJson = function (str) {
+    if (typeof str === "string") {
+        try {
+            const obj = JSON.parse(str);
+            return !!(obj && typeof obj === "object");
+        } catch (e) {
+            console.log("$isJSON error：", e);
+            return false;
+        }
+    } else {
+        return false;
+    }
+};
+
 Util.prototype.extend = function () {
     var that = this
         , src, copyIsArray, copy, name, options, clone,

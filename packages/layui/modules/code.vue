@@ -8,8 +8,6 @@
     </div>
 </template>
 <script>
-import jiuchet from "../../utils/jiuchet";
-import util from "../../utils/jiuchet";
 
 export default {
     name: 'LayuiCode',

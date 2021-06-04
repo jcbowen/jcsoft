@@ -42,14 +42,33 @@
                             <el-form-item label="服务地址">
                                 <el-input v-model="form.domain"></el-input>
                             </el-form-item>
-                            <el-form-item label="计算签名">
-                                <el-switch v-model="form.isUseSign"></el-switch>
+                            <el-form-item label="使用变量">
+                                <el-switch v-model="form.useVar"></el-switch>
                             </el-form-item>
-                            <el-form-item v-if="form.isUseSign" label="签名计算模版">
-                                <el-input v-model="form.tpl_makeSign"></el-input>
-                            </el-form-item>
+                            <div v-show="form.useVar">
+                                <el-form-item label="变量">
+                                    <el-input type="textarea"
+                                              placeholder="请输入 js对象格式 的变量"
+                                              v-model="form.var"
+                                              @change="onVarChange"
+                                              rows="5"
+                                              class="input-with-select">
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item style="margin-top: -20px;" label="查看说明">
+                                    <el-switch v-model="showDemoVar"></el-switch>
+                                </el-form-item>
+                                <div v-show="showDemoVar" style="margin-top: -20px;margin-bottom: 30px">
+                                    <layui-code
+                                        title="变量格式示例"
+                                        :code="demoVar"
+                                        :encode="true"
+                                        lang="Object + Tpl"
+                                    ></layui-code>
+                                </div>
+                            </div>
                             <el-form-item label="路径参数">
-                                <el-input v-model="form.query"></el-input>
+                                <el-input v-model="form.query" @change="onFormQueryChange"></el-input>
                             </el-form-item>
                             <el-form-item label="消息内容">
                                 <el-input type="textarea"
@@ -65,7 +84,7 @@
 
                             <el-form-item v-for="(item, ind) in commands" :key="ind"
                                           :label="item.title"
-                                          v-show="item.command === 'Send' ? (form.msg?true:false) : true"
+                                          v-show="item.command === 'Send' ? (!!form.msg) : true"
                             >
                                 <el-button
                                     :type="item.command === 'Send'?'primary':''"
@@ -97,19 +116,26 @@ export default {
                 domain: '192.168.56.4',
                 port: '9410',
                 query: '/',
-                path: '',
+                path: '/',
                 state: {
                     type: 'info',
                     msg: '未连接'
                 },
-                isUseSign: false,
-                tpl_makeSign: '',
+                useVar: false,
+                var: '',
                 log: '',
                 msg: ''
             },
-            variable: {
-                timestamp: ''
-            },
+            variable: {},
+            showDemoVar: false,
+            demoVar: `// tpl函数内的字符串将由模版引擎输出，模版引擎规则参考layui.laytpl
+//d.timestamp 为秒级时间戳，每10秒自动更新一次
+
+{
+    imei: 12332112123321,
+    sign: tpl("{{# return php.md5('secret=dasjdiosaiodoas&timestamp='+d.timestamp+'&key=12332112123321'); }}")
+}
+`,
             wsUrl: '',
             WS_type: 'ws://',
             protocolStr: 'https:',
@@ -170,15 +196,15 @@ export default {
                 return this.setLog('#disconnected:' + (event.message || '服务未启用或服务地址错误'));
             }
         };
-
-        window.WS = this;
     },
     mounted() {
         window.vm = this
         window.php = php;
+        window.tpl = this.tpl;
+        // 10秒执行一次时间戳变量更新
         setInterval(() => {
             this.makeVariable();
-        }, 1000);
+        }, 10 * 1000);
     },
     methods: {
         setLog(...res) {
@@ -329,6 +355,9 @@ export default {
                     return '-1';
             }
         },
+        makeVariable() {
+            this.variable.timestamp = php.time()
+        },
         onChangeQuery(route) {
             const queryDomain = route.query.domain
                 , queryPort = route.query.port
@@ -348,10 +377,25 @@ export default {
                 this.form.query = queryQuery
             }
         },
-        makeVariable() {
-            if (!this.form.isUseSign) return '';
-            this.variable.timestamp = php.time()
-            if (!php.empty(this.form.tpl_makeSign)) laytpl(this.form.tpl_makeSign).render(this.variable);
+        onVarChange(value) {
+            try {
+                value = new Function('return ' + value)();
+                return this.variable = value;
+            } catch (e) {
+                this.$notify({
+                    title: 'error',
+                    dangerouslyUseHTMLString: true,
+                    message: '不正确的格式：' + value,
+                    type: 'warning'
+                });
+                return console.error('以下部分格式不正确：\n' + value);
+            }
+        },
+        onFormQueryChange(pathTpl) {
+            if (!php.empty(pathTpl)) this.form.path = this.tpl(pathTpl);
+        },
+        tpl(string) {
+            return laytpl(string).render(this.variable);
         }
     },
     watch: {

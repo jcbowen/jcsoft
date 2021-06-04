@@ -349,6 +349,7 @@ export default {
             }
         },
         makeVariable() {
+            if (!this.form.isUseSign) return '';
             this.variable.timestamp = php.time()
             if (!php.empty(this.form.tpl_makeSign)) laytpl(this.form.tpl_makeSign).render(this.variable);
         }

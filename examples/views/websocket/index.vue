@@ -42,8 +42,14 @@
                             <el-form-item label="服务地址">
                                 <el-input v-model="form.domain"></el-input>
                             </el-form-item>
-                            <el-form-item label="服务路径">
-                                <el-input v-model="form.path"></el-input>
+                            <el-form-item label="计算签名">
+                                <el-switch v-model="form.isUseSign"></el-switch>
+                            </el-form-item>
+                            <el-form-item v-if="form.isUseSign" label="签名计算模版">
+                                <el-input v-model="form.tpl_makeSign"></el-input>
+                            </el-form-item>
+                            <el-form-item label="路径参数">
+                                <el-input v-model="form.query"></el-input>
                             </el-form-item>
                             <el-form-item label="消息内容">
                                 <el-input type="textarea"
@@ -80,6 +86,7 @@
 <script>
 import LayuiCode from "../../../packages/layui/modules/code";
 import php from '../../../packages/utils/php'
+import laytpl from "../../../packages/utils/laytpl";
 
 export default {
     name: 'Test',
@@ -89,13 +96,19 @@ export default {
             form: {
                 domain: '192.168.56.4',
                 port: '9410',
-                path: '/',
+                query: '/',
+                path: '',
                 state: {
                     type: 'info',
                     msg: '未连接'
                 },
+                isUseSign: false,
+                tpl_makeSign: '',
                 log: '',
                 msg: ''
+            },
+            variable: {
+                timestamp: ''
             },
             wsUrl: '',
             WS_type: 'ws://',
@@ -159,6 +172,13 @@ export default {
         };
 
         window.WS = this;
+    },
+    mounted() {
+        window.vm = this
+        window.php = php;
+        setInterval(() => {
+            this.makeVariable();
+        }, 1000);
     },
     methods: {
         setLog(...res) {
@@ -310,14 +330,27 @@ export default {
             }
         },
         onChangeQuery(route) {
-            const queryDomain = route.query.domain;
-            const queryPort = route.query.port;
+            const queryDomain = route.query.domain
+                , queryPort = route.query.port
+                , queryWsType = route.query.wsType
+                , queryQuery = route.query.query;
+
             if (queryDomain) {
                 this.form.domain = queryDomain
             }
             if (queryPort) {
                 this.form.port = queryPort
             }
+            if (queryWsType) {
+                this.WS_type = queryWsType + '://'
+            }
+            if (queryQuery) {
+                this.form.query = queryQuery
+            }
+        },
+        makeVariable() {
+            this.variable.timestamp = php.time()
+            if (!php.empty(this.form.tpl_makeSign)) laytpl(this.form.tpl_makeSign).render(this.variable);
         }
     },
     watch: {

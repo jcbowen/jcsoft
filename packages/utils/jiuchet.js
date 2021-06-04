@@ -400,7 +400,7 @@ Util.prototype.isJson = function (str) {
             const obj = JSON.parse(str);
             return !!(obj && typeof obj === "object");
         } catch (e) {
-            console.log("$isJSON error：", e);
+            // console.log("$isJSON error：", e);
             return false;
         }
     } else {

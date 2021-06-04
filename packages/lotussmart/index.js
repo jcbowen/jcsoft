@@ -180,6 +180,7 @@ Method.prototype.execStringCommand = function (strCommand) {
     that.strLastResult = '';
     that.nCommandIndex++;
     if (that.getSocketStatus() === '2') {
+        if (strCommand === 'ClearIdBuffer') that.data = '';
         that.socket.send(strCommand + ',' + that.nCommandIndex);
     } else {
         that.setLog('#send failed. websocket not open. please check.');

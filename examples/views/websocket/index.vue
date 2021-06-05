@@ -75,7 +75,8 @@
                                           placeholder="请输入消息内容
 
 输入内容后【发送】按钮将会出现"
-                                          v-model="form.msg"
+                                          v-model="form.content"
+                                          @change="onFormContentChange"
                                           rows="5"
                                           class="input-with-select">
                                 </el-input>
@@ -124,7 +125,8 @@ export default {
                 useVar: false,
                 var: '',
                 log: '',
-                msg: ''
+                msg: '',
+                content: '',
             },
             variable: {},
             showDemoVar: false,
@@ -173,10 +175,10 @@ export default {
     },
     created() {
         // 根据地址栏中的参数，修改表单中的默认信息
-        this.onChangeQuery(this.$route)
+        let auto = this.onChangeQuery(this.$route)
 
         this.protocolStr = document.location.protocol;
-        this.make_wsUrl(true);
+        this.make_wsUrl(auto);
 
         this.onWS = {
             onopen: (event) => {
@@ -372,10 +374,13 @@ export default {
             }
             if (queryWsType) {
                 this.WS_type = queryWsType + '://'
+                return false;
             }
             if (queryQuery) {
                 this.form.query = queryQuery
             }
+            return true;
+            // false 代表不再自动根据https选择ws还是wss
         },
         onVarChange(value) {
             try {
@@ -393,6 +398,21 @@ export default {
         },
         onFormQueryChange(pathTpl) {
             if (!php.empty(pathTpl)) this.form.path = this.tpl(pathTpl);
+        },
+        onFormContentChange(content) {
+            if (php.empty(content)) return '';
+            try {
+                content = new Function('return ' + content)();
+                return this.form.msg = JSON.stringify(content, 4);
+            } catch (e) {
+                this.$notify({
+                    title: 'error',
+                    dangerouslyUseHTMLString: true,
+                    message: '不正确的格式：' + content,
+                    type: 'warning'
+                });
+                return console.error('以下部分格式不正确：\n' + content);
+            }
         },
         tpl(string) {
             return laytpl(string).render(this.variable);

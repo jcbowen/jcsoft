@@ -85,7 +85,7 @@
 
                             <el-form-item v-for="(item, ind) in commands" :key="ind"
                                           :label="item.title"
-                                          v-show="item.command === 'Send' ? (!!form.msg) : true"
+                                          v-show="item.command === 'Send' ? (!!form.content) : true"
                             >
                                 <el-button
                                     :type="item.command === 'Send'?'primary':''"

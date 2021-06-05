@@ -75,8 +75,7 @@
                                           placeholder="请输入消息内容
 
 输入内容后【发送】按钮将会出现"
-                                          v-model="form.content"
-                                          @change="onFormContentChange"
+                                          v-model="form.msg"
                                           rows="5"
                                           class="input-with-select">
                                 </el-input>
@@ -85,7 +84,7 @@
 
                             <el-form-item v-for="(item, ind) in commands" :key="ind"
                                           :label="item.title"
-                                          v-show="item.command === 'Send' ? (!!form.content) : true"
+                                          v-show="item.command === 'Send' ? (!!form.msg) : true"
                             >
                                 <el-button
                                     :type="item.command === 'Send'?'primary':''"
@@ -125,8 +124,7 @@ export default {
                 useVar: false,
                 var: '',
                 log: '',
-                msg: '',
-                content: '',
+                msg: ''
             },
             variable: {},
             showDemoVar: false,
@@ -398,21 +396,6 @@ export default {
         },
         onFormQueryChange(pathTpl) {
             if (!php.empty(pathTpl)) this.form.path = this.tpl(pathTpl);
-        },
-        onFormContentChange(content) {
-            if (php.empty(content)) return '';
-            try {
-                content = new Function('return ' + content)();
-                return this.form.msg = JSON.stringify(content, 4);
-            } catch (e) {
-                this.$notify({
-                    title: 'error',
-                    dangerouslyUseHTMLString: true,
-                    message: '不正确的格式：' + content,
-                    type: 'warning'
-                });
-                return console.error('以下部分格式不正确：\n' + content);
-            }
         },
         tpl(string) {
             return laytpl(string).render(this.variable);

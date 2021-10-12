@@ -819,6 +819,24 @@ Util.prototype.numberToChinese = function (str, isInt = true, isFloat = false, r
     }) + (isFloat ? isInt ? '元' : '' : '元整');
 }
 
+// 获取屏幕类型，根据当前屏幕大小，返回 0 - 3 的值
+// 0: 低于768px的屏幕
+// 1：768px到992px之间的屏幕
+// 2：992px到1200px之间的屏幕
+// 3：高于1200px的屏幕
+Util.prototype.screen = function () {
+    var width = document.body.clientWidth;
+    if (width > 1200) {
+        return 3; //大屏幕
+    } else if (width > 992) {
+        return 2; //中屏幕
+    } else if (width > 768) {
+        return 1; //小屏幕
+    } else {
+        return 0; //超小屏幕
+    }
+}
+
 let util = new Util();
 
 export default util;

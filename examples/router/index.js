@@ -15,16 +15,6 @@ const constantRoutes = [
         },
     },
     {
-        path: '/editor',
-        name: 'EditorDemo',
-        component: () => import('@/views/editor/index'),
-        meta: {
-            title: 'EditorDemo',
-            icon: 'home',
-            affix: true,
-        },
-    },
-    {
         path: '/script',
         name: 'Script',
         component: () => import('@/views/script/index'),
@@ -35,71 +25,11 @@ const constantRoutes = [
         },
     },
     {
-        path: '/readIdCard',
-        name: 'readIdCard',
-        component: () => import('@/views/readIdCard/index'),
-        meta: {
-            title: 'readIdCard',
-            icon: 'home',
-            affix: true,
-        },
-    },
-    {
-        path: '/websocket',
-        name: 'WebSocket',
-        component: () => import('@/views/websocket/index'),
-        meta: {
-            title: 'WebSocket',
-            icon: 'home',
-            affix: true,
-        },
-    },
-    {
-        path: '/layui',
-        name: 'layui',
-        component: () => import('@/views/layui/index'),
-        meta: {
-            title: 'layui',
-            icon: 'home',
-            affix: true,
-        },
-    },
-    {
-        path: '/xspreadsheet',
-        name: 'Xspreadsheet',
-        component: () => import('@/views/xspreadsheet/index'),
-        meta: {
-            title: '电子表格',
-            icon: 'home',
-            affix: true,
-        },
-    },
-    {
         path: '/test',
         name: 'Test',
         component: () => import('@/views/test/index'),
         meta: {
             title: 'Test',
-            icon: 'home',
-            affix: true,
-        },
-    },
-    {
-        path: '/test/barcode',
-        name: 'testbarcode',
-        component: () => import('@/views/test/barcode'),
-        meta: {
-            title: 'barcode',
-            icon: 'home',
-            affix: true,
-        },
-    },
-    {
-        path: '/test/elTable',
-        name: 'testElTable',
-        component: () => import('@/views/test/elTable'),
-        meta: {
-            title: 'elTable',
             icon: 'home',
             affix: true,
         },

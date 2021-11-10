@@ -26,26 +26,6 @@ export default {
                     title: '脚本测试'
                 },
                 {
-                    path: '/layui',
-                    title: 'Layui'
-                },
-                {
-                    path: '/editor',
-                    title: '富文本编辑器'
-                },
-                {
-                    path: '/xspreadsheet',
-                    title: '电子表格'
-                },
-                {
-                    path: '/readIdCard',
-                    title: '身份证读卡器'
-                },
-                {
-                    path: '/websocket',
-                    title: 'WebSocket测试'
-                },
-                {
                     path: '/test',
                     title: '其他测试'
                 },

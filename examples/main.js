@@ -5,14 +5,15 @@ import router from "./router";
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import jiuchet from '../packages/utils/jiuchet'
-import jcsoft from '../packages'
 
 Vue.use(ElementUI);
-Vue.prototype.$jiuchet = jiuchet;
-Vue.use(jcsoft);
 
-if (process.env.NODE_ENV === 'development'){
+import utils from 'packages/utils/index'
+
+Vue.prototype.$utils = utils;
+
+
+if (process.env.NODE_ENV === 'development') {
     Vue.config.devtools = true
     Vue.config.productionTip = true;
 }

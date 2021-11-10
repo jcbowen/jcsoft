@@ -2,15 +2,6 @@
     <div class="index">
         <h1>Jcsoft 组件汇总</h1>
         <hr>
-        <h2>编辑器演示</h2>
-        <jc-editor/>
-        <h2>代码演示</h2>
-        <layui-code
-            :code="code"
-            :title="'自定义组件的 v-model'"
-            :encode="true"
-            :lang="'Vue 2.0'"
-        />
     </div>
 </template>
 <script>
@@ -22,22 +13,7 @@ export default {
         }
     },
     created() {
-        this.code = `Vue.component('base-checkbox', {
-    model: {
-        prop: 'checked',
-        event: 'change'
-    },
-    props: {
-        checked: Boolean
-    },
-    template: '
-        <input
-            type="checkbox"
-            v-bind:checked="checked"
-            v-on:change="$emit('change', $event.target.checked)"
-        />
-    '
-})`;
+
     },
     mounted() {
     },

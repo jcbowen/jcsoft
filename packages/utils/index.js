@@ -17,6 +17,7 @@ let Index = function () {
     // 内置模块
     that.modules = {
         // 'w7PaymentAlipay': '{/}'+xm_global.ims_siteroot+'payment/alipay/ap'
+        'jquery': '{/}https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery'
     };
 };
 
@@ -50,65 +51,6 @@ Index.prototype.hint = function (msg, type = 'error') {
 };
 
 /**
- * param 将要转为URL参数字符串的对象
- * key URL参数字符串的前缀
- * encode true/false 是否进行URL编码,默认为true
- *
- * return URL参数字符串
-
- * var obj={name:'tom','class':{className:'class1'},classMates:[{name:'lily'}]};
- * console.log(http_build_query(obj));
- * output: &name=tom&class.className=class1&classMates[0].name=lily
- * console.log(http_build_query(obj,'stu'));
- * output: &stu.name=tom&stu.class.className=class1&stu.classMates[0].name=lily
- */
-Index.prototype.http_build_query = function (param, key, encode) {
-    let that = this;
-    if (param == null) return '';
-    var paramStr = '';
-    var t = typeof (param);
-    if (t == 'string' || t == 'number' || t == 'boolean') {
-        paramStr += key + '=' + ((encode == null || encode) ? encodeURIComponent(param) : param) + '&';
-    } else {
-        for (var i in param) {
-            var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
-            paramStr += that.http_build_query(param[i], k, encode);
-        }
-    }
-    return paramStr;
-};
-
-/**
- * 比较版本号大小
- *
- * @description compare('2.3.1', '2.5.7');输出false
- * @param curV
- * @param reqV
- * @returns {boolean}
- */
-Index.prototype.compare = function (curV, reqV) {
-    if (curV && reqV) {
-        //将两个版本号拆成数字
-        var arr1 = curV.split('.'),
-            arr2 = reqV.split('.');
-        var minLength = Math.min(arr1.length, arr2.length),
-            position = 0,
-            diff = 0;
-        //依次比较版本号每一位大小，当对比得出结果后跳出循环（后文有简单介绍）
-        while (position < minLength && ((diff = parseInt(arr1[position]) - parseInt(arr2[position])) == 0)) {
-            position++;
-        }
-        diff = (diff != 0) ? diff : (arr1.length - arr2.length);
-        //若curV大于reqV，则返回true
-        return diff > 0;
-    } else {
-        //输入为空
-        console.error("版本号不能为空");
-        return false;
-    }
-};
-
-/**
  * 用于将一个或多个对象的内容合并到目标对象
  *
  * @description 用法同jQuery.extend()，不支持第一个参数为false
@@ -120,7 +62,13 @@ Index.prototype.compare = function (curV, reqV) {
  */
 Index.prototype.extend = function () {
     var that = this
-        , src, copyIsArray, copy, name, options, clone,
+        ,
+        src,
+        copyIsArray,
+        copy,
+        name,
+        options,
+        clone,
         target = arguments[0] || {},
         i = 1,
         length = arguments.length,
@@ -189,7 +137,7 @@ Index.prototype.extend = function () {
 };
 
 /**
- * 循环，同$.ajax
+ * 循环，同$.each
  *
  * @param obj
  * @param fn
@@ -197,7 +145,8 @@ Index.prototype.extend = function () {
  */
 Index.prototype.each = function (obj, fn) {
     var key
-        , that = this;
+        ,
+        that = this;
     if (typeof fn !== 'function') return that;
     obj = obj || [];
     if (obj.constructor === Object) {
@@ -238,19 +187,26 @@ Index.prototype.in_array = function (find, Object, argStrict = false) {
     return result;
 }
 
+/**
+ * 加载外链js到全局
+ *
+ * @param apps 可以是config.module中定义的模块，也可以直接填写外链
+ * @param callback 加载成功后调用，调用时不携带参数
+ * @returns {Index}
+ */
 Index.prototype.loadjs = function (apps, callback) {
-    var that = this
-        , config = that.config
-        , head = document.getElementsByTagName('head')[0];
+    var that = this,
+        config = that.config,
+        head = document.getElementsByTagName('head')[0];
 
     apps = typeof apps === 'string' ? [apps] : apps;
 
-    var item = apps[0]
-        , timeout = 0;
+    var item = apps[0],
+        timeout = 0;
 
     //加载完毕
     function onScriptLoad(e, url) {
-        var readyRegExp = navigator.platform === 'PLaySTATION 3' ? /^complete$/ : /^(complete|loaded)$/
+        let readyRegExp = navigator.platform === 'PLaySTATION 3' ? /^complete$/ : /^(complete|loaded)$/
         if (e.type === 'load' || (readyRegExp.test((e.currentTarget || e.srcElement).readyState))) {
             config.modules[item] = url;
             head.removeChild(node);
@@ -265,7 +221,7 @@ Index.prototype.loadjs = function (apps, callback) {
 
     //回调
     function onCallback() {
-        apps.length > 1 ? that.loadjs(apps.slice(1), callback) : (typeof callback === 'function' && callback.apply(util));
+        apps.length > 1 ? that.loadjs(apps.slice(1), callback) : (typeof callback === 'function' && callback.apply(that));
     }
 
     //获取加载的js文件 URL
@@ -276,7 +232,7 @@ Index.prototype.loadjs = function (apps, callback) {
 
     url = url.replace(/^\{\/\}/, '');
     //如果扩展模块（即：非内置模块）对象已经存在，则不必再加载
-    if (!config.modules[item] && util[item]) {
+    if (!config.modules[item] && that[item]) {
         config.modules[item] = url; //并记录起该扩展模块的 url
     }
 
@@ -292,7 +248,8 @@ Index.prototype.loadjs = function (apps, callback) {
         }();
         head.appendChild(node);
 
-        if (node.attachEvent && !(node.attachEvent.toString && node.attachEvent.toString().indexOf('[native code') < 0) && !isOpera) {
+        if (node.attachEvent && !(node.attachEvent.toString && node.attachEvent.toString()
+        .indexOf('[native code') < 0) && !isOpera) {
             node.attachEvent('onreadystatechange', function (e) {
                 onScriptLoad(e, url);
             });
@@ -319,14 +276,18 @@ Index.prototype.loadjs = function (apps, callback) {
 Index.prototype.link = function (href, fn, cssname) {
     if (!href) return false;
     var that = this
-        , link = document.createElement('link')
-        , head = document.getElementsByTagName('head')[0];
+        ,
+        link = document.createElement('link')
+        ,
+        head = document.getElementsByTagName('head')[0];
 
     if (typeof fn === 'string') cssname = fn;
 
     var app = (cssname || href).replace(/\.|\//g, '')
-        , id = link.id = 'jiuchetcss-' + app
-        , timeout = 0;
+        ,
+        id = link.id = 'jiuchetcss-' + app
+        ,
+        timeout = 0;
 
     link.rel = 'stylesheet';
     link.href = href + '?v=' /** + (xm_global.nocache == 1 ? new Date().getTime() : xm_global.release)*/;
@@ -378,13 +339,15 @@ Index.prototype.img = function (url, callback, error) {
 Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = 'jc-src', style = {}}) {
     let that = this;
 
-    let index = 0, haveScroll = false;
+    let index = 0,
+        haveScroll = false;
     scrollElem = !that.validate.isEmpty(scrollElem) ? document.querySelector(`${scrollElem}`) : false;
     scrollElem = scrollElem || document.documentElement; // 滚动条所在元素
     let scrollElementStyle = style
-        , notDocument = scrollElem && scrollElem !== document.documentElement; //滚动条所在元素是否为document
-        // , setScrollElementStyle = !!notDocument  // 一般传递了options.scrollElem的时候，需要为其设置样式maxHeight与overflowY, 除非本身已有该样式
-        // , scrollElementHeight = null;
+        ,
+        notDocument = scrollElem && scrollElem !== document.documentElement; //滚动条所在元素是否为document
+    // , setScrollElementStyle = !!notDocument  // 一般传递了options.scrollElem的时候，需要为其设置样式maxHeight与overflowY, 除非本身已有该样式
+    // , scrollElementHeight = null;
 
     // 设置自定义样式
     if (Object.keys(scrollElementStyle).length) {
@@ -403,57 +366,63 @@ Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = '
 
     //显示图片
     var show = function (item, height) {
-        let start = scrollElem.scrollTop, end = start + height
-            , elemTop = notDocument ? function () {
-            return item.offsetTop - scrollElem.offsetTop + start;
-        }() : item.offsetTop;// item.scrollTop /item.offsetTop
-
-        /* 始终只加载在当前屏范围内的图片 */
-        if (elemTop >= start && elemTop - start <= end) { // elemTop >= start && elemTop <= end
-            if (!item.getAttribute('src') && item.getAttribute(`${lazyAttr}`)) { //!item.getAttribute('src')
-                const src = item.getAttribute(`${lazyAttr}`);
-                that.img(src, function () { // 执行函数, 创建图片对象并加载
-                    const next = that.lazyimg.elem[index];
-                    item.setAttribute('src', src);
-                    item.removeAttribute(`${lazyAttr}`);
-
-                    /* 当前图片加载就绪后，检测下一个图片是否在当前屏 */
-                    render(next);
-                    index++; // 当前图片加载完成之后, 将加载下一张，直到最后一张被加载完成为止
-                });
-            }
-        }
-    }
-        , render = function (othis, scroll) { // othis => 当前对象/下一个, scroll: 绑定滚动事件的元素对象
-        //计算滚动所在容器的可视高度
-        let height = notDocument ? (scroll || scrollElem).offsetHeight > window.innerHeight ? (scroll || scrollElem).offsetHeight : window.innerHeight : window.innerHeight;
-        let start = scrollElem.scrollTop, end = start + height;
-        // scrollElementHeight = height;
-
-        that.lazyimg.elem = scrollElem.querySelectorAll(`${elem}`);
-
-        if (othis) {
-            show(othis, height);
-        } else {
-            //计算未加载过的图片 index: 当前需要加载(渲染)的图片
-            for (let i = index; i < that.lazyimg.elem.length; i++) {
-                let item = that.lazyimg.elem[i], elemTop = notDocument ? function () {
+            let start = scrollElem.scrollTop,
+                end = start + height
+                ,
+                elemTop = notDocument ? function () {
                     return item.offsetTop - scrollElem.offsetTop + start;
-                }() : item.offsetTop;
+                }() : item.offsetTop;// item.scrollTop /item.offsetTop
 
-                show(item, height);
+            /* 始终只加载在当前屏范围内的图片 */
+            if (elemTop >= start && elemTop - start <= end) { // elemTop >= start && elemTop <= end
+                if (!item.getAttribute('src') && item.getAttribute(`${lazyAttr}`)) { //!item.getAttribute('src')
+                    const src = item.getAttribute(`${lazyAttr}`);
+                    that.img(src, function () { // 执行函数, 创建图片对象并加载
+                        const next = that.lazyimg.elem[index];
+                        item.setAttribute('src', src);
+                        item.removeAttribute(`${lazyAttr}`);
 
-                // 如果图片的top坐标，超出了当前屏，则终止后续图片的遍历(防止图片被一次性加载完)
-                if (elemTop > end) break;
+                        /* 当前图片加载就绪后，检测下一个图片是否在当前屏 */
+                        render(next);
+                        index++; // 当前图片加载完成之后, 将加载下一张，直到最后一张被加载完成为止
+                    });
+                }
             }
         }
-    };
+        ,
+        render = function (othis, scroll) { // othis => 当前对象/下一个, scroll: 绑定滚动事件的元素对象
+            //计算滚动所在容器的可视高度
+            let height = notDocument ? (scroll || scrollElem).offsetHeight > window.innerHeight ? (scroll || scrollElem).offsetHeight : window.innerHeight : window.innerHeight;
+            let start = scrollElem.scrollTop,
+                end = start + height;
+            // scrollElementHeight = height;
+
+            that.lazyimg.elem = scrollElem.querySelectorAll(`${elem}`);
+
+            if (othis) {
+                show(othis, height);
+            } else {
+                //计算未加载过的图片 index: 当前需要加载(渲染)的图片
+                for (let i = index; i < that.lazyimg.elem.length; i++) {
+                    let item = that.lazyimg.elem[i],
+                        elemTop = notDocument ? function () {
+                            return item.offsetTop - scrollElem.offsetTop + start;
+                        }() : item.offsetTop;
+
+                    show(item, height);
+
+                    // 如果图片的top坐标，超出了当前屏，则终止后续图片的遍历(防止图片被一次性加载完)
+                    if (elemTop > end) break;
+                }
+            }
+        };
 
     render();
 
     if (!haveScroll) {
         let timer
-            , scrollEle = notDocument ? scrollElem : window;
+            ,
+            scrollEle = notDocument ? scrollElem : window;
         scrollEle.addEventListener("scroll", function (e) { // 绑定指定元素滚动事件
             let othis = this;
             if (timer) clearTimeout(timer)
@@ -496,6 +465,65 @@ Index.prototype.data = function (table, settings, storage) {
 };
 
 /**
+ * param 将要转为URL参数字符串的对象
+ * key URL参数字符串的前缀
+ * encode true/false 是否进行URL编码,默认为true
+ *
+ * return URL参数字符串
+
+ * var obj={name:'tom','class':{className:'class1'},classMates:[{name:'lily'}]};
+ * console.log(http_build_query(obj));
+ * output: &name=tom&class.className=class1&classMates[0].name=lily
+ * console.log(http_build_query(obj,'stu'));
+ * output: &stu.name=tom&stu.class.className=class1&stu.classMates[0].name=lily
+ */
+Index.prototype.http_build_query = function (param, key, encode) {
+    let that = this;
+    if (param == null) return '';
+    var paramStr = '';
+    var t = typeof (param);
+    if (t == 'string' || t == 'number' || t == 'boolean') {
+        paramStr += key + '=' + ((encode == null || encode) ? encodeURIComponent(param) : param) + '&';
+    } else {
+        for (var i in param) {
+            var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
+            paramStr += that.http_build_query(param[i], k, encode);
+        }
+    }
+    return paramStr;
+};
+
+/**
+ * 比较版本号大小
+ *
+ * @description compare('2.3.1', '2.5.7');输出false
+ * @param curV
+ * @param reqV
+ * @returns {boolean}
+ */
+Index.prototype.compare = function (curV, reqV) {
+    if (curV && reqV) {
+        //将两个版本号拆成数字
+        var arr1 = curV.split('.'),
+            arr2 = reqV.split('.');
+        var minLength = Math.min(arr1.length, arr2.length),
+            position = 0,
+            diff = 0;
+        //依次比较版本号每一位大小，当对比得出结果后跳出循环（后文有简单介绍）
+        while (position < minLength && ((diff = parseInt(arr1[position]) - parseInt(arr2[position])) == 0)) {
+            position++;
+        }
+        diff = (diff != 0) ? diff : (arr1.length - arr2.length);
+        //若curV大于reqV，则返回true
+        return diff > 0;
+    } else {
+        //输入为空
+        console.error("版本号不能为空");
+        return false;
+    }
+};
+
+/**
  * 人民币数值转大写
  *
  * @param str
@@ -520,7 +548,9 @@ Index.prototype.numberToChinese = function (str, isInt = true, isFloat = false, 
         isInt = false;
         isFloat = true;
         str = '' + this.$baseLodash.round(str, 2);
-        let intNumber = str.split('.')[0], decimalNumber = str.split('.')[1], hasPoint = true;
+        let intNumber = str.split('.')[0],
+            decimalNumber = str.split('.')[1],
+            hasPoint = true;
         hasPoint = str.lastIndexOf('.') === -1 ? false : true;
         return that.numberToChinese(intNumber, true, hasPoint)
             + (hasPoint ? that.numberToChinese(decimalNumber, isInt, isFloat) : '')
@@ -535,7 +565,8 @@ Index.prototype.numberToChinese = function (str, isInt = true, isFloat = false, 
             return numArray[$1[0]] + chineseArray[len - idx];
         } else {
             let left = len - idx
-                , right = len - idx + $1.length;
+                ,
+                right = len - idx + $1.length;
             if (Math.floor(right / 4) - Math.floor(left / 4) > 0) {
                 pos = left - left % 4;
             }
@@ -550,31 +581,15 @@ Index.prototype.numberToChinese = function (str, isInt = true, isFloat = false, 
     }) + (isFloat ? isInt ? '元' : '' : '元整');
 }
 
-// 获取屏幕类型，根据当前屏幕大小，返回 0 - 3 的值
-// 0: 低于768px的屏幕
-// 1：768px到992px之间的屏幕
-// 2：992px到1200px之间的屏幕
-// 3：高于1200px的屏幕
-Index.prototype.screen = function () {
-    var width = document.body.clientWidth;
-    if (width > 1200) {
-        return 3; //大屏幕
-    } else if (width > 992) {
-        return 2; //中屏幕
-    } else if (width > 768) {
-        return 1; //小屏幕
-    } else {
-        return 0; //超小屏幕
-    }
-}
 
-
+//----- 时间戳相关处理 -----/
 Index.prototype.time = function () {
     return Math.floor(new Date().getTime() / 1000)
 }//10位时间戳
 Index.prototype.date = function (format, timestamp) {
     var that = this;
-    var jsdate, f;
+    var jsdate,
+        f;
     var txt_words = ["Sun", "Mon", "Tues", "Wednes", "Thurs", "Fri", "Satur", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var formatChr = /\\?(.?)/gi;
     var formatChrCb = function (t, s) {
@@ -712,7 +727,18 @@ Index.prototype.microtime = function (get_as_float) {
     }
 }
 Index.prototype.strtotime = function (text, now) {
-    var parsed, match, today, year, date, days, ranges, len, times, regex, i, fail = false;
+    var parsed,
+        match,
+        today,
+        year,
+        date,
+        days,
+        ranges,
+        len,
+        times,
+        regex,
+        i,
+        fail = false;
     if (!text) {
         return fail
     }
@@ -803,7 +829,8 @@ Index.prototype.strtotime = function (text, now) {
     ranges = {"yea": "FullYear", "mon": "Month", "day": "Date", "hou": "Hours", "min": "Minutes", "sec": "Seconds"};
 
     function lastNext(type, range, modifier) {
-        var diff, day = days[range];
+        var diff,
+            day = days[range];
         if (typeof day !== "undefined") {
             diff = day - date.getDay();
             if (diff === 0) {
@@ -822,8 +849,12 @@ Index.prototype.strtotime = function (text, now) {
     }
 
     function process(val) {
-        var splt = val.split(" "), type = splt[0], range = splt[1].substring(0, 3), typeIsNumber = /\d+/.test(type),
-            ago = splt[2] === "ago", num = (type === "last" ? -1 : 1) * (ago ? -1 : 1);
+        var splt = val.split(" "),
+            type = splt[0],
+            range = splt[1].substring(0, 3),
+            typeIsNumber = /\d+/.test(type),
+            ago = splt[2] === "ago",
+            num = (type === "last" ? -1 : 1) * (ago ? -1 : 1);
         if (typeIsNumber) {
             num *= parseInt(type, 10)
         }
@@ -856,9 +887,12 @@ Index.prototype.strtotime = function (text, now) {
     }
     return (date.getTime() / 1000)
 }
-/*html编码函数和解码函数,转换成实体和还原实体,同名php函数*/
+
+//----- html编码函数和解码函数,转换成实体和还原实体,同名php函数 -----/
 Index.prototype.htmlspecialchars_decode = function (e, E) {
-    var T = 0, _ = 0, r = !1;
+    var T = 0,
+        _ = 0,
+        r = !1;
     "undefined" == typeof E && (E = 2), e = e.toString().replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     var t = {
         ENT_NOQUOTES: 0,
@@ -875,8 +909,11 @@ Index.prototype.htmlspecialchars_decode = function (e, E) {
     return E & t.ENT_HTML_QUOTE_SINGLE && (e = e.replace(/&#0*39;/g, "'")), r || (e = e.replace(/&quot;/g, '"')), e = e.replace(/&amp;/g, "&")
 }
 Index.prototype.htmlspecialchars = function (e, E, T, _) {
-    var r = 0, t = 0, a = !1;
-    ("undefined" == typeof E || null === E) && (E = 2), e = e.toString(), _ !== !1 && (e = e.replace(/&/g, "&amp;")), e = e.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    var r = 0,
+        t = 0,
+        a = !1;
+    ("undefined" == typeof E || null === E) && (E = 2), e = e.toString(), _ !== !1 && (e = e.replace(/&/g, "&amp;")), e = e.replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
     var N = {
         ENT_NOQUOTES: 0,
         ENT_HTML_QUOTE_SINGLE: 1,
@@ -898,10 +935,15 @@ Index.prototype.htmldecode = function (sStr) {
     return php.htmlspecialchars_decode(sStr)
 }
 
-/*浏览器判断和网络判断*/
+/**
+ * 浏览器判断和网络判断
+ *
+ * @type {{wifi: boolean, language: string, version: {opera: boolean, weixin: boolean, firefox: boolean, android: boolean, mobile: boolean, ipad: boolean, ie: boolean, ios: boolean, iphone: boolean, webKit: boolean}}}
+ */
 Index.prototype.browser = {
     version: function () {
-        var u = navigator.userAgent.toLowerCase(), app = navigator.appVersion;
+        var u = navigator.userAgent.toLowerCase(),
+            app = navigator.appVersion;
         return {
             ie: u.indexOf("trident") > -1,
             opera: u.indexOf("tresto") > -1,
@@ -915,7 +957,9 @@ Index.prototype.browser = {
             weixin: u.match(/micromessenger/i) == "micromessenger"
         }
     }(), language: (navigator.browserLanguage || navigator.language).toLowerCase(), wifi: !function (t) {
-        var e = !0, n = t.navigator.userAgent, i = t.navigator.connection;
+        var e = !0,
+            n = t.navigator.userAgent,
+            i = t.navigator.connection;
         if (/MicroMessenger/.test(n)) if (/NetType/.test(n)) {
             var o = n.match(/NetType\/(\S)+/)[0].replace("NetType/", "");
             o && "WIFI" != o && (e = !1)
@@ -931,20 +975,29 @@ Index.prototype.browser = {
     }(window)
 }
 
-/*变量处理*/
-Index.prototype.isset = function () {
-    var a = arguments, l = a.length, i = 0, undef;
-    if (l === 0) {
-        throw new Error("Empty isset")
+/**
+ * 获取屏幕类型，根据当前屏幕大小，返回 0 - 3 的值
+ * 0: 低于768px的屏幕
+ * 1：768px到992px之间的屏幕
+ * 2：992px到1200px之间的屏幕
+ * 3：高于1200px的屏幕
+ *
+ * @returns {number}
+ */
+Index.prototype.screen = function () {
+    var width = document.body.clientWidth;
+    if (width > 1200) {
+        return 3; //大屏幕
+    } else if (width > 992) {
+        return 2; //中屏幕
+    } else if (width > 768) {
+        return 1; //小屏幕
+    } else {
+        return 0; //超小屏幕
     }
-    while (i !== l) {
-        if (a[i] === undef || a[i] === null) {
-            return false
-        }
-        i++
-    }
-    return true
 }
+
+
 Index.prototype.intval = function (mixed_var, base) {
     var tmp;
     var type = typeof mixed_var;
@@ -972,7 +1025,9 @@ Index.prototype.function_exists = function (func_name) {
 
 Index.prototype.range = function (low, high, step) {
     var matrix = [];
-    var inival, endval, plus;
+    var inival,
+        endval,
+        plus;
     var walker = step || 1;
     var chars = false;
     if (!isNaN(low) && !isNaN(high)) {
@@ -1004,7 +1059,8 @@ Index.prototype.range = function (low, high, step) {
 }
 Index.prototype.strip_tags = function (input, allowed) {
     allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join("");
-    var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi, commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
+    var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
+        commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
     return input.replace(commentsAndPhpTags, "").replace(tags, function ($0, $1) {
         return allowed.indexOf("<" + $1.toLowerCase() + ">") > -1 ? $0 : ""
     })
@@ -1022,7 +1078,10 @@ Index.prototype.rand = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 Index.prototype.round = function (value, precision, mode) {
-    var m, f, isHalf, sgn;
+    var m,
+        f,
+        isHalf,
+        sgn;
     precision |= 0;
     m = Math.pow(10, precision);
     value *= m;
@@ -1075,7 +1134,10 @@ Index.prototype.utf8_encode = function (argString) {
         return ""
     }
     var string = (argString + "");
-    var utftext = "", start, end, stringl = 0;
+    var utftext = "",
+        start,
+        end,
+        stringl = 0;
     start = end = 0;
     stringl = string.length;
     for (var n = 0; n < stringl; n++) {
@@ -1116,7 +1178,10 @@ Index.prototype.utf8_encode = function (argString) {
     return utftext
 }
 Index.prototype.utf8_decode = function (str_data) {
-    var tmp_arr = [], i = 0, c1 = 0, seqlen = 0;
+    var tmp_arr = [],
+        i = 0,
+        c1 = 0,
+        seqlen = 0;
     str_data += "";
     while (i < str_data.length) {
         c1 = str_data.charCodeAt(i) & 255;
@@ -1154,7 +1219,13 @@ Index.prototype.utf8_decode = function (str_data) {
 /*URL编码解码*/
 Index.prototype.urlencode = function (str) {
     str = (str + "").toString();
-    return encodeURIComponent(str).replace(/!/g, "%21").replace(/'/g, "%27").replace(/\(/g, "%28").replace(/\)/g, "%29").replace(/\*/g, "%2A").replace(/%20/g, "+")
+    return encodeURIComponent(str)
+    .replace(/!/g, "%21")
+    .replace(/'/g, "%27")
+    .replace(/\(/g, "%28")
+    .replace(/\)/g, "%29")
+    .replace(/\*/g, "%2A")
+    .replace(/%20/g, "+")
 }
 Index.prototype.urldecode = function (str) {
     return decodeURIComponent((str + "").replace(/%(?![\da-f]{2})/gi, function () {
@@ -1165,7 +1236,18 @@ Index.prototype.urldecode = function (str) {
 /*base64*/
 Index.prototype.base64Encode = function (data) {
     var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc = "", tmp_arr = [];
+    var o1,
+        o2,
+        o3,
+        h1,
+        h2,
+        h3,
+        h4,
+        bits,
+        i = 0,
+        ac = 0,
+        enc = "",
+        tmp_arr = [];
     if (!data) {
         return data
     }
@@ -1187,7 +1269,18 @@ Index.prototype.base64Encode = function (data) {
 }
 Index.prototype.base64Decode = function (data) {
     var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, dec = "", tmp_arr = [];
+    var o1,
+        o2,
+        o3,
+        h1,
+        h2,
+        h3,
+        h4,
+        bits,
+        i = 0,
+        ac = 0,
+        dec = "",
+        tmp_arr = [];
     if (!data) {
         return data
     }
@@ -1256,7 +1349,8 @@ Index.prototype.strCut = function (str, iMaxBytes, sSuffix) {
     if (that.strLength(str) <= iMaxBytes) {
         return str
     }
-    var i = 0, bytes = 0;
+    var i = 0,
+        bytes = 0;
     for (; i < str.length && bytes < iMaxBytes; ++i, ++bytes) {
         if (str.charCodeAt(i) > 255) {
             ++bytes
@@ -1344,7 +1438,8 @@ Index.prototype.setcookie = function (name, value, expire) {
  */
 Index.prototype.dateCompare = function (strDate1, strDate2) {
     let date1 = new Date(strDate1.replace(/\-/g, "\/"))
-        , date2 = new Date(strDate2.replace(/\-/g, "\/"));
+        ,
+        date2 = new Date(strDate2.replace(/\-/g, "\/"));
     return (date1 - date2) >= 0;
 }
 
@@ -1397,7 +1492,11 @@ Index.prototype.md5 = function (string) {
         return (b << a) | (b >>> (32 - a))
     };
     var H = function (k, b) {
-        var V, a, d, x, c;
+        var V,
+            a,
+            d,
+            x,
+            c;
         d = (k & 2147483648);
         x = (b & 2147483648);
         V = (k & 1073741824);
@@ -1467,7 +1566,10 @@ Index.prototype.md5 = function (string) {
         return X
     };
     var s = function (d) {
-        var a = "", b = "", k, c;
+        var a = "",
+            b = "",
+            k,
+            c;
         for (c = 0; c <= 3; c++) {
             k = (d >>> (c * 8)) & 255;
             b = "0" + k.toString(16);
@@ -1475,8 +1577,32 @@ Index.prototype.md5 = function (string) {
         }
         return a
     };
-    var E = [], L, h, G, v, g, U, T, S, R, O = 7, M = 12, J = 17, I = 22, B = 5, A = 9, z = 14, y = 20, o = 4,
-        m = 11, l = 16, j = 23, Q = 6, P = 10, N = 15, K = 21;
+    var E = [],
+        L,
+        h,
+        G,
+        v,
+        g,
+        U,
+        T,
+        S,
+        R,
+        O = 7,
+        M = 12,
+        J = 17,
+        I = 22,
+        B = 5,
+        A = 9,
+        z = 14,
+        y = 20,
+        o = 4,
+        m = 11,
+        l = 16,
+        j = 23,
+        Q = 6,
+        P = 10,
+        N = 15,
+        K = 21;
     string = this.utf8_encode(string);
     E = e(string);
     U = 1732584193;

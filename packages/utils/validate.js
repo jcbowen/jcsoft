@@ -3,11 +3,16 @@
  */
 
 let getProto = Object.getPrototypeOf
-    , class2type = {}
-    , toString = class2type.toString
-    , hasOwn = class2type.hasOwnProperty
-    , fnToString = hasOwn.toString
-    , ObjectFunctionString = fnToString.call(Object);
+    ,
+    class2type = {}
+    ,
+    toString = class2type.toString
+    ,
+    hasOwn = class2type.hasOwnProperty
+    ,
+    fnToString = hasOwn.toString
+    ,
+    ObjectFunctionString = fnToString.call(Object);
 
 let Validate = function () {
     let that = this;
@@ -22,6 +27,29 @@ let Validate = function () {
 Validate.prototype.set = function ({util}) {
     let that = this;
     that.util = util;
+}
+
+/**
+ * 判断是否设置了某个变量
+ *
+ * @description 变量必须是已经赋值了的
+ * @returns {boolean}
+ */
+Validate.prototype.isset = function () {
+    var a = arguments,
+        l = a.length,
+        i = 0,
+        undef;
+    if (l === 0) {
+        throw new Error("Empty isset")
+    }
+    while (i !== l) {
+        if (a[i] === undef || a[i] === null) {
+            return false
+        }
+        i++
+    }
+    return true
 }
 
 /**
@@ -196,7 +224,8 @@ Validate.prototype.isArray = function (arg) {
  * @returns {boolean}
  */
 Validate.prototype.isPlainObject = function (obj) {
-    var proto, Ctor;
+    var proto,
+        Ctor;
 
     // Detect obvious negatives
     // Use toString instead of jQuery.type to catch host objects
@@ -328,7 +357,10 @@ Validate.prototype.isEnglish = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isEmpty = function (mixed_var) {
-    var undef, key, i, len;
+    var undef,
+        key,
+        i,
+        len;
     var emptyValues = [undef, null, false, 0, "", "0"];
     for (i = 0, len = emptyValues.length; i < len; i++) {
         if (mixed_var === emptyValues[i]) return true

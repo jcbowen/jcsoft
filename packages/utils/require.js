@@ -1,10 +1,10 @@
-import Vue from 'vue'
+// import Vue from 'vue'
 import axios from 'axios'
 import qs from 'qs'
+import * as lodash from 'lodash'
 
-import store from '@/store'
 import router from '@/router'
-import validate from 'packages/utils/validate'
+import util from 'jcsoft/packages/utils'
 
 let Require = function () {
     let that = this;
@@ -12,7 +12,7 @@ let Require = function () {
     that.config = {
         baseURL: '/',
         contentType: 'application/x-www-form-urlencoded;charset=UTF-8',
-        debounce: ['doEdit'],
+        debounce: ['edit'],
         invalidCode: 1001,
         noPermissionCode: 2,
         requestTimeout: 60000,
@@ -20,34 +20,43 @@ let Require = function () {
         tokenName: 'access_token',
         loginInterception: false,
     };
+
+    that.method = {
+        getAccessToken: null,
+        resetAccessToken: null,
+    };
+
+    that.on = {}
 }
 
-Require.prototype.set = function ({config, util = {}, loading = null}) {
-    let that = this;
-
-    util = util || {
-        extend: function (a1, a2, a3) {
-            return a3 || a2 || a1;
-        }
-    }
-    loading = util.extend({}, {
-        $baseMessage: () => {
-        },
-        $baseLodash: {
-            pickBy: ()=>{},
-            identity: ''
-        },
-        $baseLoading: () => {
-        },
-    }, loading)
-    that.util = util;
-    that.loading = loading
-
+/**
+ * 配置修改
+ *
+ * @param config
+ */
+Require.prototype.config = function (config = {}) {
+    this.config = util.extend(this.config, config);
 }
 
-Require.prototype.init = function () {
+Require.prototype.method = function (method = {}) {
+    this.method = util.extend(this.method, method);
+}
+
+/**
+ * 初始化 axios
+ *
+ * @param {Function} getAccessToken
+ * @param {Function} resetAccessToken
+ * @returns {AxiosInstance}
+ */
+Require.prototype.init = function ({getAccessToken, resetAccessToken}) {
     let that = this;
-    let loadingInstance;
+    // let loadingInstance;
+
+    that.method = util.extend(that.method, {
+        getAccessToken,
+        resetAccessToken
+    })
 
     /**
      * 处理code异常
@@ -58,9 +67,11 @@ Require.prototype.init = function () {
     const handleCode = (code, msg) => {
         switch (code) {
             case that.config.invalidCode:
-                Vue.prototype.$baseMessage(msg || `后端接口${code}异常`, 'error');
-                store.dispatch('user/resetAccessToken').catch(() => {
-                });
+                // Vue.prototype.$baseMessage(msg || `后端接口${code}异常`, 'error');
+                util.hint(msg || `后端接口${code}异常`)
+                if (typeof that.method.resetAccessToken === 'function') {
+                    that.method.resetAccessToken.call()
+                }
                 if (that.config.loginInterception) location.reload()
                 break
             case that.config.noPermissionCode:
@@ -70,12 +81,14 @@ Require.prototype.init = function () {
                 })
                 break
             default:
-                Vue.prototype.$baseMessage(msg || `后端接口${code}异常`, 'error')
+                util.hint(msg || `后端接口${code}异常`)
+                // Vue.prototype.$baseMessage(msg || `后端接口${code}异常`, 'error')
                 break
         }
     }
+
     const instance = axios.create({
-        baseURL,
+        baseURL: that.config.baseURL,
         timeout: requestTimeout,
         headers: {
             'Content-Type': contentType,
@@ -83,14 +96,14 @@ Require.prototype.init = function () {
     })
     instance.interceptors.request.use(
         (config) => {
-            if (store.getters['user/accessToken']) {
-                config.headers[tokenName] = store.getters['user/accessToken']
+            if (typeof that.method.getAccessToken === 'function') {
+                config.headers[that.config.tokenName] = that.method.getAccessToken.call()
             }
             //这里会过滤所有为空、0、false的key，如果不需要请自行注释
             if (config.data)
-                config.data = Vue.prototype.$baseLodash.pickBy(
+                config.data = lodash.pickBy(
                     config.data,
-                    Vue.prototype.$baseLodash.identity
+                    lodash.identity
                 )
             if (
                 config.data &&
@@ -98,9 +111,9 @@ Require.prototype.init = function () {
                 'application/x-www-form-urlencoded;charset=UTF-8'
             )
                 config.data = qs.stringify(config.data)
-            if (debounce.some((item) => config.url.includes(item)))
-                loadingInstance = Vue.prototype.$baseLoading()
-            return config
+            if (that.config.debounce.some((item) => config.url.includes(item)))
+                // loadingInstance = Vue.prototype.$baseLoading()
+                return config
         },
         (error) => {
             return Promise.reject(error)
@@ -108,7 +121,7 @@ Require.prototype.init = function () {
     )
     instance.interceptors.response.use(
         (response) => {
-            if (loadingInstance) loadingInstance.close()
+            // if (loadingInstance) loadingInstance.close()
             const {
                 data,
                 config
@@ -118,9 +131,9 @@ Require.prototype.init = function () {
                 msg
             } = data
             // 操作正常Code数组
-            const codeVerificationArray = that.util.validate.isArray(successCode) ?
-                [...successCode] :
-                [...[successCode]]
+            const codeVerificationArray = util.validate.isArray(that.config.successCode) ?
+                [...that.config.successCode] :
+                [...[that.config.successCode]]
             // 是否操作正常
             if (codeVerificationArray.includes(code)) {
                 return data
@@ -137,7 +150,7 @@ Require.prototype.init = function () {
             }
         },
         (error) => {
-            if (loadingInstance) loadingInstance.close()
+            // if (loadingInstance) loadingInstance.close()
             const {
                 response,
                 message
@@ -163,7 +176,8 @@ Require.prototype.init = function () {
                     const code = message.substr(message.length - 3)
                     message = '后端接口' + code + '异常'
                 }
-                Vue.prototype.$baseMessage(message || `后端接口未知异常`, 'error')
+                // Vue.prototype.$baseMessage(message || `后端接口未知异常`, 'error')
+                util.hint(message || `后端接口未知异常`)
                 return Promise.reject(error)
             }
         }

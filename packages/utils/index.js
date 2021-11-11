@@ -1,4 +1,4 @@
-import validate from "packages/utils/validate";
+import validate from "jcsoft/packages/utils/validate";
 
 let error = function (msg, type) {
     type = type || 'log';
@@ -9,15 +9,15 @@ let error = function (msg, type) {
 let Index = function () {
     var that = this;
     that.config = {
-        base: ''
-        , version: true
-        , modules: {}
-        , timeout: 10
+        base: '',
+        version: true,
+        modules: {},
+        timeout: 10
     };
     // 内置模块
     that.modules = {
-        // 'w7PaymentAlipay': '{/}'+xm_global.ims_siteroot+'payment/alipay/ap'
-        'jquery': '{/}https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery'
+        'test': '{/}https://www.baidu.com/project/js/w_jiuchet',
+        'jq': '{/}https://www.baidu.com/project/js/w_jiuchet123',
     };
 };
 
@@ -61,8 +61,7 @@ Index.prototype.hint = function (msg, type = 'error') {
  * @returns {any}
  */
 Index.prototype.extend = function () {
-    var that = this
-        ,
+    let that = this,
         src,
         copyIsArray,
         copy,
@@ -137,7 +136,7 @@ Index.prototype.extend = function () {
 };
 
 /**
- * 循环，同$.each
+ * 循环，类似$.each
  *
  * @param obj
  * @param fn
@@ -162,142 +161,173 @@ Index.prototype.each = function (obj, fn) {
 };
 
 /**
+ * 将数组中的对象按其某个成员排序
  *
- * @param find
- * @param Object
- * @param argStrict 严格模式，默认关闭
- * @returns {boolean}
+ * @param obj
+ * @param key
+ * @param desc
+ * @returns {any}
  */
-Index.prototype.in_array = function (find, Object, argStrict = false) {
-    const that = this;
-    let result = false;
-    that.each(Object, function (ind, item) {
-        if (argStrict) {
-            if (find === item) {
-                result = true;
-                return false;
-            }
+Index.prototype.sort = function (obj, key, desc = false) {
+    var clone = JSON.parse(
+        JSON.stringify(obj || [])
+    );
+
+    if (!key) return clone;
+
+    //如果是数字，按大小排序，如果是非数字，按字典序排序
+    clone.sort(function (o1, o2) {
+        var isNum = /^-?\d+$/
+            , v1 = o1[key]
+            , v2 = o2[key];
+
+        if (isNum.test(v1)) v1 = parseFloat(v1);
+        if (isNum.test(v2)) v2 = parseFloat(v2);
+
+        if (v1 && !v2) {
+            return 1;
+        } else if (!v1 && v2) {
+            return -1;
+        }
+
+        if (v1 > v2) {
+            return 1;
+        } else if (v1 < v2) {
+            return -1;
         } else {
-            if (find == item) {
-                result = true;
-                return false;
-            }
+            return 0;
         }
     });
-    return result;
-}
 
-/**
- * 加载外链js到全局
- *
- * @param apps 可以是config.module中定义的模块，也可以直接填写外链
- * @param callback 加载成功后调用，调用时不携带参数
- * @returns {Index}
- */
-Index.prototype.loadjs = function (apps, callback) {
-    var that = this,
-        config = that.config,
-        head = document.getElementsByTagName('head')[0];
-
-    apps = typeof apps === 'string' ? [apps] : apps;
-
-    var item = apps[0],
-        timeout = 0;
-
-    //加载完毕
-    function onScriptLoad(e, url) {
-        let readyRegExp = navigator.platform === 'PLaySTATION 3' ? /^complete$/ : /^(complete|loaded)$/
-        if (e.type === 'load' || (readyRegExp.test((e.currentTarget || e.srcElement).readyState))) {
-            config.modules[item] = url;
-            head.removeChild(node);
-            (function poll() {
-                if (++timeout > config.timeout * 1000 / 4) {
-                    return error(item + ' is not a valid module');
-                }
-                onCallback();
-            }());
-        }
-    }
-
-    //回调
-    function onCallback() {
-        apps.length > 1 ? that.loadjs(apps.slice(1), callback) : (typeof callback === 'function' && callback.apply(that));
-    }
-
-    //获取加载的js文件 URL
-    //判断路径值是否为 {/} 开头，
-    //如果路径值是 {/} 开头，则路径即为后面紧跟的字符。
-    //否则，则按照 base 参数拼接模块路径
-    var url = (/^\{\/\}/.test(item) ? '' : (/^\{\/\}/.test(that.modules[item]) ? '' : (config.base || ''))) + (that.modules[item] || item) + '.js';
-
-    url = url.replace(/^\{\/\}/, '');
-    //如果扩展模块（即：非内置模块）对象已经存在，则不必再加载
-    if (!config.modules[item] && that[item]) {
-        config.modules[item] = url; //并记录起该扩展模块的 url
-    }
-
-    //首次加载模块
-    if (!config.modules[item]) {
-        var node = document.createElement('script');
-
-        node.async = true;
-        node.charset = 'utf-8';
-        node.src = url + function () {
-            var version = config.version === true ? (config.v || (new Date()).getTime()) : (config.version || '');
-            return version ? ('?v=' + version) : '';
-        }();
-        head.appendChild(node);
-
-        if (node.attachEvent && !(node.attachEvent.toString && node.attachEvent.toString()
-        .indexOf('[native code') < 0) && !isOpera) {
-            node.attachEvent('onreadystatechange', function (e) {
-                onScriptLoad(e, url);
-            });
-        } else {
-            node.addEventListener('load', function (e) {
-                onScriptLoad(e, url);
-            }, false);
-        }
-
-        config.modules[item] = url;
-    } else { //缓存
-        (function poll() {
-            if (++timeout > config.timeout * 1000 / 4) {
-                return error(item + ' is not a valid module');
-            }
-            (typeof config.modules[item] === 'string') ? onCallback() : setTimeout(poll, 4);
-        }());
-    }
-
-    return that;
+    desc && clone.reverse(); //倒序
+    return clone;
 };
 
-//css外部加载器
-Index.prototype.link = function (href, fn, cssname) {
+/**
+ * js 外部加载器
+ *
+ * @param apps 可以是config.module中定义的模块，也可以直接填写外链
+ * @returns {Index}
+ */
+Index.prototype.loadjs = function (apps) {
+    let that = this,
+        config = that.config;
+
+    return new Promise((resolve, reject) => {
+        let load = function (apps) {
+
+            let head = document.getElementsByTagName('head')[0];
+
+            apps = typeof apps === 'string' ? [apps] : apps;
+
+            var item = apps[0],
+                timeout = 0;
+
+            //加载完毕
+            function onScriptLoad(e, url) {
+                let readyRegExp = navigator.platform === 'PLaySTATION 3' ? /^complete$/ : /^(complete|loaded)$/
+                if (e.type === 'load' || (readyRegExp.test((e.currentTarget || e.srcElement).readyState))) {
+                    config.modules[item] = url;
+                    head.removeChild(node);
+                    (function poll() {
+                        if (++timeout > config.timeout * 1000 / 4) {
+                            reject(e, url);
+                            return error(item + ' is not a valid module');
+                        }
+                        onCallback();
+                    }());
+                }
+            }
+
+            //回调
+            function onCallback() {
+                apps.length > 1 ? load(apps.slice(1)) : resolve();
+            }
+
+            //获取加载的js文件 URL
+            //判断路径值是否为 {/} 开头，
+            //如果路径值是 {/} 开头，则路径即为后面紧跟的字符。
+            //否则，则按照 base 参数拼接模块路径
+            var url = (/^\{\/\}/.test(item) ? '' : (/^\{\/\}/.test(that.modules[item]) ? '' : (config.base || ''))) + (that.modules[item] || item) + '.js';
+
+            url = url.replace(/^\{\/\}/, '');
+            //如果扩展模块（即：非内置模块）对象已经存在，则不必再加载
+            if (!config.modules[item] && that[item]) {
+                config.modules[item] = url; //并记录起该扩展模块的 url
+            }
+
+            //首次加载模块
+            if (!config.modules[item]) {
+                var node = document.createElement('script');
+
+                node.async = true;
+                node.charset = 'utf-8';
+                node.src = url + function () {
+                    var version = config.version === true ? (config.v || (new Date()).getTime()) : (config.version || '');
+                    return version ? ('?v=' + version) : '';
+                }();
+                head.appendChild(node);
+
+                if (node.attachEvent && !(node.attachEvent.toString && node.attachEvent.toString()
+                .indexOf('[native code') < 0) && !isOpera) {
+                    node.attachEvent('onreadystatechange', function (e) {
+                        onScriptLoad(e, url);
+                    });
+                } else {
+                    node.addEventListener('load', function (e) {
+                        onScriptLoad(e, url);
+                    }, false);
+                    node.addEventListener('error', function (e) {
+                        reject(e, url)
+                    }, false);
+                }
+
+                config.modules[item] = url;
+            } else { //缓存
+                (function poll() {
+                    if (++timeout > config.timeout * 1000 / 4) {
+                        return error(item + ' is not a valid module');
+                    }
+                    (typeof config.modules[item] === 'string') ? onCallback() : setTimeout(poll, 4);
+                }());
+            }
+
+        };
+        load(apps)
+    });
+};
+
+/**
+ * css 外部加载器
+ *
+ * @param href
+ * @param callBack
+ * @param cssName
+ * @returns {boolean|Index}
+ */
+Index.prototype.link = function (href, callBack, cssName) {
     if (!href) return false;
-    var that = this
-        ,
-        link = document.createElement('link')
-        ,
+    let that = this,
+        config = that.config,
+        link = document.createElement('link'),
         head = document.getElementsByTagName('head')[0];
 
-    if (typeof fn === 'string') cssname = fn;
+    if (typeof callBack === 'string') cssName = callBack;
 
-    var app = (cssname || href).replace(/\.|\//g, '')
-        ,
-        id = link.id = 'jiuchetcss-' + app
-        ,
+    let app = (cssName || href).replace(/\.|\//g, ''),
+        id = link.id = 'jcsoftCss-' + app,
         timeout = 0;
 
     link.rel = 'stylesheet';
-    link.href = href + '?v=' /** + (xm_global.nocache == 1 ? new Date().getTime() : xm_global.release)*/;
+    link.href = href + '?v=' + function () {
+        var version = config.version === true ? (config.v || (new Date()).getTime()) : (config.version || '');
+        return version ? ('?v=' + version) : '';
+    }();
     link.media = 'all';
 
-    if (!document.getElementById(id)) {
-        head.appendChild(link);
-    }
+    if (!document.getElementById(id)) head.appendChild(link);
 
-    if (typeof fn !== 'function') return that;
+    if (typeof callBack !== 'function') return that;
 
     //轮询css是否加载完毕
     (function poll() {
@@ -305,32 +335,38 @@ Index.prototype.link = function (href, fn, cssname) {
             return error(href + ' timeout');
         }
         parseInt(that.getStyle(document.getElementById(id), 'width')) === 1994 ? function () {
-            fn();
+            callBack();
         }() : setTimeout(poll, 100);
     }());
 
     return that;
 };
 
-//图片预加载
-Index.prototype.img = function (url, callback, error) {
-    var img = new Image();
-    img.src = url;
-    if (img.complete) {
-        return callback(img);
-    }
-    img.onload = function () {
-        img.onload = null;
-        typeof callback === 'function' && callback(img);
-    };
-    img.onerror = function (e) {
-        img.onerror = null;
-        typeof error === 'function' && error(e);
-    };
+/**
+ * 图片预加载
+ *
+ * @param src
+ * @returns {Promise<unknown>}
+ */
+Index.prototype.img = function (src) {
+    return new Promise((resolve, reject) => {
+        let img = new Image();
+        img.src = src;
+        img.onload = function (Event) {
+            img.onload = null;
+            resolve(Event, img);
+        };
+        img.onerror = function (Event) {
+            img.onerror = null;
+            reject(Event);
+        };
+    })
 };
 
 /**
+ * 图片懒加载
  *
+ * @description 通过修改Dom属性实现，vue不建议使用
  * @param elem
  * @param scrollElem
  * @param lazyAttr
@@ -364,22 +400,22 @@ Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = '
     // scrollElem.style.overflowY !== 'scroll' && (scrollElem.style.overflowY = 'scroll');
     // }
 
-    //显示图片
-    var show = function (item, height) {
+    // 修改DOM的src属性
+    let show = async function (item, height) {
             let start = scrollElem.scrollTop,
-                end = start + height
-                ,
+                end = start + height,
                 elemTop = notDocument ? function () {
                     return item.offsetTop - scrollElem.offsetTop + start;
                 }() : item.offsetTop;// item.scrollTop /item.offsetTop
 
             /* 始终只加载在当前屏范围内的图片 */
             if (elemTop >= start && elemTop - start <= end) { // elemTop >= start && elemTop <= end
-                if (!item.getAttribute('src') && item.getAttribute(`${lazyAttr}`)) { //!item.getAttribute('src')
-                    const src = item.getAttribute(`${lazyAttr}`);
-                    that.img(src, function () { // 执行函数, 创建图片对象并加载
+                const attrSrc = item.getAttribute('src'),
+                    attrJcSrc = item.getAttribute(`${lazyAttr}`);
+                if (attrJcSrc && (!attrSrc || attrSrc !== attrJcSrc)) { //!item.getAttribute('src')
+                    await that.img(attrJcSrc).then(() => {
                         const next = that.lazyimg.elem[index];
-                        item.setAttribute('src', src);
+                        item.setAttribute('src', attrJcSrc);
                         item.removeAttribute(`${lazyAttr}`);
 
                         /* 当前图片加载就绪后，检测下一个图片是否在当前屏 */
@@ -388,9 +424,12 @@ Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = '
                     });
                 }
             }
-        }
-        ,
-        render = function (othis, scroll) { // othis => 当前对象/下一个, scroll: 绑定滚动事件的元素对象
+        },
+        /**
+         * @param othis 渲染对象
+         * @param scroll 绑定滚动事件的元素对象
+         */
+        render = async function (othis, scroll) {
             //计算滚动所在容器的可视高度
             let height = notDocument ? (scroll || scrollElem).offsetHeight > window.innerHeight ? (scroll || scrollElem).offsetHeight : window.innerHeight : window.innerHeight;
             let start = scrollElem.scrollTop,
@@ -400,7 +439,7 @@ Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = '
             that.lazyimg.elem = scrollElem.querySelectorAll(`${elem}`);
 
             if (othis) {
-                show(othis, height);
+                await show(othis, height);
             } else {
                 //计算未加载过的图片 index: 当前需要加载(渲染)的图片
                 for (let i = index; i < that.lazyimg.elem.length; i++) {
@@ -409,7 +448,7 @@ Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = '
                             return item.offsetTop - scrollElem.offsetTop + start;
                         }() : item.offsetTop;
 
-                    show(item, height);
+                    await show(item, height);
 
                     // 如果图片的top坐标，超出了当前屏，则终止后续图片的遍历(防止图片被一次性加载完)
                     if (elemTop > end) break;
@@ -420,10 +459,10 @@ Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = '
     render();
 
     if (!haveScroll) {
-        let timer
-            ,
+        let timer,
             scrollEle = notDocument ? scrollElem : window;
-        scrollEle.addEventListener("scroll", function (e) { // 绑定指定元素滚动事件
+        // 监听滚动
+        scrollEle.addEventListener("scroll", function (e) {
             let othis = this;
             if (timer) clearTimeout(timer)
             timer = setTimeout(function () {
@@ -581,11 +620,46 @@ Index.prototype.numberToChinese = function (str, isInt = true, isFloat = false, 
     }) + (isFloat ? isInt ? '元' : '' : '元整');
 }
 
-
-//----- 时间戳相关处理 -----/
+//----- 时间相关处理 -----/
+/**
+ * 秒级时间戳
+ *
+ * @returns {number}
+ */
 Index.prototype.time = function () {
     return Math.floor(new Date().getTime() / 1000)
-}//10位时间戳
+}
+/**
+ * 毫秒级时间戳
+ *
+ * @param get_as_float
+ * @returns {string|number}
+ */
+Index.prototype.microtime = function (get_as_float) {
+    let now, s;
+    if (typeof performance !== "undefined" && performance.now) {
+        now = (performance.now() + performance.timing.navigationStart) / 1000;
+        if (get_as_float) {
+            return now
+        }
+        s = now | 0;
+        return (Math.round((now - s) * 1000000) / 1000000) + " " + s
+    } else {
+        now = (Date.now ? Date.now() : new Date().getTime()) / 1000;
+        if (get_as_float) {
+            return now
+        }
+        s = now | 0;
+        return (Math.round((now - s) * 1000) / 1000) + " " + s
+    }
+}
+/**
+ * 转换时间戳为时间
+ *
+ * @param format
+ * @param timestamp
+ * @returns {*}
+ */
 Index.prototype.date = function (format, timestamp) {
     var that = this;
     var jsdate,
@@ -709,23 +783,13 @@ Index.prototype.date = function (format, timestamp) {
     };
     return this.date(format, timestamp)
 }
-Index.prototype.microtime = function (get_as_float) {
-    if (typeof performance !== "undefined" && performance.now) {
-        var now = (performance.now() + performance.timing.navigationStart) / 1000;
-        if (get_as_float) {
-            return now
-        }
-        var s = now | 0;
-        return (Math.round((now - s) * 1000000) / 1000000) + " " + s
-    } else {
-        var now = (Date.now ? Date.now() : new Date().getTime()) / 1000;
-        if (get_as_float) {
-            return now
-        }
-        var s = now | 0;
-        return (Math.round((now - s) * 1000) / 1000) + " " + s
-    }
-}
+/**
+ * 将字符时间转换为秒级时间戳
+ *
+ * @param text
+ * @param now
+ * @returns {boolean|number}
+ */
 Index.prototype.strtotime = function (text, now) {
     var parsed,
         match,
@@ -739,9 +803,7 @@ Index.prototype.strtotime = function (text, now) {
         regex,
         i,
         fail = false;
-    if (!text) {
-        return fail
-    }
+    if (!text) return fail;
     text = text.replace(/^\s+|\s+$/g, "").replace(/\s{2,}/g, " ").replace(/[\t\r\n]/g, "").toLowerCase();
     match = text.match(/^(\d{1,4})([\-\.\/\:])(\d{1,2})([\-\.\/\:])(\d{1,4})(?:\s(\d{1,2}):(\d{2})?:?(\d{2})?)?(?:\s([A-Z]+)?)?$/);
     if (match && match[2] === match[4]) {
@@ -996,7 +1058,6 @@ Index.prototype.screen = function () {
         return 0; //超小屏幕
     }
 }
-
 
 Index.prototype.intval = function (mixed_var, base) {
     var tmp;
@@ -1688,11 +1749,8 @@ Index.prototype.md5 = function (string) {
     return i.toLowerCase()
 }
 
-
 let main = new Index();
 
-// 将当前方法传递给validate
-validate.set({util: main})
 Index.prototype.validate = validate;
 
 export default main;

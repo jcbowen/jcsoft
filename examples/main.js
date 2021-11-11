@@ -8,7 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(ElementUI);
 
-import utils from 'packages/utils/index'
+import utils from 'jcsoft/packages/utils/index'
 
 Vue.prototype.$utils = utils;
 

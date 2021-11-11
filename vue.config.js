@@ -29,7 +29,7 @@ module.exports = {
             resolve: {
                 alias: {
                     '@': resolve('examples'),
-                    'packages': resolve('packages')
+                    'jcsoft/packages': resolve('packages')
                 },
             }
         }

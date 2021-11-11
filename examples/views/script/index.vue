@@ -76,6 +76,7 @@ export default {
     },
     mounted() {
         window.VM = this;
+        window.util = this.$utils;
         this.$utils.lazyimg({
         })
     },

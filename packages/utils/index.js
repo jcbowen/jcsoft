@@ -1,4 +1,5 @@
 import validate from "jcsoft/packages/utils/validate";
+import * as lodash from 'lodash';
 
 let error = function (msg, type) {
     type = type || 'log';
@@ -178,8 +179,10 @@ Index.prototype.sort = function (obj, key, desc = false) {
     //如果是数字，按大小排序，如果是非数字，按字典序排序
     clone.sort(function (o1, o2) {
         var isNum = /^-?\d+$/
-            , v1 = o1[key]
-            , v2 = o2[key];
+            ,
+            v1 = o1[key]
+            ,
+            v2 = o2[key];
 
         if (isNum.test(v1)) v1 = parseFloat(v1);
         if (isNum.test(v2)) v2 = parseFloat(v2);
@@ -636,7 +639,8 @@ Index.prototype.time = function () {
  * @returns {string|number}
  */
 Index.prototype.microtime = function (get_as_float) {
-    let now, s;
+    let now,
+        s;
     if (typeof performance !== "undefined" && performance.now) {
         now = (performance.now() + performance.timing.navigationStart) / 1000;
         if (get_as_float) {
@@ -1749,8 +1753,16 @@ Index.prototype.md5 = function (string) {
     return i.toLowerCase()
 }
 
-let main = new Index();
+/**
+ * Lodash
+ */
+Index.prototype._ = lodash;
 
+/**
+ * @description validate.js
+ */
 Index.prototype.validate = validate;
+
+let main = new Index();
 
 export default main;

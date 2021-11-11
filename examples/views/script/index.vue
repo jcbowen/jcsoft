@@ -64,6 +64,8 @@
 </template>
 
 <script>
+import notice from "../../../packages/utils/notice";
+
 export default {
     name: 'Test',
     components: {},
@@ -77,8 +79,8 @@ export default {
     mounted() {
         window.VM = this;
         window.util = this.$utils;
-        this.$utils.lazyimg({
-        })
+        window.notice = notice
+
     },
     methods: {},
 }

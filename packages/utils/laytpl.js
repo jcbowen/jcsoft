@@ -8,12 +8,12 @@
 
 "use strict";
 
-var config = {
+let config = {
     open: '{{',
     close: '}}'
 };
 
-var tool = {
+let tool = {
     exp: function (str) {
         return new RegExp(str, 'g');
     },
@@ -36,7 +36,7 @@ var tool = {
     }
 };
 
-var exp = tool.exp, Tpl = function (tpl) {
+let exp = tool.exp, Tpl = function (tpl) {
     this.tpl = tpl;
 };
 
@@ -102,14 +102,14 @@ Tpl.pt.render = function (data, callback) {
     callback(tpl);
 };
 
-var laytpl = function (tpl) {
+let laytpl = function (tpl) {
     if (typeof tpl !== 'string') return tool.error('Template not found');
     return new Tpl(tpl);
 };
 
 laytpl.config = function (options) {
     options = options || {};
-    for (var i in options) {
+    for (let i in options) {
         config[i] = options[i];
     }
 };

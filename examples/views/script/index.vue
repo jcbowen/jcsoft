@@ -65,6 +65,7 @@
 
 <script>
 import notice from "../../../packages/utils/notice";
+import * as lodash from 'lodash'
 
 export default {
     name: 'Test',
@@ -81,6 +82,10 @@ export default {
         window.util = this.$utils;
         window.notice = notice
 
+        let s = [{a: 1, b: 2}, {a: 2, b: 3}]
+
+        let r = lodash.find(s, {id: 2})
+        console.log(r)
     },
     methods: {},
 }

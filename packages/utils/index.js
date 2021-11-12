@@ -1,5 +1,4 @@
-import validate from "jcsoft/packages/utils/validate";
-import * as lodash from 'lodash';
+import validate from "./validate";
 
 let error = function (msg, type) {
     type = type || 'log';
@@ -137,25 +136,25 @@ Index.prototype.extend = function () {
 };
 
 /**
- * 循环，类似$.each
+ * 循环
  *
- * @param obj
- * @param fn
+ * @desc 类似forEach，但不区分数组和对象
+ * @param {Array|Object} collection 用来循环的集合
+ * @param {Function} predicate 断言函数
  * @returns {Index}
  */
-Index.prototype.each = function (obj, fn) {
-    var key
-        ,
+Index.prototype.each = function (collection, predicate) {
+    let key,
         that = this;
-    if (typeof fn !== 'function') return that;
-    obj = obj || [];
-    if (obj.constructor === Object) {
-        for (key in obj) {
-            if (fn.call(obj[key], key, obj[key])) break;
+    if (typeof predicate !== 'function') return that;
+    collection = collection || [];
+    if (collection.constructor === Object) {
+        for (key in collection) {
+            if (predicate.call(collection[key], key, collection[key])) break;
         }
     } else {
-        for (key = 0; key < obj.length; key++) {
-            if (fn.call(obj[key], key, obj[key])) break;
+        for (key = 0; key < collection.length; key++) {
+            if (predicate.call(collection[key], key, collection[key])) break;
         }
     }
     return that;
@@ -205,6 +204,74 @@ Index.prototype.sort = function (obj, key, desc = false) {
     desc && clone.reverse(); //倒序
     return clone;
 };
+
+/**
+ * 查找集合中的元素
+ *
+ * @param {Array|Object} collection 集合
+ * @param {Array|Function|Object|String} predicate 每次迭代调用的断言函数
+ * @param {number} [fromIndex=0] 开始搜索的索引位置
+ * @returns {*} Returns the matched element, else `undefined`
+ * @example
+ *
+ * var users = [
+ *   { 'user': 'barney',  'age': 36, 'active': true },
+ *   { 'user': 'fred',    'age': 40, 'active': false },
+ *   { 'user': 'pebbles', 'age': 1,  'active': true }
+ * ];
+ *
+ * _.find(users, function(o) { return o.age < 40; });
+ * // => object for 'barney'
+ *
+ * // The `_.matches` iteratee shorthand.
+ * _.find(users, { 'age': 1, 'active': true });
+ * // => object for 'pebbles'
+ *
+ * // The `_.matchesProperty` iteratee shorthand.
+ * _.find(users, ['active', false]);
+ * // => object for 'fred'
+ *
+ * // The `_.property` iteratee shorthand.
+ * _.find(users, 'active');
+ * // => object for 'barney'
+ */
+Index.prototype.find = function (collection, predicate, fromIndex) {
+    let that = this,
+        go = false;
+
+    if (!validate.isFunction(predicate)) {
+        if (validate.isArray(predicate)) {
+            if (predicate.length >= 2) {
+                go = true;
+                predicate = (v) => {
+                    return v[predicate[0]] === predicate[1]
+                }
+            }
+        } else if (validate.isPlainObject(predicate)) {
+            go = true;
+            predicate = (v) => {
+                let result = true;
+                that.each(predicate, (index, item) => {
+                    // if()
+                })
+                return v[predicate[0]] === predicate[1]
+            }
+        } else if (validate.isString(predicate)) {
+            go = true;
+            predicate = (v) => {
+                return v[predicate] === true
+            }
+        }
+    } else {
+        go = true;
+    }
+    if (!go) return undefined;
+
+    that.each(collection, (key, value) => {
+
+    })
+
+}
 
 /**
  * js 外部加载器
@@ -1752,11 +1819,6 @@ Index.prototype.md5 = function (string) {
     var i = s(U) + s(T) + s(S) + s(R);
     return i.toLowerCase()
 }
-
-/**
- * Lodash
- */
-Index.prototype._ = lodash;
 
 /**
  * @description validate.js

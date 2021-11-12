@@ -12,7 +12,7 @@ let getProto = Object.getPrototypeOf,
     ObjectFunctionString = fnToString.call(Object);
 
 /**
- * 循环，类似$.each
+ * 循环，不区分数组/对象
  *
  * @param obj
  * @param fn
@@ -87,7 +87,7 @@ Validate.prototype.isEmpty = function (mixed_var) {
 /**
  * 判断是否为函数
  *
- * @param obj
+ * @param obj 判断的对象
  * @returns {boolean}
  */
 Validate.prototype.isFunction = function (obj) {
@@ -146,16 +146,16 @@ Validate.prototype.isPlainObject = function (obj) {
 };
 
 /**
- * 判断元素是否存在对象或数组中
+ * 判断元素是否存集合中
  *
- * @param find
- * @param Object 数组活着对象
- * @param argStrict 严格模式，默认关闭
+ * @param {String|Number} find 查找对象
+ * @param {Object|Array} collection 集合，不区分数组/对象
+ * @param {Boolean} argStrict 严格模式，默认关闭
  * @returns {boolean}
  */
-Validate.prototype.inArray = function (find, Object, argStrict = false) {
+Validate.prototype.inArray = function (find, collection, argStrict = false) {
     let result = false;
-    _each(Object, function (ind, item) {
+    _each(collection, function (ind, item) {
         if (argStrict) {
             if (find === item) {
                 result = true;

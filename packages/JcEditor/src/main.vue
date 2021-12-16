@@ -50,6 +50,10 @@ import '../plugins/wptadv/plugin.min'
 export default {
     name: 'JcEditor',
     components: {Editor},
+    model: {
+        prop: 'value',
+        event: 'modelEvent'
+    },
     props: {
         successCode: {
             type: [String, Number, Array],
@@ -260,7 +264,7 @@ export default {
     created() {
     },
     mounted() {
-        tinymce.init();
+        tinymce.init({});
     },
     methods: {
         // 添加相关的事件，可用的事件参照文档=> https://github.com/tinymce/tinymce-vue => All available events
@@ -274,11 +278,12 @@ export default {
         }
     },
     watch: {
-        value(value, oldValue) {
-            this.myValue = value
+        value(newValue) {
+            this.myValue = newValue
         },
-        myValue(value, oldValue) {
-            this.$emit('input', value)
+        myValue(newValue) {
+            this.$emit('modelEvent', newValue)
+            this.$emit('input', newValue)
         }
     }
 }

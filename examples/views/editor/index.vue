@@ -5,6 +5,7 @@
         <!--            <el-button type="primary">主要按钮</el-button>-->
         <!--        </el-row>-->
         <my-editor
+            v-model="content"
             :plugins="plugins"
             :menubar="menubar"
             :toolbar="toolbar"
@@ -21,6 +22,7 @@ export default {
     components: {MyEditor},
     data() {
         return {
+            content: '这是测试内容',
             plugins: ['directionality codesample imagetools textpattern autosave indent2em autoresize lineheight formatpainter'
                 , 'advlist autolink link lists charmap print preview hr pagebreak'
                 , 'searchreplace wordcount visualblocks visualchars insertdatetime media2 nonbreaking'

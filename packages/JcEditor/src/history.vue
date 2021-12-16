@@ -50,6 +50,10 @@ import '../plugins/wptadv/plugin.min'
 export default {
     name: 'JcEditor',
     components: {Editor},
+    model: {
+        prop: 'value',
+        event: 'modelEvent'
+    },
     props: {
         successCode: {
             type: [String, Number, Array],
@@ -72,6 +76,10 @@ export default {
             default: false
         },
         height: {
+            type: [Number, String],
+            default: '300'
+        },
+        min_height: {
             type: [Number, String],
             default: '300'
         },
@@ -178,7 +186,7 @@ export default {
                 skin_url: `${this.baseUrl}/skins/ui/oxide`,
                 height: this.height,
                 width: this.width,
-                min_height: 300,
+                min_height: this.min_height,
                 plugins: this.plugins,
                 toolbar: this.toolbar,
                 toolbar_mode: this.toolbar_mode, // 工具栏模式
@@ -254,52 +262,6 @@ export default {
         this.$emit('Editor', tinymce);
     },
     created() {
-        // 增加图片选择器插件
-        /*tinymce.PluginManager.add('image2', function (editor, url) {
-            // 注册一个工具栏按钮名称
-            editor.ui.registry.addButton('image2', {
-                // text: '<i class="fa fa-home" title="图片选择器" aria-hidden="true" ></i>',
-                // text: '图片选择器',
-                icon: 'image',
-                onAction: function () {
-                    selector.image(function (res) {
-                        if (typeof res !== 'object') return;
-                        if (0 != res.length) {
-                            var e = "";
-                            for (let i in res) e += '<p><img src="' + res[i].url + '" _src="' + res[i].attachment + '" alt="' + res[i].filename + '" style="max-width: 100%"/></p>';
-                            editor.insertContent(e);
-                        }
-                    }, {isedit: 2})
-
-                }
-            });
-
-            // 注册一个菜单项名称 menu/menubar
-            /!*editor.ui.registry.addMenuItem('image2', {
-                text: '图片选择器',
-                icon: 'image',
-                onAction: function () {
-                    selector.image(function (res) {
-                        if (typeof res !== 'object') return;
-                        if (0 != res.length) {
-                            var e = "";
-                            for (let i in res) e += '<p><img src="' + res[i].url + '" _src="' + res[i].attachment + '" alt="' + res[i].filename + '" style="max-width: 100%"/></p>';
-                            editor.insertContent(e);
-                        }
-                    }, {isedit: 2})
-                }
-            });*!/
-
-            return {
-                getMetadata: function () {
-                    return {
-                        //插件名和链接会显示在“帮助”→“插件”→“已安装的插件”中
-                        name: "玖祺图片选择器",
-                        url: "http://www.jiuchet.com"
-                    };
-                }
-            };
-        });*/
     },
     mounted() {
         tinymce.init({});
@@ -320,6 +282,7 @@ export default {
             this.myValue = newValue
         },
         myValue(newValue) {
+            this.$emit('modelEvent', newValue)
             this.$emit('input', newValue)
         }
     }

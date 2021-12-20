@@ -1,25 +1,27 @@
-import validate from "./validate";
+import validate from './validate'
+import * as lodash from 'lodash'
 
 let error = function (msg, type) {
-    type = type || 'log';
-    window.console && console[type] && console[type]('jcSoft error hint: ' + msg);
-    return msg;
-};
+    type = type || 'log'
+    window.console && console[type] && console[type]('jcSoft error hint: ' + msg)
+    return msg
+}
 
 let Index = function () {
-    var that = this;
+    var that = this
     that.config = {
         base: '',
         version: true,
         modules: {},
         timeout: 10
-    };
+    }
     // 内置模块
     that.modules = {
+        // 测试数据
         'test': '{/}https://www.baidu.com/project/js/w_jiuchet',
         'jq': '{/}https://www.baidu.com/project/js/w_jiuchet123',
-    };
-};
+    }
+}
 
 /**
  * 全局设置
@@ -28,14 +30,14 @@ let Index = function () {
  * @returns {Index}
  */
 Index.prototype.set = function (options) {
-    var that = this;
+    var that = this
     // 引入
-    options.vm && (that.vm = options.vm);
+    options.vm && (that.vm = options.vm)
     // delete options.vm;
-    that.extend(true, that.config, options);
+    that.extend(true, that.config, options)
 
-    return that;
-};
+    return that
+}
 
 /**
  * 输出提示信息
@@ -48,7 +50,7 @@ Index.prototype.hint = function (msg, type = 'error') {
     return {
         error: error(msg, type)
     }
-};
+}
 
 /**
  * 用于将一个或多个对象的内容合并到目标对象
@@ -71,26 +73,26 @@ Index.prototype.extend = function () {
         target = arguments[0] || {},
         i = 1,
         length = arguments.length,
-        deep = false;
+        deep = false
 
     // Handle a deep copy situation
-    if (typeof target === "boolean") {
-        deep = target;
+    if (typeof target === 'boolean') {
+        deep = target
 
         // skip the boolean and the target
-        target = arguments[i] || {};
-        i++;
+        target = arguments[i] || {}
+        i++
     }
 
     // Handle case when target is a string or something (possible in deep copy)
-    if (typeof target !== "object" && !validate.isFunction(target)) {
-        target = {};
+    if (typeof target !== 'object' && !validate.isFunction(target)) {
+        target = {}
     }
 
     // extend jQuery itself if only one argument is passed
     if (i === length) {
-        target = this;
-        i--;
+        target = this
+        i--
     }
 
     for (; i < length; i++) {
@@ -100,12 +102,12 @@ Index.prototype.extend = function () {
 
             // Extend the base object
             for (name in options) {
-                src = target[name];
-                copy = options[name];
+                src = target[name]
+                copy = options[name]
 
                 // Prevent never-ending loop
                 if (target === copy) {
-                    continue;
+                    continue
                 }
 
                 // Recurse if we're merging plain objects or arrays
@@ -113,27 +115,27 @@ Index.prototype.extend = function () {
                     (copyIsArray = validate.isArray(copy)))) {
 
                     if (copyIsArray) {
-                        copyIsArray = false;
-                        clone = src && validate.isArray(src) ? src : [];
+                        copyIsArray = false
+                        clone = src && validate.isArray(src) ? src : []
 
                     } else {
-                        clone = src && validate.isPlainObject(src) ? src : {};
+                        clone = src && validate.isPlainObject(src) ? src : {}
                     }
 
                     // Never move original objects, clone them
-                    target[name] = that.extend(deep, clone, copy);
+                    target[name] = that.extend(deep, clone, copy)
 
                     // Don't bring in undefined values
                 } else if (copy !== undefined) {
-                    target[name] = copy;
+                    target[name] = copy
                 }
             }
         }
     }
 
     // Return the modified object
-    return target;
-};
+    return target
+}
 
 /**
  * 循环
@@ -145,132 +147,19 @@ Index.prototype.extend = function () {
  */
 Index.prototype.each = function (collection, predicate) {
     let key,
-        that = this;
-    if (typeof predicate !== 'function') return that;
-    collection = collection || [];
+        that = this
+    if (typeof predicate !== 'function') return that
+    collection = collection || []
     if (collection.constructor === Object) {
         for (key in collection) {
-            if (predicate.call(collection[key], key, collection[key])) break;
+            if (predicate.call(collection[key], key, collection[key])) break
         }
     } else {
         for (key = 0; key < collection.length; key++) {
-            if (predicate.call(collection[key], key, collection[key])) break;
+            if (predicate.call(collection[key], key, collection[key])) break
         }
     }
-    return that;
-};
-
-/**
- * 将数组中的对象按其某个成员排序
- *
- * @param obj
- * @param key
- * @param desc
- * @returns {any}
- */
-Index.prototype.sort = function (obj, key, desc = false) {
-    var clone = JSON.parse(
-        JSON.stringify(obj || [])
-    );
-
-    if (!key) return clone;
-
-    //如果是数字，按大小排序，如果是非数字，按字典序排序
-    clone.sort(function (o1, o2) {
-        var isNum = /^-?\d+$/
-            ,
-            v1 = o1[key]
-            ,
-            v2 = o2[key];
-
-        if (isNum.test(v1)) v1 = parseFloat(v1);
-        if (isNum.test(v2)) v2 = parseFloat(v2);
-
-        if (v1 && !v2) {
-            return 1;
-        } else if (!v1 && v2) {
-            return -1;
-        }
-
-        if (v1 > v2) {
-            return 1;
-        } else if (v1 < v2) {
-            return -1;
-        } else {
-            return 0;
-        }
-    });
-
-    desc && clone.reverse(); //倒序
-    return clone;
-};
-
-/**
- * 查找集合中的元素
- *
- * @param {Array|Object} collection 集合
- * @param {Array|Function|Object|String} predicate 每次迭代调用的断言函数
- * @param {number} [fromIndex=0] 开始搜索的索引位置
- * @returns {*} Returns the matched element, else `undefined`
- * @example
- *
- * var users = [
- *   { 'user': 'barney',  'age': 36, 'active': true },
- *   { 'user': 'fred',    'age': 40, 'active': false },
- *   { 'user': 'pebbles', 'age': 1,  'active': true }
- * ];
- *
- * _.find(users, function(o) { return o.age < 40; });
- * // => object for 'barney'
- *
- * // The `_.matches` iteratee shorthand.
- * _.find(users, { 'age': 1, 'active': true });
- * // => object for 'pebbles'
- *
- * // The `_.matchesProperty` iteratee shorthand.
- * _.find(users, ['active', false]);
- * // => object for 'fred'
- *
- * // The `_.property` iteratee shorthand.
- * _.find(users, 'active');
- * // => object for 'barney'
- */
-Index.prototype.find = function (collection, predicate, fromIndex) {
-    let that = this,
-        go = false;
-
-    if (!validate.isFunction(predicate)) {
-        if (validate.isArray(predicate)) {
-            if (predicate.length >= 2) {
-                go = true;
-                predicate = (v) => {
-                    return v[predicate[0]] === predicate[1]
-                }
-            }
-        } else if (validate.isPlainObject(predicate)) {
-            go = true;
-            predicate = (v) => {
-                let result = true;
-                that.each(predicate, (index, item) => {
-                    // if()
-                })
-                return v[predicate[0]] === predicate[1]
-            }
-        } else if (validate.isString(predicate)) {
-            go = true;
-            predicate = (v) => {
-                return v[predicate] === true
-            }
-        }
-    } else {
-        go = true;
-    }
-    if (!go) return undefined;
-
-    that.each(collection, (key, value) => {
-
-    })
-
+    return that
 }
 
 /**
@@ -281,91 +170,91 @@ Index.prototype.find = function (collection, predicate, fromIndex) {
  */
 Index.prototype.loadjs = function (apps) {
     let that = this,
-        config = that.config;
+        config = that.config
 
     return new Promise((resolve, reject) => {
         let load = function (apps) {
 
-            let head = document.getElementsByTagName('head')[0];
+            let head = document.getElementsByTagName('head')[0]
 
-            apps = typeof apps === 'string' ? [apps] : apps;
+            apps = typeof apps === 'string' ? [apps] : apps
 
             var item = apps[0],
-                timeout = 0;
+                timeout = 0
 
             //加载完毕
-            function onScriptLoad(e, url) {
+            function onScriptLoad (e, url) {
                 let readyRegExp = navigator.platform === 'PLaySTATION 3' ? /^complete$/ : /^(complete|loaded)$/
                 if (e.type === 'load' || (readyRegExp.test((e.currentTarget || e.srcElement).readyState))) {
-                    config.modules[item] = url;
+                    config.modules[item] = url
                     head.removeChild(node);
-                    (function poll() {
+                    (function poll () {
                         if (++timeout > config.timeout * 1000 / 4) {
-                            reject(e, url);
-                            return error(item + ' is not a valid module');
+                            reject(e, url)
+                            return error(item + ' is not a valid module')
                         }
-                        onCallback();
-                    }());
+                        onCallback()
+                    }())
                 }
             }
 
             //回调
-            function onCallback() {
-                apps.length > 1 ? load(apps.slice(1)) : resolve();
+            function onCallback () {
+                apps.length > 1 ? load(apps.slice(1)) : resolve()
             }
 
             //获取加载的js文件 URL
             //判断路径值是否为 {/} 开头，
             //如果路径值是 {/} 开头，则路径即为后面紧跟的字符。
             //否则，则按照 base 参数拼接模块路径
-            var url = (/^\{\/\}/.test(item) ? '' : (/^\{\/\}/.test(that.modules[item]) ? '' : (config.base || ''))) + (that.modules[item] || item) + '.js';
+            var url = (/^\{\/\}/.test(item) ? '' : (/^\{\/\}/.test(that.modules[item]) ? '' : (config.base || ''))) + (that.modules[item] || item) + '.js'
 
-            url = url.replace(/^\{\/\}/, '');
+            url = url.replace(/^\{\/\}/, '')
             //如果扩展模块（即：非内置模块）对象已经存在，则不必再加载
             if (!config.modules[item] && that[item]) {
-                config.modules[item] = url; //并记录起该扩展模块的 url
+                config.modules[item] = url //并记录起该扩展模块的 url
             }
 
             //首次加载模块
             if (!config.modules[item]) {
-                var node = document.createElement('script');
+                var node = document.createElement('script')
 
-                node.async = true;
-                node.charset = 'utf-8';
+                node.async = true
+                node.charset = 'utf-8'
                 node.src = url + function () {
-                    var version = config.version === true ? (config.v || (new Date()).getTime()) : (config.version || '');
-                    return version ? ('?v=' + version) : '';
-                }();
-                head.appendChild(node);
+                    var version = config.version === true ? (config.v || (new Date()).getTime()) : (config.version || '')
+                    return version ? ('?v=' + version) : ''
+                }()
+                head.appendChild(node)
 
                 if (node.attachEvent && !(node.attachEvent.toString && node.attachEvent.toString()
                 .indexOf('[native code') < 0) && !isOpera) {
                     node.attachEvent('onreadystatechange', function (e) {
-                        onScriptLoad(e, url);
-                    });
+                        onScriptLoad(e, url)
+                    })
                 } else {
                     node.addEventListener('load', function (e) {
-                        onScriptLoad(e, url);
-                    }, false);
+                        onScriptLoad(e, url)
+                    }, false)
                     node.addEventListener('error', function (e) {
                         reject(e, url)
-                    }, false);
+                    }, false)
                 }
 
-                config.modules[item] = url;
+                config.modules[item] = url
             } else { //缓存
-                (function poll() {
+                (function poll () {
                     if (++timeout > config.timeout * 1000 / 4) {
-                        return error(item + ' is not a valid module');
+                        return error(item + ' is not a valid module')
                     }
-                    (typeof config.modules[item] === 'string') ? onCallback() : setTimeout(poll, 4);
-                }());
+                    (typeof config.modules[item] === 'string') ? onCallback() : setTimeout(poll, 4)
+                }())
             }
 
-        };
+        }
         load(apps)
-    });
-};
+    })
+}
 
 /**
  * css 外部加载器
@@ -376,41 +265,41 @@ Index.prototype.loadjs = function (apps) {
  * @returns {boolean|Index}
  */
 Index.prototype.link = function (href, callBack, cssName) {
-    if (!href) return false;
+    if (!href) return false
     let that = this,
         config = that.config,
         link = document.createElement('link'),
-        head = document.getElementsByTagName('head')[0];
+        head = document.getElementsByTagName('head')[0]
 
-    if (typeof callBack === 'string') cssName = callBack;
+    if (typeof callBack === 'string') cssName = callBack
 
     let app = (cssName || href).replace(/\.|\//g, ''),
         id = link.id = 'jcsoftCss-' + app,
-        timeout = 0;
+        timeout = 0
 
-    link.rel = 'stylesheet';
+    link.rel = 'stylesheet'
     link.href = href + '?v=' + function () {
-        var version = config.version === true ? (config.v || (new Date()).getTime()) : (config.version || '');
-        return version ? ('?v=' + version) : '';
-    }();
-    link.media = 'all';
+        var version = config.version === true ? (config.v || (new Date()).getTime()) : (config.version || '')
+        return version ? ('?v=' + version) : ''
+    }()
+    link.media = 'all'
 
-    if (!document.getElementById(id)) head.appendChild(link);
+    if (!document.getElementById(id)) head.appendChild(link)
 
     if (typeof callBack !== 'function') return that;
 
     //轮询css是否加载完毕
-    (function poll() {
+    (function poll () {
         if (++timeout > that.config.timeout * 1000 / 100) {
-            return error(href + ' timeout');
+            return error(href + ' timeout')
         }
         parseInt(that.getStyle(document.getElementById(id), 'width')) === 1994 ? function () {
-            callBack();
-        }() : setTimeout(poll, 100);
-    }());
+            callBack()
+        }() : setTimeout(poll, 100)
+    }())
 
-    return that;
-};
+    return that
+}
 
 /**
  * 图片预加载
@@ -420,18 +309,18 @@ Index.prototype.link = function (href, callBack, cssName) {
  */
 Index.prototype.img = function (src) {
     return new Promise((resolve, reject) => {
-        let img = new Image();
-        img.src = src;
+        let img = new Image()
+        img.src = src
         img.onload = function (Event) {
-            img.onload = null;
-            resolve(Event, img);
-        };
+            img.onload = null
+            resolve(Event, img)
+        }
         img.onerror = function (Event) {
-            img.onerror = null;
-            reject(Event);
-        };
+            img.onerror = null
+            reject(Event)
+        }
     })
-};
+}
 
 /**
  * 图片懒加载
@@ -442,23 +331,23 @@ Index.prototype.img = function (src) {
  * @param lazyAttr
  * @param style
  */
-Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = 'jc-src', style = {}}) {
-    let that = this;
+Index.prototype.lazyimg = function ({ elem = 'img', scrollElem = '', lazyAttr = 'jc-src', style = {} }) {
+    let that = this
 
     let index = 0,
-        haveScroll = false;
-    scrollElem = !that.validate.isEmpty(scrollElem) ? document.querySelector(`${scrollElem}`) : false;
-    scrollElem = scrollElem || document.documentElement; // 滚动条所在元素
+        haveScroll = false
+    scrollElem = !that.validate.isEmpty(scrollElem) ? document.querySelector(`${scrollElem}`) : false
+    scrollElem = scrollElem || document.documentElement // 滚动条所在元素
     let scrollElementStyle = style
         ,
-        notDocument = scrollElem && scrollElem !== document.documentElement; //滚动条所在元素是否为document
+        notDocument = scrollElem && scrollElem !== document.documentElement //滚动条所在元素是否为document
     // , setScrollElementStyle = !!notDocument  // 一般传递了options.scrollElem的时候，需要为其设置样式maxHeight与overflowY, 除非本身已有该样式
     // , scrollElementHeight = null;
 
     // 设置自定义样式
     if (Object.keys(scrollElementStyle).length) {
         for (let k in scrollElementStyle) {
-            scrollElem.style[k] = scrollElementStyle[k];
+            scrollElem.style[k] = scrollElementStyle[k]
         }
     }
 
@@ -475,23 +364,23 @@ Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = '
             let start = scrollElem.scrollTop,
                 end = start + height,
                 elemTop = notDocument ? function () {
-                    return item.offsetTop - scrollElem.offsetTop + start;
-                }() : item.offsetTop;// item.scrollTop /item.offsetTop
+                    return item.offsetTop - scrollElem.offsetTop + start
+                }() : item.offsetTop// item.scrollTop /item.offsetTop
 
             /* 始终只加载在当前屏范围内的图片 */
             if (elemTop >= start && elemTop - start <= end) { // elemTop >= start && elemTop <= end
                 const attrSrc = item.getAttribute('src'),
-                    attrJcSrc = item.getAttribute(`${lazyAttr}`);
+                    attrJcSrc = item.getAttribute(`${lazyAttr}`)
                 if (attrJcSrc && (!attrSrc || attrSrc !== attrJcSrc)) { //!item.getAttribute('src')
                     await that.img(attrJcSrc).then(() => {
-                        const next = that.lazyimg.elem[index];
-                        item.setAttribute('src', attrJcSrc);
-                        item.removeAttribute(`${lazyAttr}`);
+                        const next = that.lazyimg.elem[index]
+                        item.setAttribute('src', attrJcSrc)
+                        item.removeAttribute(`${lazyAttr}`)
 
                         /* 当前图片加载就绪后，检测下一个图片是否在当前屏 */
-                        render(next);
-                        index++; // 当前图片加载完成之后, 将加载下一张，直到最后一张被加载完成为止
-                    });
+                        render(next)
+                        index++ // 当前图片加载完成之后, 将加载下一张，直到最后一张被加载完成为止
+                    })
                 }
             }
         },
@@ -501,85 +390,104 @@ Index.prototype.lazyimg = function ({elem = 'img', scrollElem = '', lazyAttr = '
          */
         render = async function (othis, scroll) {
             //计算滚动所在容器的可视高度
-            let height = notDocument ? (scroll || scrollElem).offsetHeight > window.innerHeight ? (scroll || scrollElem).offsetHeight : window.innerHeight : window.innerHeight;
+            let height = notDocument ? (scroll || scrollElem).offsetHeight > window.innerHeight ? (scroll || scrollElem).offsetHeight : window.innerHeight : window.innerHeight
             let start = scrollElem.scrollTop,
-                end = start + height;
+                end = start + height
             // scrollElementHeight = height;
 
-            that.lazyimg.elem = scrollElem.querySelectorAll(`${elem}`);
+            that.lazyimg.elem = scrollElem.querySelectorAll(`${elem}`)
 
             if (othis) {
-                await show(othis, height);
+                await show(othis, height)
             } else {
                 //计算未加载过的图片 index: 当前需要加载(渲染)的图片
                 for (let i = index; i < that.lazyimg.elem.length; i++) {
                     let item = that.lazyimg.elem[i],
                         elemTop = notDocument ? function () {
-                            return item.offsetTop - scrollElem.offsetTop + start;
-                        }() : item.offsetTop;
+                            return item.offsetTop - scrollElem.offsetTop + start
+                        }() : item.offsetTop
 
-                    await show(item, height);
+                    await show(item, height)
 
                     // 如果图片的top坐标，超出了当前屏，则终止后续图片的遍历(防止图片被一次性加载完)
-                    if (elemTop > end) break;
+                    if (elemTop > end) break
                 }
             }
-        };
+        }
 
-    render();
+    render()
 
     if (!haveScroll) {
         let timer,
-            scrollEle = notDocument ? scrollElem : window;
+            scrollEle = notDocument ? scrollElem : window
         // 监听滚动
-        scrollEle.addEventListener("scroll", function (e) {
-            let othis = this;
+        scrollEle.addEventListener('scroll', function (e) {
+            let othis = this
             if (timer) clearTimeout(timer)
             timer = setTimeout(function () {
-                render(null, othis);
-            }, 50);
-        });
-        haveScroll = true;
+                render(null, othis)
+            }, 50)
+        })
+        haveScroll = true
     }
-    return render;
-};
+    return render
+}
 
-//本地持久性存储
+/**
+ * 持久性储存
+ * @param {String} table 表名
+ * @param {Object} settings 操作对象{key: 'filed_name', value: 'filed_value', remove: false}
+ * @param storage
+ * @returns {*|boolean}
+ */
 Index.prototype.data = function (table, settings, storage) {
-    table = table || 'jiuchet';
-    storage = storage || localStorage;
+    table = table || 'jiuchet'
+    storage = storage || localStorage
 
-    if (!window.JSON || !window.JSON.parse) return;
+    if (!window.JSON || !window.JSON.parse) return
 
     //如果settings为null，则删除表
     if (settings === null) {
-        return delete storage[table];
+        return delete storage[table]
     }
 
     settings = typeof settings === 'object'
         ? settings
-        : {key: settings};
+        : { key: settings }
 
+    let data
     try {
-        var data = JSON.parse(storage[table]);
+        data = JSON.parse(storage[table])
     } catch (e) {
-        var data = {};
+        data = {}
     }
 
-    if ('value' in settings) data[settings.key] = settings.value;
-    if (settings.remove) delete data[settings.key];
-    storage[table] = JSON.stringify(data);
+    if ('value' in settings) data[settings.key] = settings.value
+    if (settings.remove) delete data[settings.key]
+    storage[table] = JSON.stringify(data)
 
-    return settings.key ? data[settings.key] : data;
-};
+    return settings.key ? data[settings.key] : data
+}
 
 /**
- * param 将要转为URL参数字符串的对象
- * key URL参数字符串的前缀
- * encode true/false 是否进行URL编码,默认为true
- *
- * return URL参数字符串
+ * 会话性存储
+ * @param {String} table 表名
+ * @param {Object} settings 操作对象{key: 'filed_name', value: 'filed_value', remove: false}
+ * @returns {*|Boolean}
+ */
+Index.prototype.sessionData = function (table, settings) {
+    return this.data(table, settings, sessionStorage)
+}
 
+/**
+ * 将对象转换为URL参数字符串
+ *
+ * @param {Object} param 转换对象
+ * @param {String} key URL参数字符串的前缀
+ * @param {Boolean} encode true/false 是否进行URL编码,默认为true
+ * @returns {String}
+ *
+ * @example
  * var obj={name:'tom','class':{className:'class1'},classMates:[{name:'lily'}]};
  * console.log(http_build_query(obj));
  * output: &name=tom&class.className=class1&classMates[0].name=lily
@@ -587,107 +495,111 @@ Index.prototype.data = function (table, settings, storage) {
  * output: &stu.name=tom&stu.class.className=class1&stu.classMates[0].name=lily
  */
 Index.prototype.http_build_query = function (param, key, encode) {
-    let that = this;
-    if (param == null) return '';
-    var paramStr = '';
-    var t = typeof (param);
-    if (t == 'string' || t == 'number' || t == 'boolean') {
-        paramStr += key + '=' + ((encode == null || encode) ? encodeURIComponent(param) : param) + '&';
+    let that = this
+    if (param == null) return ''
+    var paramStr = ''
+    var t = typeof (param)
+    if (t === 'string' || t === 'number' || t === 'boolean') {
+        paramStr += key + '=' + ((encode == null || encode) ? encodeURIComponent(param) : param) + '&'
     } else {
         for (var i in param) {
-            var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
-            paramStr += that.http_build_query(param[i], k, encode);
+            var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i)
+            paramStr += that.http_build_query(param[i], k, encode)
         }
     }
-    return paramStr;
-};
+    return paramStr
+}
 
 /**
- * 比较版本号大小
+ * 比较版本号
+ * @description 判断第一个参数传递的版本号，是否大于第二个参数传递的版本号
  *
- * @description compare('2.3.1', '2.5.7');输出false
- * @param curV
- * @param reqV
+ * @example
+ * compare('2.3.1', '2.5.7');
+ * output: false
+ *
+ * @param {String} curV 校验版本号
+ * @param {String} reqV 基准版本号
  * @returns {boolean}
  */
 Index.prototype.compare = function (curV, reqV) {
     if (curV && reqV) {
         //将两个版本号拆成数字
         var arr1 = curV.split('.'),
-            arr2 = reqV.split('.');
+            arr2 = reqV.split('.')
         var minLength = Math.min(arr1.length, arr2.length),
             position = 0,
-            diff = 0;
+            diff = 0
         //依次比较版本号每一位大小，当对比得出结果后跳出循环（后文有简单介绍）
-        while (position < minLength && ((diff = parseInt(arr1[position]) - parseInt(arr2[position])) == 0)) {
-            position++;
+        while (position < minLength && ((diff = parseInt(arr1[position]) - parseInt(arr2[position])) === 0)) {
+            position++
         }
-        diff = (diff != 0) ? diff : (arr1.length - arr2.length);
+        diff = (diff !== 0) ? diff : (arr1.length - arr2.length)
         //若curV大于reqV，则返回true
-        return diff > 0;
+        return diff > 0
     } else {
         //输入为空
-        console.error("版本号不能为空");
-        return false;
+        this.hint('版本号不能为空')
+        return false
     }
-};
+}
 
 /**
  * 人民币数值转大写
  *
- * @param str
- * @param isInt
- * @param isFloat
- * @param replace
+ * @param {number|string} str 人民币数值
+ * @param {boolean} isInt
+ * @param {boolean} isFloat
+ * @param {boolean} replace 是否需要移除人民币数值中的','
  * @returns {string|void|*}
  */
-Index.prototype.numberToChinese = function (str, isInt = true, isFloat = false, replace = '') {
-    let that = this;
-    str = str + '';
+Index.prototype.numberToChinese = function (str, isInt = true, isFloat = false, replace = false) {
+    let that = this
+    str = str.toString()
     let len = str.length - 1,
         chineseArray = isInt ? ['', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千', '万', '十', '百', '千', '亿'] : ['分', '角'],
-        numArray = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
+        numArray = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']
 
-    if (!str) return '';
-    if (str.length > 15) return '输入位数有误';
-    if (str.split('.').length > 2) return '输入的值有误';
-    if (replace) str = str.replace(/\,/ig, '');
-    if (/[^0-9\.]+/gi.test(str)) return that.hint('只能输入数值');
+    if (!str) return ''
+    if (str.length > 15) return '输入位数有误'
+    if (str.split('.').length > 2) return '输入的值有误'
+    if (replace) str = str.replace(/\,/ig, '')
+    if (/[^0-9\.]+/gi.test(str)) return that.hint('只能输入数值')
     if (str.split('.').length === 2) {
-        isInt = false;
-        isFloat = true;
-        str = '' + this.$baseLodash.round(str, 2);
+        isInt = false
+        isFloat = true
+        str = '' + lodash.round(str, 2)
         let intNumber = str.split('.')[0],
             decimalNumber = str.split('.')[1],
-            hasPoint = true;
-        hasPoint = str.lastIndexOf('.') === -1 ? false : true;
+            hasPoint = true
+        hasPoint = str.lastIndexOf('.') !== -1
         return that.numberToChinese(intNumber, true, hasPoint)
             + (hasPoint ? that.numberToChinese(decimalNumber, isInt, isFloat) : '')
     }
     return str.replace(/([1-9]|0+)/g, function ($, $1, idx, full) {
-        var pos = 0;
+        var pos = 0
         if ($1[0] != '0') {
-            pos = len - idx;
-            if (idx == 0 && $1[0] == 1 && chineseArray[len - idx] == '十') {
-                return chineseArray[len - idx];
+            pos = len - idx
+            if (idx == 0 && $1[0] == 1 && chineseArray[len - idx] === '十') {
+                return chineseArray[len - idx]
             }
-            return numArray[$1[0]] + chineseArray[len - idx];
+            return numArray[$1[0]] + chineseArray[len - idx]
         } else {
             let left = len - idx
                 ,
-                right = len - idx + $1.length;
+                right = len - idx + $1.length
             if (Math.floor(right / 4) - Math.floor(left / 4) > 0) {
-                pos = left - left % 4;
+                pos = left - left % 4
             }
             if (pos) {
-                return chineseArray[pos] + numArray[$1[0]];
+                return chineseArray[pos] + numArray[$1[0]]
             } else if (idx + $1.length >= len) {
-                return '';
+                return ''
             } else {
                 return numArray[$1[0]]
             }
         }
-    }) + (isFloat ? isInt ? '元' : '' : '元整');
+    }) + (isFloat ? isInt ? '元' : '' : '元整')
 }
 
 //----- 时间相关处理 -----/
@@ -707,46 +619,52 @@ Index.prototype.time = function () {
  */
 Index.prototype.microtime = function (get_as_float) {
     let now,
-        s;
-    if (typeof performance !== "undefined" && performance.now) {
-        now = (performance.now() + performance.timing.navigationStart) / 1000;
+        s
+    if (typeof performance !== 'undefined' && performance.now) {
+        now = (performance.now() + performance.timing.navigationStart) / 1000
         if (get_as_float) {
             return now
         }
-        s = now | 0;
-        return (Math.round((now - s) * 1000000) / 1000000) + " " + s
+        s = now | 0
+        return (Math.round((now - s) * 1000000) / 1000000) + ' ' + s
     } else {
-        now = (Date.now ? Date.now() : new Date().getTime()) / 1000;
+        now = (Date.now ? Date.now() : new Date().getTime()) / 1000
         if (get_as_float) {
             return now
         }
-        s = now | 0;
-        return (Math.round((now - s) * 1000) / 1000) + " " + s
+        s = now | 0
+        return (Math.round((now - s) * 1000) / 1000) + ' ' + s
     }
 }
 /**
  * 转换时间戳为时间
+ * @example
+ * date('Y-m-d')
+ * output: '2021-10-23'
+ * date('Y-m-d H:i:s', 782909083)
+ * output: '1994-10-23 18:44:43'
  *
- * @param format
- * @param timestamp
- * @returns {*}
+ * @description 用法同php的date方法
+ * @param {string} format 需要转换的时间戳格式
+ * @param {string|number} timestamp 秒级或毫秒级时间戳
+ * @returns {string}
  */
 Index.prototype.date = function (format, timestamp) {
-    var that = this;
+    var that = this
     var jsdate,
-        f;
-    var txt_words = ["Sun", "Mon", "Tues", "Wednes", "Thurs", "Fri", "Satur", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    var formatChr = /\\?(.?)/gi;
+        f
+    var txt_words = ['Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    var formatChr = /\\?(.?)/gi
     var formatChrCb = function (t, s) {
         return f[t] ? f[t]() : s
-    };
+    }
     var _pad = function (n, c) {
-        n = String(n);
+        n = String(n)
         while (n.length < c) {
-            n = "0" + n
+            n = '0' + n
         }
         return n
-    };
+    }
     f = {
         d: function () {
             return _pad(f.j(), 2)
@@ -755,25 +673,25 @@ Index.prototype.date = function (format, timestamp) {
         }, j: function () {
             return jsdate.getDate()
         }, l: function () {
-            return txt_words[f.w()] + "day"
+            return txt_words[f.w()] + 'day'
         }, N: function () {
             return f.w() || 7
         }, S: function () {
-            var j = f.j();
-            var i = j % 10;
+            var j = f.j()
+            var i = j % 10
             if (i <= 3 && parseInt((j % 100) / 10, 10) == 1) {
                 i = 0
             }
-            return ["st", "nd", "rd"][i - 1] || "th"
+            return ['st', 'nd', 'rd'][i - 1] || 'th'
         }, w: function () {
             return jsdate.getDay()
         }, z: function () {
-            var a = new Date(f.Y(), f.n() - 1, f.j());
-            var b = new Date(f.Y(), 0, 1);
+            var a = new Date(f.Y(), f.n() - 1, f.j())
+            var b = new Date(f.Y(), 0, 1)
             return Math.round((a - b) / 86400000)
         }, W: function () {
-            var a = new Date(f.Y(), f.n() - 1, f.j() - f.N() + 3);
-            var b = new Date(a.getFullYear(), 0, 4);
+            var a = new Date(f.Y(), f.n() - 1, f.j() - f.N() + 3)
+            var b = new Date(a.getFullYear(), 0, 4)
             return _pad(1 + Math.round((a - b) / 86400000 / 7), 2)
         }, F: function () {
             return txt_words[6 + f.n()]
@@ -786,25 +704,25 @@ Index.prototype.date = function (format, timestamp) {
         }, t: function () {
             return (new Date(f.Y(), f.n(), 0)).getDate()
         }, L: function () {
-            var j = f.Y();
+            var j = f.Y()
             return j % 4 === 0 & j % 100 !== 0 | j % 400 === 0
         }, o: function () {
-            var n = f.n();
-            var W = f.W();
-            var Y = f.Y();
+            var n = f.n()
+            var W = f.W()
+            var Y = f.Y()
             return Y + (n === 12 && W < 9 ? 1 : n === 1 && W > 9 ? -1 : 0)
         }, Y: function () {
             return jsdate.getFullYear()
         }, y: function () {
             return f.Y().toString().slice(-2)
         }, a: function () {
-            return jsdate.getHours() > 11 ? "pm" : "am"
+            return jsdate.getHours() > 11 ? 'pm' : 'am'
         }, A: function () {
             return f.a().toUpperCase()
         }, B: function () {
-            var H = jsdate.getUTCHours() * 3600;
-            var i = jsdate.getUTCMinutes() * 60;
-            var s = jsdate.getUTCSeconds();
+            var H = jsdate.getUTCHours() * 3600
+            var i = jsdate.getUTCMinutes() * 60
+            var s = jsdate.getUTCSeconds()
             return _pad(Math.floor((H + i + s + 3600) / 86.4) % 1000, 3)
         }, g: function () {
             return f.G() % 12 || 12
@@ -821,43 +739,44 @@ Index.prototype.date = function (format, timestamp) {
         }, u: function () {
             return _pad(jsdate.getMilliseconds() * 1000, 6)
         }, e: function () {
-            throw"Not supported (see source code of date() for timezone on how to add support)"
+            throw'Not supported (see source code of date() for timezone on how to add support)'
         }, I: function () {
-            var a = new Date(f.Y(), 0);
-            var c = Date.UTC(f.Y(), 0);
-            var b = new Date(f.Y(), 6);
-            var d = Date.UTC(f.Y(), 6);
+            var a = new Date(f.Y(), 0)
+            var c = Date.UTC(f.Y(), 0)
+            var b = new Date(f.Y(), 6)
+            var d = Date.UTC(f.Y(), 6)
             return ((a - c) !== (b - d)) ? 1 : 0
         }, O: function () {
-            var tzo = jsdate.getTimezoneOffset();
-            var a = Math.abs(tzo);
-            return (tzo > 0 ? "-" : "+") + _pad(Math.floor(a / 60) * 100 + a % 60, 4)
+            var tzo = jsdate.getTimezoneOffset()
+            var a = Math.abs(tzo)
+            return (tzo > 0 ? '-' : '+') + _pad(Math.floor(a / 60) * 100 + a % 60, 4)
         }, P: function () {
-            var O = f.O();
-            return (O.substr(0, 3) + ":" + O.substr(3, 2))
+            var O = f.O()
+            return (O.substr(0, 3) + ':' + O.substr(3, 2))
         }, T: function () {
-            return "UTC"
+            return 'UTC'
         }, Z: function () {
             return -jsdate.getTimezoneOffset() * 60
         }, c: function () {
-            return "Y-m-d\\TH:i:sP".replace(formatChr, formatChrCb)
+            return 'Y-m-d\\TH:i:sP'.replace(formatChr, formatChrCb)
         }, r: function () {
-            return "D, d M Y H:i:s O".replace(formatChr, formatChrCb)
+            return 'D, d M Y H:i:s O'.replace(formatChr, formatChrCb)
         }, U: function () {
             return jsdate / 1000 | 0
         }
-    };
+    }
     this.date = function (format, timestamp) {
-        that = this;
-        jsdate = (timestamp === undefined ? new Date() : (timestamp instanceof Date) ? new Date(timestamp) : new Date(timestamp * 1000));
+        that = this
+        jsdate = (timestamp === undefined ? new Date() : (timestamp instanceof Date) ? new Date(timestamp) : new Date(timestamp * 1000))
         return format.replace(formatChr, formatChrCb)
-    };
+    }
     return this.date(format, timestamp)
 }
+
 /**
  * 将字符时间转换为秒级时间戳
  *
- * @param text
+ * @param {string|number} text 时间戳
  * @param now
  * @returns {boolean|number}
  */
@@ -873,21 +792,21 @@ Index.prototype.strtotime = function (text, now) {
         times,
         regex,
         i,
-        fail = false;
-    if (!text) return fail;
-    text = text.replace(/^\s+|\s+$/g, "").replace(/\s{2,}/g, " ").replace(/[\t\r\n]/g, "").toLowerCase();
-    match = text.match(/^(\d{1,4})([\-\.\/\:])(\d{1,2})([\-\.\/\:])(\d{1,4})(?:\s(\d{1,2}):(\d{2})?:?(\d{2})?)?(?:\s([A-Z]+)?)?$/);
+        fail = false
+    if (!text) return fail
+    text = text.replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ').replace(/[\t\r\n]/g, '').toLowerCase()
+    match = text.match(/^(\d{1,4})([\-\.\/\:])(\d{1,2})([\-\.\/\:])(\d{1,4})(?:\s(\d{1,2}):(\d{2})?:?(\d{2})?)?(?:\s([A-Z]+)?)?$/)
     if (match && match[2] === match[4]) {
         if (match[1] > 1901) {
             switch (match[2]) {
-                case"-":
+                case'-':
                     if (match[3] > 12 || match[5] > 31) {
                         return fail
                     }
-                    return new Date(match[1], parseInt(match[3], 10) - 1, match[5], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000;
-                case".":
-                    return fail;
-                case"/":
+                    return new Date(match[1], parseInt(match[3], 10) - 1, match[5], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000
+                case'.':
+                    return fail
+                case'/':
                     if (match[3] > 12 || match[5] > 31) {
                         return fail
                     }
@@ -896,17 +815,17 @@ Index.prototype.strtotime = function (text, now) {
         } else {
             if (match[5] > 1901) {
                 switch (match[2]) {
-                    case"-":
+                    case'-':
                         if (match[3] > 12 || match[1] > 31) {
                             return fail
                         }
-                        return new Date(match[5], parseInt(match[3], 10) - 1, match[1], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000;
-                    case".":
+                        return new Date(match[5], parseInt(match[3], 10) - 1, match[1], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000
+                    case'.':
                         if (match[3] > 12 || match[1] > 31) {
                             return fail
                         }
-                        return new Date(match[5], parseInt(match[3], 10) - 1, match[1], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000;
-                    case"/":
+                        return new Date(match[5], parseInt(match[3], 10) - 1, match[1], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000
+                    case'/':
                         if (match[1] > 12 || match[3] > 31) {
                             return fail
                         }
@@ -914,13 +833,13 @@ Index.prototype.strtotime = function (text, now) {
                 }
             } else {
                 switch (match[2]) {
-                    case"-":
+                    case'-':
                         if (match[3] > 12 || match[5] > 31 || (match[1] < 70 && match[1] > 38)) {
                             return fail
                         }
-                        year = match[1] >= 0 && match[1] <= 38 ? +match[1] + 2000 : match[1];
-                        return new Date(year, parseInt(match[3], 10) - 1, match[5], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000;
-                    case".":
+                        year = match[1] >= 0 && match[1] <= 38 ? +match[1] + 2000 : match[1]
+                        return new Date(year, parseInt(match[3], 10) - 1, match[5], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000
+                    case'.':
                         if (match[5] >= 70) {
                             if (match[3] > 12 || match[1] > 31) {
                                 return fail
@@ -931,48 +850,48 @@ Index.prototype.strtotime = function (text, now) {
                             if (match[1] > 23 || match[3] > 59) {
                                 return fail
                             }
-                            today = new Date();
+                            today = new Date()
                             return new Date(today.getFullYear(), today.getMonth(), today.getDate(), match[1] || 0, match[3] || 0, match[5] || 0, match[9] || 0) / 1000
                         }
-                        return fail;
-                    case"/":
+                        return fail
+                    case'/':
                         if (match[1] > 12 || match[3] > 31 || (match[5] < 70 && match[5] > 38)) {
                             return fail
                         }
-                        year = match[5] >= 0 && match[5] <= 38 ? +match[5] + 2000 : match[5];
-                        return new Date(year, parseInt(match[1], 10) - 1, match[3], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000;
-                    case":":
+                        year = match[5] >= 0 && match[5] <= 38 ? +match[5] + 2000 : match[5]
+                        return new Date(year, parseInt(match[1], 10) - 1, match[3], match[6] || 0, match[7] || 0, match[8] || 0, match[9] || 0) / 1000
+                    case':':
                         if (match[1] > 23 || match[3] > 59 || match[5] > 59) {
                             return fail
                         }
-                        today = new Date();
+                        today = new Date()
                         return new Date(today.getFullYear(), today.getMonth(), today.getDate(), match[1] || 0, match[3] || 0, match[5] || 0) / 1000
                 }
             }
         }
     }
-    if (text === "now") {
+    if (text === 'now') {
         return now === null || isNaN(now) ? new Date().getTime() / 1000 | 0 : now | 0
     }
     if (!isNaN(parsed = Date.parse(text))) {
         return parsed / 1000 | 0
     }
-    date = now ? new Date(now * 1000) : new Date();
-    days = {"sun": 0, "mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6};
-    ranges = {"yea": "FullYear", "mon": "Month", "day": "Date", "hou": "Hours", "min": "Minutes", "sec": "Seconds"};
+    date = now ? new Date(now * 1000) : new Date()
+    days = { 'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6 }
+    ranges = { 'yea': 'FullYear', 'mon': 'Month', 'day': 'Date', 'hou': 'Hours', 'min': 'Minutes', 'sec': 'Seconds' }
 
-    function lastNext(type, range, modifier) {
+    function lastNext (type, range, modifier) {
         var diff,
-            day = days[range];
-        if (typeof day !== "undefined") {
-            diff = day - date.getDay();
+            day = days[range]
+        if (typeof day !== 'undefined') {
+            diff = day - date.getDay()
             if (diff === 0) {
                 diff = 7 * modifier
             } else {
-                if (diff > 0 && type === "last") {
+                if (diff > 0 && type === 'last') {
                     diff -= 7
                 } else {
-                    if (diff < 0 && type === "next") {
+                    if (diff < 0 && type === 'next') {
                         diff += 7
                     }
                 }
@@ -981,23 +900,23 @@ Index.prototype.strtotime = function (text, now) {
         }
     }
 
-    function process(val) {
-        var splt = val.split(" "),
+    function process (val) {
+        var splt = val.split(' '),
             type = splt[0],
             range = splt[1].substring(0, 3),
             typeIsNumber = /\d+/.test(type),
-            ago = splt[2] === "ago",
-            num = (type === "last" ? -1 : 1) * (ago ? -1 : 1);
+            ago = splt[2] === 'ago',
+            num = (type === 'last' ? -1 : 1) * (ago ? -1 : 1)
         if (typeIsNumber) {
             num *= parseInt(type, 10)
         }
         if (ranges.hasOwnProperty(range) && !splt[1].match(/^mon(day|\.)?$/i)) {
-            return date["set" + ranges[range]](date["get" + ranges[range]]() + num)
+            return date['set' + ranges[range]](date['get' + ranges[range]]() + num)
         }
-        if (range === "wee") {
+        if (range === 'wee') {
             return date.setDate(date.getDate() + (num * 7))
         }
-        if (type === "next" || type === "last") {
+        if (type === 'next' || type === 'last') {
             lastNext(type, range, num)
         } else {
             if (!typeIsNumber) {
@@ -1007,9 +926,9 @@ Index.prototype.strtotime = function (text, now) {
         return true
     }
 
-    times = "(years?|months?|weeks?|days?|hours?|minutes?|min|seconds?|sec" + "|sunday|sun\\.?|monday|mon\\.?|tuesday|tue\\.?|wednesday|wed\\.?" + "|thursday|thu\\.?|friday|fri\\.?|saturday|sat\\.?)";
-    regex = "([+-]?\\d+\\s" + times + "|" + "(last|next)\\s" + times + ")(\\sago)?";
-    match = text.match(new RegExp(regex, "gi"));
+    times = '(years?|months?|weeks?|days?|hours?|minutes?|min|seconds?|sec' + '|sunday|sun\\.?|monday|mon\\.?|tuesday|tue\\.?|wednesday|wed\\.?' + '|thursday|thu\\.?|friday|fri\\.?|saturday|sat\\.?)'
+    regex = '([+-]?\\d+\\s' + times + '|' + '(last|next)\\s' + times + ')(\\sago)?'
+    match = text.match(new RegExp(regex, 'gi'))
     if (!match) {
         return fail
     }
@@ -1025,8 +944,8 @@ Index.prototype.strtotime = function (text, now) {
 Index.prototype.htmlspecialchars_decode = function (e, E) {
     var T = 0,
         _ = 0,
-        r = !1;
-    "undefined" == typeof E && (E = 2), e = e.toString().replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        r = !1
+    'undefined' == typeof E && (E = 2), e = e.toString().replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     var t = {
         ENT_NOQUOTES: 0,
         ENT_HTML_QUOTE_SINGLE: 1,
@@ -1034,19 +953,19 @@ Index.prototype.htmlspecialchars_decode = function (e, E) {
         ENT_COMPAT: 2,
         ENT_QUOTES: 3,
         ENT_IGNORE: 4
-    };
-    if (0 === E && (r = !0), "number" != typeof E) {
-        for (E = [].concat(E), _ = 0; _ < E.length; _++) 0 === t[E[_]] ? r = !0 : t[E[_]] && (T |= t[E[_]]);
+    }
+    if (0 === E && (r = !0), 'number' != typeof E) {
+        for (E = [].concat(E), _ = 0; _ < E.length; _++) 0 === t[E[_]] ? r = !0 : t[E[_]] && (T |= t[E[_]])
         E = T
     }
-    return E & t.ENT_HTML_QUOTE_SINGLE && (e = e.replace(/&#0*39;/g, "'")), r || (e = e.replace(/&quot;/g, '"')), e = e.replace(/&amp;/g, "&")
+    return E & t.ENT_HTML_QUOTE_SINGLE && (e = e.replace(/&#0*39;/g, '\'')), r || (e = e.replace(/&quot;/g, '"')), e = e.replace(/&amp;/g, '&')
 }
 Index.prototype.htmlspecialchars = function (e, E, T, _) {
     var r = 0,
         t = 0,
         a = !1;
-    ("undefined" == typeof E || null === E) && (E = 2), e = e.toString(), _ !== !1 && (e = e.replace(/&/g, "&amp;")), e = e.replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    ('undefined' == typeof E || null === E) && (E = 2), e = e.toString(), _ !== !1 && (e = e.replace(/&/g, '&amp;')), e = e.replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     var N = {
         ENT_NOQUOTES: 0,
         ENT_HTML_QUOTE_SINGLE: 1,
@@ -1054,60 +973,19 @@ Index.prototype.htmlspecialchars = function (e, E, T, _) {
         ENT_COMPAT: 2,
         ENT_QUOTES: 3,
         ENT_IGNORE: 4
-    };
-    if (0 === E && (a = !0), "number" != typeof E) {
-        for (E = [].concat(E), t = 0; t < E.length; t++) 0 === N[E[t]] ? a = !0 : N[E[t]] && (r |= N[E[t]]);
+    }
+    if (0 === E && (a = !0), 'number' != typeof E) {
+        for (E = [].concat(E), t = 0; t < E.length; t++) 0 === N[E[t]] ? a = !0 : N[E[t]] && (r |= N[E[t]])
         E = r
     }
-    return E & N.ENT_HTML_QUOTE_SINGLE && (e = e.replace(/'/g, "&#039;")), a || (e = e.replace(/"/g, "&quot;")), e
+    return E & N.ENT_HTML_QUOTE_SINGLE && (e = e.replace(/'/g, '&#039;')), a || (e = e.replace(/"/g, '&quot;')), e
 }
 Index.prototype.htmlencode = function (sStr) {
-    return php.htmlspecialchars(sStr);
+    return php.htmlspecialchars(sStr)
 }
 Index.prototype.htmldecode = function (sStr) {
     return php.htmlspecialchars_decode(sStr)
 }
-
-/**
- * 浏览器判断和网络判断
- *
- * @type {{wifi: boolean, language: string, version: {opera: boolean, weixin: boolean, firefox: boolean, android: boolean, mobile: boolean, ipad: boolean, ie: boolean, ios: boolean, iphone: boolean, webKit: boolean}}}
- */
-Index.prototype.browser = {
-    version: function () {
-        var u = navigator.userAgent.toLowerCase(),
-            app = navigator.appVersion;
-        return {
-            ie: u.indexOf("trident") > -1,
-            opera: u.indexOf("tresto") > -1,
-            webKit: u.indexOf("applewebkit") > -1,
-            firefox: u.indexOf("gecko") > -1 && u.indexOf("khtml") == -1,
-            mobile: !!u.match(/applewebkit.*mobile.*/),
-            ios: !!u.match(/\(i[^;]+;( u;)? cpu.+mac os x/),
-            android: u.indexOf("android") > -1 || u.indexOf("linux") > -1,
-            iphone: u.indexOf("iphone") > -1,
-            ipad: u.indexOf("ipad") > -1,
-            weixin: u.match(/micromessenger/i) == "micromessenger"
-        }
-    }(), language: (navigator.browserLanguage || navigator.language).toLowerCase(), wifi: !function (t) {
-        var e = !0,
-            n = t.navigator.userAgent,
-            i = t.navigator.connection;
-        if (/MicroMessenger/.test(n)) if (/NetType/.test(n)) {
-            var o = n.match(/NetType\/(\S)+/)[0].replace("NetType/", "");
-            o && "WIFI" != o && (e = !1)
-        } else document.addEventListener("WeixinJSBridgeReady", function () {
-            WeixinJSBridge.invoke("getNetworkType", {}, function (t) {
-                "network_type:wifi" != t.err_msg && (e = !1)
-            })
-        }); else if (i) {
-            var a = i.type;
-            "wifi" != a && "2" != a && "unknown" != a && (e = !1)
-        }
-        t.wifi = e
-    }(window)
-}
-
 /**
  * 获取屏幕类型，根据当前屏幕大小，返回 0 - 3 的值
  * 0: 低于768px的屏幕
@@ -1118,29 +996,35 @@ Index.prototype.browser = {
  * @returns {number}
  */
 Index.prototype.screen = function () {
-    var width = document.body.clientWidth;
+    var width = document.body.clientWidth
     if (width > 1200) {
-        return 3; //大屏幕
+        return 3 //大屏幕
     } else if (width > 992) {
-        return 2; //中屏幕
+        return 2 //中屏幕
     } else if (width > 768) {
-        return 1; //小屏幕
+        return 1 //小屏幕
     } else {
-        return 0; //超小屏幕
+        return 0 //超小屏幕
     }
 }
 
-Index.prototype.intval = function (mixed_var, base) {
-    var tmp;
-    var type = typeof mixed_var;
-    if (type === "boolean") {
+/**
+ * 字符串转数字
+ * @param mixed_var 必需。要被解析的字符串
+ * @param {number} radix 可选。表示要解析的数字的基数。该值介于 2 ~ 36 之间。
+ * @returns {number|number}
+ */
+Index.prototype.intval = function (mixed_var, radix) {
+    var tmp
+    var type = typeof mixed_var
+    if (type === 'boolean') {
         return +mixed_var
     } else {
-        if (type === "string") {
-            tmp = parseInt(mixed_var, base || 10);
+        if (type === 'string') {
+            tmp = parseInt(mixed_var, radix || 10)
             return (isNaN(tmp) || !isFinite(tmp)) ? 0 : tmp
         } else {
-            if (type === "number" && isFinite(mixed_var)) {
+            if (type === 'number' && isFinite(mixed_var)) {
                 return mixed_var | 0
             } else {
                 return 0
@@ -1148,133 +1032,225 @@ Index.prototype.intval = function (mixed_var, base) {
         }
     }
 }
+
+/**
+ * 判断函数是否存在
+ *
+ * @param func_name 方法名
+ * @returns {boolean}
+ */
 Index.prototype.function_exists = function (func_name) {
-    if (typeof func_name === "string") {
+    if (typeof func_name === 'string') {
         func_name = this.window[func_name]
     }
-    return typeof func_name === "function"
+    return typeof func_name === 'function'
 }
 
+/**
+ * 范围
+ *
+ * @param {string|number} low
+ * @param {string|number} high
+ * @param {number} step 跨度
+ * @returns {[]}
+ */
 Index.prototype.range = function (low, high, step) {
-    var matrix = [];
+    var matrix = []
     var inival,
         endval,
-        plus;
-    var walker = step || 1;
-    var chars = false;
+        plus
+    var walker = step || 1
+    var chars = false
     if (!isNaN(low) && !isNaN(high)) {
-        inival = low;
+        inival = low
         endval = high
     } else {
         if (isNaN(low) && isNaN(high)) {
-            chars = true;
-            inival = low.charCodeAt(0);
+            chars = true
+            inival = low.charCodeAt(0)
             endval = high.charCodeAt(0)
         } else {
-            inival = (isNaN(low) ? 0 : low);
+            inival = (isNaN(low) ? 0 : low)
             endval = (isNaN(high) ? 0 : high)
         }
     }
-    plus = ((inival > endval) ? false : true);
+    plus = (inival <= endval)
     if (plus) {
         while (inival <= endval) {
-            matrix.push(((chars) ? String.fromCharCode(inival) : inival));
+            matrix.push(((chars) ? String.fromCharCode(inival) : inival))
             inival += walker
         }
     } else {
         while (inival >= endval) {
-            matrix.push(((chars) ? String.fromCharCode(inival) : inival));
+            matrix.push(((chars) ? String.fromCharCode(inival) : inival))
             inival -= walker
         }
     }
     return matrix
 }
+
+/**
+ * 剥去字符串中的 HTML 标签
+ *
+ * @param input 必需。规定要检查的字符串。
+ * @param allowed 可选。规定允许的标签。这些标签不会被删除。
+ * @returns {*}
+ */
 Index.prototype.strip_tags = function (input, allowed) {
-    allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join("");
+    allowed = (((allowed || '') + '').toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('')
     var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
-        commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
-    return input.replace(commentsAndPhpTags, "").replace(tags, function ($0, $1) {
-        return allowed.indexOf("<" + $1.toLowerCase() + ">") > -1 ? $0 : ""
+        commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi
+    return input.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {
+        return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : ''
     })
 }
+
+/**
+ * 随机数
+ *
+ * @param min
+ * @param max
+ * @returns {number}
+ */
 Index.prototype.rand = function (min, max) {
-    var argc = arguments.length;
+    var argc = arguments.length
     if (argc === 0) {
-        min = 0;
+        min = 0
         max = 2147483647
     } else {
         if (argc === 1) {
-            throw new Error("Warning: rand() expects exactly 2 parameters, 1 given")
+            throw new Error('Warning: rand() expects exactly 2 parameters, 1 given')
         }
     }
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
+
+/**
+ * 对浮点数进行四舍五入
+ *
+ * @param value
+ * @param precision
+ * @param mode
+ * @returns {number}
+ */
 Index.prototype.round = function (value, precision, mode) {
     var m,
         f,
         isHalf,
-        sgn;
-    precision |= 0;
-    m = Math.pow(10, precision);
-    value *= m;
-    sgn = (value > 0) | -(value < 0);
-    isHalf = value % 1 === 0.5 * sgn;
-    f = Math.floor(value);
+        sgn
+    precision |= 0
+    m = Math.pow(10, precision)
+    value *= m
+    sgn = (value > 0) | -(value < 0)
+    isHalf = value % 1 === 0.5 * sgn
+    f = Math.floor(value)
     if (isHalf) {
         switch (mode) {
-            case"PHP_ROUND_HALF_DOWN":
-                value = f + (sgn < 0);
-                break;
-            case"PHP_ROUND_HALF_EVEN":
-                value = f + (f % 2 * sgn);
-                break;
-            case"PHP_ROUND_HALF_ODD":
-                value = f + !(f % 2);
-                break;
+            case'PHP_ROUND_HALF_DOWN':
+                value = f + (sgn < 0)
+                break
+            case'PHP_ROUND_HALF_EVEN':
+                value = f + (f % 2 * sgn)
+                break
+            case'PHP_ROUND_HALF_ODD':
+                value = f + !(f % 2)
+                break
             default:
                 value = f + (sgn > 0)
         }
     }
     return (isHalf ? value : Math.round(value)) / m
 }
+
+/**
+ * 字符串 转小写
+ * @param {string} str
+ * @returns {string}
+ */
 Index.prototype.strtolower = function (str) {
-    return (str + "").toLowerCase()
+    return (str + '').toLowerCase()
 }
+
+/**
+ * 字符串 转大写
+ * @param {string} str
+ * @returns {string}
+ */
 Index.prototype.strtoupper = function (str) {
-    return (str + "").toUpperCase()
+    return (str + '').toUpperCase()
 }
+
+/**
+ * 返回变量的浮点值
+ * @param mixed_var
+ * @returns {string}
+ */
 Index.prototype.floatval = function (mixed_var) {
     return (parseFloat(mixed_var) || 0)
 }
+
+/**
+ * 字符串 首字母大写
+ *
+ * @param {string} str
+ * @returns {string}
+ */
 Index.prototype.ucfirst = function (str) {
-    str += "";
-    var f = str.charAt(0).toUpperCase();
+    str += ''
+    var f = str.charAt(0).toUpperCase()
     return f + str.substr(1)
 }
+
+/**
+ * 在任意进制之间转换数字。
+ *
+ * @param number 必需。规定要转换的数。
+ * @param frombase 必需。规定数字原来的进制。介于 2 和 36 之间（包括 2 和 36）。高于十进制的数字用字母 a-z 表示，例如 a 表示 10，b 表示 11 以及 z 表示 35。
+ * @param tobase 必需。规定要转换的进制。介于 2 和 36 之间（包括 2 和 36）。高于十进制的数字用字母 a-z 表示，例如 a 表示 10，b 表示 11 以及 z 表示 35。
+ * @returns {string}
+ */
 Index.prototype.base_convert = function (number, frombase, tobase) {
-    return parseInt(number + "", frombase | 0).toString(tobase | 0)
+    return parseInt(number + '', frombase | 0).toString(tobase | 0)
 }
+
+/**
+ * 向下舍入为最接近的整数
+ *
+ * @param value
+ * @returns {number}
+ */
 Index.prototype.floor = function (value) {
     return Math.floor(value)
 }
+
+/**
+ * 向上舍入为最接近的整数
+ * @param value
+ * @returns {number}
+ */
 Index.prototype.ceil = function (value) {
     return Math.ceil(value)
 }
 
+/**
+ * 把 ISO-8859-1 字符串编码为 UTF-8
+ * @param argString
+ * @returns {string}
+ */
 Index.prototype.utf8_encode = function (argString) {
-    if (argString === null || typeof argString === "undefined") {
-        return ""
+    if (argString === null || typeof argString === 'undefined') {
+        return ''
     }
-    var string = (argString + "");
-    var utftext = "",
+    var string = (argString + '')
+    var utftext = '',
         start,
         end,
-        stringl = 0;
-    start = end = 0;
-    stringl = string.length;
+        stringl = 0
+    start = end = 0
+    stringl = string.length
     for (var n = 0; n < stringl; n++) {
-        var c1 = string.charCodeAt(n);
-        var enc = null;
+        var c1 = string.charCodeAt(n)
+        var enc = null
         if (c1 < 128) {
             end++
         } else {
@@ -1285,13 +1261,13 @@ Index.prototype.utf8_encode = function (argString) {
                     enc = String.fromCharCode((c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128)
                 } else {
                     if ((c1 & 64512) != 55296) {
-                        throw new RangeError("Unmatched trail surrogate at " + n)
+                        throw new RangeError('Unmatched trail surrogate at ' + n)
                     }
-                    var c2 = string.charCodeAt(++n);
+                    var c2 = string.charCodeAt(++n)
                     if ((c2 & 64512) != 56320) {
-                        throw new RangeError("Unmatched lead surrogate at " + (n - 1))
+                        throw new RangeError('Unmatched lead surrogate at ' + (n - 1))
                     }
-                    c1 = ((c1 & 1023) << 10) + (c2 & 1023) + 65536;
+                    c1 = ((c1 & 1023) << 10) + (c2 & 1023) + 65536
                     enc = String.fromCharCode((c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128)
                 }
             }
@@ -1300,7 +1276,7 @@ Index.prototype.utf8_encode = function (argString) {
             if (end > start) {
                 utftext += string.slice(start, end)
             }
-            utftext += enc;
+            utftext += enc
             start = end = n + 1
         }
     }
@@ -1309,28 +1285,34 @@ Index.prototype.utf8_encode = function (argString) {
     }
     return utftext
 }
+
+/**
+ * 把 UTF-8 字符串解码为 ISO-8859-1
+ * @param str_data
+ * @returns {string}
+ */
 Index.prototype.utf8_decode = function (str_data) {
     var tmp_arr = [],
         i = 0,
         c1 = 0,
-        seqlen = 0;
-    str_data += "";
+        seqlen = 0
+    str_data += ''
     while (i < str_data.length) {
-        c1 = str_data.charCodeAt(i) & 255;
-        seqlen = 0;
+        c1 = str_data.charCodeAt(i) & 255
+        seqlen = 0
         if (c1 <= 191) {
-            c1 = (c1 & 127);
+            c1 = (c1 & 127)
             seqlen = 1
         } else {
             if (c1 <= 223) {
-                c1 = (c1 & 31);
+                c1 = (c1 & 31)
                 seqlen = 2
             } else {
                 if (c1 <= 239) {
-                    c1 = (c1 & 15);
+                    c1 = (c1 & 15)
                     seqlen = 3
                 } else {
-                    c1 = (c1 & 7);
+                    c1 = (c1 & 7)
                     seqlen = 4
                 }
             }
@@ -1339,68 +1321,51 @@ Index.prototype.utf8_decode = function (str_data) {
             c1 = ((c1 << 6) | (str_data.charCodeAt(ai + i) & 63))
         }
         if (seqlen == 4) {
-            c1 -= 65536;
+            c1 -= 65536
             tmp_arr.push(String.fromCharCode(55296 | ((c1 >> 10) & 1023)), String.fromCharCode(56320 | (c1 & 1023)))
         } else {
             tmp_arr.push(String.fromCharCode(c1))
         }
         i += seqlen
     }
-    return tmp_arr.join("")
-}
-/*URL编码解码*/
-Index.prototype.urlencode = function (str) {
-    str = (str + "").toString();
-    return encodeURIComponent(str)
-    .replace(/!/g, "%21")
-    .replace(/'/g, "%27")
-    .replace(/\(/g, "%28")
-    .replace(/\)/g, "%29")
-    .replace(/\*/g, "%2A")
-    .replace(/%20/g, "+")
-}
-Index.prototype.urldecode = function (str) {
-    return decodeURIComponent((str + "").replace(/%(?![\da-f]{2})/gi, function () {
-        return "%25"
-    }).replace(/\+/g, "%20"))
+    return tmp_arr.join('')
 }
 
-/*base64*/
-Index.prototype.base64Encode = function (data) {
-    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    var o1,
-        o2,
-        o3,
-        h1,
-        h2,
-        h3,
-        h4,
-        bits,
-        i = 0,
-        ac = 0,
-        enc = "",
-        tmp_arr = [];
-    if (!data) {
-        return data
-    }
-    data = unescape(encodeURIComponent(data));
-    do {
-        o1 = data.charCodeAt(i++);
-        o2 = data.charCodeAt(i++);
-        o3 = data.charCodeAt(i++);
-        bits = o1 << 16 | o2 << 8 | o3;
-        h1 = bits >> 18 & 63;
-        h2 = bits >> 12 & 63;
-        h3 = bits >> 6 & 63;
-        h4 = bits & 63;
-        tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4)
-    } while (i < data.length);
-    enc = tmp_arr.join("");
-    var r = data.length % 3;
-    return (r ? enc.slice(0, r - 3) : enc) + "===".slice(r || 3)
+/**
+ * 字符串URL编码
+ *
+ * @param str
+ * @returns {string}
+ */
+Index.prototype.urlencode = function (str) {
+    str = (str + '').toString()
+    return encodeURIComponent(str)
+    .replace(/!/g, '%21')
+    .replace(/'/g, '%27')
+    .replace(/\(/g, '%28')
+    .replace(/\)/g, '%29')
+    .replace(/\*/g, '%2A')
+    .replace(/%20/g, '+')
 }
-Index.prototype.base64Decode = function (data) {
-    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+/**
+ * 字符串URL解码
+ * @param str
+ * @returns {string}
+ */
+Index.prototype.urldecode = function (str) {
+    return decodeURIComponent((str + '').replace(/%(?![\da-f]{2})/gi, function () {
+        return '%25'
+    }).replace(/\+/g, '%20'))
+}
+
+/**
+ * base64编码
+ * @param data
+ * @returns {string|*}
+ */
+Index.prototype.base64Encode = function (data) {
+    var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
     var o1,
         o2,
         o3,
@@ -1411,21 +1376,60 @@ Index.prototype.base64Decode = function (data) {
         bits,
         i = 0,
         ac = 0,
-        dec = "",
-        tmp_arr = [];
+        enc = '',
+        tmp_arr = []
     if (!data) {
         return data
     }
-    data += "";
+    data = unescape(encodeURIComponent(data))
     do {
-        h1 = b64.indexOf(data.charAt(i++));
-        h2 = b64.indexOf(data.charAt(i++));
-        h3 = b64.indexOf(data.charAt(i++));
-        h4 = b64.indexOf(data.charAt(i++));
-        bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
-        o1 = bits >> 16 & 255;
-        o2 = bits >> 8 & 255;
-        o3 = bits & 255;
+        o1 = data.charCodeAt(i++)
+        o2 = data.charCodeAt(i++)
+        o3 = data.charCodeAt(i++)
+        bits = o1 << 16 | o2 << 8 | o3
+        h1 = bits >> 18 & 63
+        h2 = bits >> 12 & 63
+        h3 = bits >> 6 & 63
+        h4 = bits & 63
+        tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4)
+    } while (i < data.length)
+    enc = tmp_arr.join('')
+    var r = data.length % 3
+    return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3)
+}
+
+/**
+ * base64解码
+ * @param data
+ * @returns {string|*}
+ */
+Index.prototype.base64Decode = function (data) {
+    var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+    var o1,
+        o2,
+        o3,
+        h1,
+        h2,
+        h3,
+        h4,
+        bits,
+        i = 0,
+        ac = 0,
+        dec = '',
+        tmp_arr = []
+    if (!data) {
+        return data
+    }
+    data += ''
+    do {
+        h1 = b64.indexOf(data.charAt(i++))
+        h2 = b64.indexOf(data.charAt(i++))
+        h3 = b64.indexOf(data.charAt(i++))
+        h4 = b64.indexOf(data.charAt(i++))
+        bits = h1 << 18 | h2 << 12 | h3 << 6 | h4
+        o1 = bits >> 16 & 255
+        o2 = bits >> 8 & 255
+        o3 = bits & 255
         if (h3 == 64) {
             tmp_arr[ac++] = String.fromCharCode(o1)
         } else {
@@ -1435,9 +1439,9 @@ Index.prototype.base64Decode = function (data) {
                 tmp_arr[ac++] = String.fromCharCode(o1, o2, o3)
             }
         }
-    } while (i < data.length);
-    dec = tmp_arr.join("");
-    return decodeURIComponent(escape(dec.replace(/\0+$/, "")))
+    } while (i < data.length)
+    dec = tmp_arr.join('')
+    return decodeURIComponent(escape(dec.replace(/\0+$/, '')))
 }
 
 /**
@@ -1450,18 +1454,18 @@ Index.prototype.base64Decode = function (data) {
  * @returns {*}
  */
 Index.prototype.preg_replace = function (pattern, replacement, subject, limit) {
-    if (typeof limit === 'undefined') limit = -1;
+    if (typeof limit === 'undefined') limit = -1
     if (subject.match(eval(pattern))) {
         if (limit == -1) {
-            return subject.replace(eval(pattern + 'g'), replacement);
+            return subject.replace(eval(pattern + 'g'), replacement)
         } else {
             for (let x = 0; x < limit; x++) {
-                subject = subject.replace(eval(pattern), replacement);
+                subject = subject.replace(eval(pattern), replacement)
             }
-            return subject;
+            return subject
         }
     } else {
-        return subject;
+        return subject
     }
 }
 
@@ -1474,7 +1478,7 @@ Index.prototype.preg_replace = function (pattern, replacement, subject, limit) {
  * @returns {string|*}
  */
 Index.prototype.strCut = function (str, iMaxBytes, sSuffix) {
-    let that = this;
+    let that = this
     if (isNaN(iMaxBytes)) {
         return str
     }
@@ -1482,13 +1486,13 @@ Index.prototype.strCut = function (str, iMaxBytes, sSuffix) {
         return str
     }
     var i = 0,
-        bytes = 0;
+        bytes = 0
     for (; i < str.length && bytes < iMaxBytes; ++i, ++bytes) {
         if (str.charCodeAt(i) > 255) {
             ++bytes
         }
     }
-    sSuffix = sSuffix || "";
+    sSuffix = sSuffix || ''
     return (bytes - iMaxBytes == 1 ? str.substr(0, i - 1) : str.substr(0, i)) + sSuffix
 }
 /**
@@ -1498,7 +1502,7 @@ Index.prototype.strCut = function (str, iMaxBytes, sSuffix) {
  * @returns {number}
  */
 Index.prototype.strLength = function (str) {
-    let bytes = 0;
+    let bytes = 0
     for (let i = 0; i < str.length; ++i, ++bytes) {
         if (str.charCodeAt(i) > 255) {
             ++bytes
@@ -1514,7 +1518,7 @@ Index.prototype.strLength = function (str) {
  * @returns {*}
  */
 Index.prototype.implode = function (separator, array) {
-    return array.join(separator);
+    return array.join(separator)
 }
 /**
  * 把字符串打散为数组
@@ -1526,9 +1530,9 @@ Index.prototype.implode = function (separator, array) {
  */
 Index.prototype.explode = function (separator, str, limit) {
     if (typeof limit == 'undefined') {
-        return str.split(separator);
+        return str.split(separator)
     }
-    return str.split(separator, limit);
+    return str.split(separator, limit)
 }
 
 /**
@@ -1541,23 +1545,23 @@ Index.prototype.explode = function (separator, str, limit) {
  */
 Index.prototype.setcookie = function (name, value, expire) {
     if (value === undefined) {
-        var f = "; " + document.cookie;
-        var d = f.split("; " + name + "=");
+        var f = '; ' + document.cookie
+        var d = f.split('; ' + name + '=')
         if (d.length === 2) {
-            return d.pop().split(";").shift()
+            return d.pop().split(';').shift()
         }
         return null
     } else {
         if (value === false) {
             expire = -1
         }
-        var a = "";
+        var a = ''
         if (expire) {
-            var b = new Date();
-            b.setTime(b.getTime() + (expire * 24 * 60 * 60 * 1000));
-            a = "; expires=" + b.toGMTString()
+            var b = new Date()
+            b.setTime(b.getTime() + (expire * 24 * 60 * 60 * 1000))
+            a = '; expires=' + b.toGMTString()
         }
-        document.cookie = name + "=" + value + a + "; path=/"
+        document.cookie = name + '=' + value + a + '; path=/'
     }
 }
 
@@ -1569,10 +1573,10 @@ Index.prototype.setcookie = function (name, value, expire) {
  * @returns {boolean}
  */
 Index.prototype.dateCompare = function (strDate1, strDate2) {
-    let date1 = new Date(strDate1.replace(/\-/g, "\/"))
+    let date1 = new Date(strDate1.replace(/\-/g, '\/'))
         ,
-        date2 = new Date(strDate2.replace(/\-/g, "\/"));
-    return (date1 - date2) >= 0;
+        date2 = new Date(strDate2.replace(/\-/g, '\/'))
+    return (date1 - date2) >= 0
 }
 
 /**
@@ -1582,28 +1586,28 @@ Index.prototype.dateCompare = function (strDate1, strDate2) {
  * @returns {string}
  */
 Index.prototype.prettyTime = function (time) {
-    var today = new Date();
-    var d = new Date(time);
-    var m = today.getTime() - d.getTime();
+    var today = new Date()
+    var d = new Date(time)
+    var m = today.getTime() - d.getTime()
     if (m <= 0) {
         m = 1000
     }
     if (m < 60 * 1000) {
-        return Math.floor(m / 1000) + "秒前"
+        return Math.floor(m / 1000) + '秒前'
     } else {
         if (m < 60 * 60 * 1000) {
-            return Math.floor(m / (1000 * 60)) + "分钟前"
+            return Math.floor(m / (1000 * 60)) + '分钟前'
         } else {
             if (m < 60 * 60 * 1000 * 24) {
-                return Math.floor(m / (1000 * 60 * 60)) + "小时前"
+                return Math.floor(m / (1000 * 60 * 60)) + '小时前'
             } else {
                 if (m < 60 * 60 * 1000 * 24 * 7) {
-                    return Math.floor(m / (1000 * 60 * 60 * 24)) + "天前"
+                    return Math.floor(m / (1000 * 60 * 60 * 24)) + '天前'
                 } else {
                     if (m < 60 * 60 * 1000 * 24 * 7 * 56) {
-                        return Math.floor(m / (1000 * 60 * 60 * 24 * 7)) + "周前"
+                        return Math.floor(m / (1000 * 60 * 60 * 24 * 7)) + '周前'
                     } else {
-                        return Math.floor(m / (1000 * 60 * 60 * 24 * 7 * 52)) + "年前"
+                        return Math.floor(m / (1000 * 60 * 60 * 24 * 7 * 52)) + '年前'
                     }
                 }
             }
@@ -1619,21 +1623,21 @@ Index.prototype.prettyTime = function (time) {
  * @returns {string}
  */
 Index.prototype.md5 = function (string) {
-    var D;
+    var D
     var w = function (b, a) {
         return (b << a) | (b >>> (32 - a))
-    };
+    }
     var H = function (k, b) {
         var V,
             a,
             d,
             x,
-            c;
-        d = (k & 2147483648);
-        x = (b & 2147483648);
-        V = (k & 1073741824);
-        a = (b & 1073741824);
-        c = (k & 1073741823) + (b & 1073741823);
+            c
+        d = (k & 2147483648)
+        x = (b & 2147483648)
+        V = (k & 1073741824)
+        a = (b & 1073741824)
+        c = (k & 1073741823) + (b & 1073741823)
         if (V & a) {
             return (c ^ 2147483648 ^ d ^ x)
         }
@@ -1646,69 +1650,69 @@ Index.prototype.md5 = function (string) {
         } else {
             return (c ^ d ^ x)
         }
-    };
+    }
     var r = function (a, c, b) {
         return (a & c) | ((~a) & b)
-    };
+    }
     var q = function (a, c, b) {
         return (a & b) | (c & (~b))
-    };
+    }
     var p = function (a, c, b) {
         return (a ^ c ^ b)
-    };
+    }
     var n = function (a, c, b) {
         return (c ^ (a | (~b)))
-    };
+    }
     var u = function (W, V, aa, Z, k, X, Y) {
-        W = H(W, H(H(r(V, aa, Z), k), Y));
+        W = H(W, H(H(r(V, aa, Z), k), Y))
         return H(w(W, X), V)
-    };
+    }
     var f = function (W, V, aa, Z, k, X, Y) {
-        W = H(W, H(H(q(V, aa, Z), k), Y));
+        W = H(W, H(H(q(V, aa, Z), k), Y))
         return H(w(W, X), V)
-    };
+    }
     var F = function (W, V, aa, Z, k, X, Y) {
-        W = H(W, H(H(p(V, aa, Z), k), Y));
+        W = H(W, H(H(p(V, aa, Z), k), Y))
         return H(w(W, X), V)
-    };
+    }
     var t = function (W, V, aa, Z, k, X, Y) {
-        W = H(W, H(H(n(V, aa, Z), k), Y));
+        W = H(W, H(H(n(V, aa, Z), k), Y))
         return H(w(W, X), V)
-    };
+    }
     var e = function (V) {
-        var W;
-        var d = V.length;
-        var c = d + 8;
-        var b = (c - (c % 64)) / 64;
-        var x = (b + 1) * 16;
-        var X = new Array(x - 1);
-        var a = 0;
-        var k = 0;
+        var W
+        var d = V.length
+        var c = d + 8
+        var b = (c - (c % 64)) / 64
+        var x = (b + 1) * 16
+        var X = new Array(x - 1)
+        var a = 0
+        var k = 0
         while (k < d) {
-            W = (k - (k % 4)) / 4;
-            a = (k % 4) * 8;
-            X[W] = (X[W] | (V.charCodeAt(k) << a));
+            W = (k - (k % 4)) / 4
+            a = (k % 4) * 8
+            X[W] = (X[W] | (V.charCodeAt(k) << a))
             k++
         }
-        W = (k - (k % 4)) / 4;
-        a = (k % 4) * 8;
-        X[W] = X[W] | (128 << a);
-        X[x - 2] = d << 3;
-        X[x - 1] = d >>> 29;
+        W = (k - (k % 4)) / 4
+        a = (k % 4) * 8
+        X[W] = X[W] | (128 << a)
+        X[x - 2] = d << 3
+        X[x - 1] = d >>> 29
         return X
-    };
+    }
     var s = function (d) {
-        var a = "",
-            b = "",
+        var a = '',
+            b = '',
             k,
-            c;
+            c
         for (c = 0; c <= 3; c++) {
-            k = (d >>> (c * 8)) & 255;
-            b = "0" + k.toString(16);
+            k = (d >>> (c * 8)) & 255
+            b = '0' + k.toString(16)
             a = a + b.substr(b.length - 2, 2)
         }
         return a
-    };
+    }
     var E = [],
         L,
         h,
@@ -1734,97 +1738,102 @@ Index.prototype.md5 = function (string) {
         Q = 6,
         P = 10,
         N = 15,
-        K = 21;
-    string = this.utf8_encode(string);
-    E = e(string);
-    U = 1732584193;
-    T = 4023233417;
-    S = 2562383102;
-    R = 271733878;
-    D = E.length;
+        K = 21
+    string = this.utf8_encode(string)
+    E = e(string)
+    U = 1732584193
+    T = 4023233417
+    S = 2562383102
+    R = 271733878
+    D = E.length
     for (L = 0; L < D; L += 16) {
-        h = U;
-        G = T;
-        v = S;
-        g = R;
-        U = u(U, T, S, R, E[L + 0], O, 3614090360);
-        R = u(R, U, T, S, E[L + 1], M, 3905402710);
-        S = u(S, R, U, T, E[L + 2], J, 606105819);
-        T = u(T, S, R, U, E[L + 3], I, 3250441966);
-        U = u(U, T, S, R, E[L + 4], O, 4118548399);
-        R = u(R, U, T, S, E[L + 5], M, 1200080426);
-        S = u(S, R, U, T, E[L + 6], J, 2821735955);
-        T = u(T, S, R, U, E[L + 7], I, 4249261313);
-        U = u(U, T, S, R, E[L + 8], O, 1770035416);
-        R = u(R, U, T, S, E[L + 9], M, 2336552879);
-        S = u(S, R, U, T, E[L + 10], J, 4294925233);
-        T = u(T, S, R, U, E[L + 11], I, 2304563134);
-        U = u(U, T, S, R, E[L + 12], O, 1804603682);
-        R = u(R, U, T, S, E[L + 13], M, 4254626195);
-        S = u(S, R, U, T, E[L + 14], J, 2792965006);
-        T = u(T, S, R, U, E[L + 15], I, 1236535329);
-        U = f(U, T, S, R, E[L + 1], B, 4129170786);
-        R = f(R, U, T, S, E[L + 6], A, 3225465664);
-        S = f(S, R, U, T, E[L + 11], z, 643717713);
-        T = f(T, S, R, U, E[L + 0], y, 3921069994);
-        U = f(U, T, S, R, E[L + 5], B, 3593408605);
-        R = f(R, U, T, S, E[L + 10], A, 38016083);
-        S = f(S, R, U, T, E[L + 15], z, 3634488961);
-        T = f(T, S, R, U, E[L + 4], y, 3889429448);
-        U = f(U, T, S, R, E[L + 9], B, 568446438);
-        R = f(R, U, T, S, E[L + 14], A, 3275163606);
-        S = f(S, R, U, T, E[L + 3], z, 4107603335);
-        T = f(T, S, R, U, E[L + 8], y, 1163531501);
-        U = f(U, T, S, R, E[L + 13], B, 2850285829);
-        R = f(R, U, T, S, E[L + 2], A, 4243563512);
-        S = f(S, R, U, T, E[L + 7], z, 1735328473);
-        T = f(T, S, R, U, E[L + 12], y, 2368359562);
-        U = F(U, T, S, R, E[L + 5], o, 4294588738);
-        R = F(R, U, T, S, E[L + 8], m, 2272392833);
-        S = F(S, R, U, T, E[L + 11], l, 1839030562);
-        T = F(T, S, R, U, E[L + 14], j, 4259657740);
-        U = F(U, T, S, R, E[L + 1], o, 2763975236);
-        R = F(R, U, T, S, E[L + 4], m, 1272893353);
-        S = F(S, R, U, T, E[L + 7], l, 4139469664);
-        T = F(T, S, R, U, E[L + 10], j, 3200236656);
-        U = F(U, T, S, R, E[L + 13], o, 681279174);
-        R = F(R, U, T, S, E[L + 0], m, 3936430074);
-        S = F(S, R, U, T, E[L + 3], l, 3572445317);
-        T = F(T, S, R, U, E[L + 6], j, 76029189);
-        U = F(U, T, S, R, E[L + 9], o, 3654602809);
-        R = F(R, U, T, S, E[L + 12], m, 3873151461);
-        S = F(S, R, U, T, E[L + 15], l, 530742520);
-        T = F(T, S, R, U, E[L + 2], j, 3299628645);
-        U = t(U, T, S, R, E[L + 0], Q, 4096336452);
-        R = t(R, U, T, S, E[L + 7], P, 1126891415);
-        S = t(S, R, U, T, E[L + 14], N, 2878612391);
-        T = t(T, S, R, U, E[L + 5], K, 4237533241);
-        U = t(U, T, S, R, E[L + 12], Q, 1700485571);
-        R = t(R, U, T, S, E[L + 3], P, 2399980690);
-        S = t(S, R, U, T, E[L + 10], N, 4293915773);
-        T = t(T, S, R, U, E[L + 1], K, 2240044497);
-        U = t(U, T, S, R, E[L + 8], Q, 1873313359);
-        R = t(R, U, T, S, E[L + 15], P, 4264355552);
-        S = t(S, R, U, T, E[L + 6], N, 2734768916);
-        T = t(T, S, R, U, E[L + 13], K, 1309151649);
-        U = t(U, T, S, R, E[L + 4], Q, 4149444226);
-        R = t(R, U, T, S, E[L + 11], P, 3174756917);
-        S = t(S, R, U, T, E[L + 2], N, 718787259);
-        T = t(T, S, R, U, E[L + 9], K, 3951481745);
-        U = H(U, h);
-        T = H(T, G);
-        S = H(S, v);
+        h = U
+        G = T
+        v = S
+        g = R
+        U = u(U, T, S, R, E[L + 0], O, 3614090360)
+        R = u(R, U, T, S, E[L + 1], M, 3905402710)
+        S = u(S, R, U, T, E[L + 2], J, 606105819)
+        T = u(T, S, R, U, E[L + 3], I, 3250441966)
+        U = u(U, T, S, R, E[L + 4], O, 4118548399)
+        R = u(R, U, T, S, E[L + 5], M, 1200080426)
+        S = u(S, R, U, T, E[L + 6], J, 2821735955)
+        T = u(T, S, R, U, E[L + 7], I, 4249261313)
+        U = u(U, T, S, R, E[L + 8], O, 1770035416)
+        R = u(R, U, T, S, E[L + 9], M, 2336552879)
+        S = u(S, R, U, T, E[L + 10], J, 4294925233)
+        T = u(T, S, R, U, E[L + 11], I, 2304563134)
+        U = u(U, T, S, R, E[L + 12], O, 1804603682)
+        R = u(R, U, T, S, E[L + 13], M, 4254626195)
+        S = u(S, R, U, T, E[L + 14], J, 2792965006)
+        T = u(T, S, R, U, E[L + 15], I, 1236535329)
+        U = f(U, T, S, R, E[L + 1], B, 4129170786)
+        R = f(R, U, T, S, E[L + 6], A, 3225465664)
+        S = f(S, R, U, T, E[L + 11], z, 643717713)
+        T = f(T, S, R, U, E[L + 0], y, 3921069994)
+        U = f(U, T, S, R, E[L + 5], B, 3593408605)
+        R = f(R, U, T, S, E[L + 10], A, 38016083)
+        S = f(S, R, U, T, E[L + 15], z, 3634488961)
+        T = f(T, S, R, U, E[L + 4], y, 3889429448)
+        U = f(U, T, S, R, E[L + 9], B, 568446438)
+        R = f(R, U, T, S, E[L + 14], A, 3275163606)
+        S = f(S, R, U, T, E[L + 3], z, 4107603335)
+        T = f(T, S, R, U, E[L + 8], y, 1163531501)
+        U = f(U, T, S, R, E[L + 13], B, 2850285829)
+        R = f(R, U, T, S, E[L + 2], A, 4243563512)
+        S = f(S, R, U, T, E[L + 7], z, 1735328473)
+        T = f(T, S, R, U, E[L + 12], y, 2368359562)
+        U = F(U, T, S, R, E[L + 5], o, 4294588738)
+        R = F(R, U, T, S, E[L + 8], m, 2272392833)
+        S = F(S, R, U, T, E[L + 11], l, 1839030562)
+        T = F(T, S, R, U, E[L + 14], j, 4259657740)
+        U = F(U, T, S, R, E[L + 1], o, 2763975236)
+        R = F(R, U, T, S, E[L + 4], m, 1272893353)
+        S = F(S, R, U, T, E[L + 7], l, 4139469664)
+        T = F(T, S, R, U, E[L + 10], j, 3200236656)
+        U = F(U, T, S, R, E[L + 13], o, 681279174)
+        R = F(R, U, T, S, E[L + 0], m, 3936430074)
+        S = F(S, R, U, T, E[L + 3], l, 3572445317)
+        T = F(T, S, R, U, E[L + 6], j, 76029189)
+        U = F(U, T, S, R, E[L + 9], o, 3654602809)
+        R = F(R, U, T, S, E[L + 12], m, 3873151461)
+        S = F(S, R, U, T, E[L + 15], l, 530742520)
+        T = F(T, S, R, U, E[L + 2], j, 3299628645)
+        U = t(U, T, S, R, E[L + 0], Q, 4096336452)
+        R = t(R, U, T, S, E[L + 7], P, 1126891415)
+        S = t(S, R, U, T, E[L + 14], N, 2878612391)
+        T = t(T, S, R, U, E[L + 5], K, 4237533241)
+        U = t(U, T, S, R, E[L + 12], Q, 1700485571)
+        R = t(R, U, T, S, E[L + 3], P, 2399980690)
+        S = t(S, R, U, T, E[L + 10], N, 4293915773)
+        T = t(T, S, R, U, E[L + 1], K, 2240044497)
+        U = t(U, T, S, R, E[L + 8], Q, 1873313359)
+        R = t(R, U, T, S, E[L + 15], P, 4264355552)
+        S = t(S, R, U, T, E[L + 6], N, 2734768916)
+        T = t(T, S, R, U, E[L + 13], K, 1309151649)
+        U = t(U, T, S, R, E[L + 4], Q, 4149444226)
+        R = t(R, U, T, S, E[L + 11], P, 3174756917)
+        S = t(S, R, U, T, E[L + 2], N, 718787259)
+        T = t(T, S, R, U, E[L + 9], K, 3951481745)
+        U = H(U, h)
+        T = H(T, G)
+        S = H(S, v)
         R = H(R, g)
     }
-    var i = s(U) + s(T) + s(S) + s(R);
+    var i = s(U) + s(T) + s(S) + s(R)
     return i.toLowerCase()
 }
 
 /**
  * @description validate.js
  */
-Index.prototype.validate = validate;
+Index.prototype.validate = validate
 
-let main = new Index();
+/**
+ * @description lodash
+ */
+Index.prototype.lodash = lodash
 
-export default main;
+let main = new Index()
+
+export default main

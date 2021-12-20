@@ -1,13 +1,13 @@
 <template>
-    <div class="footer"></div>
+  <div class="footer"></div>
 </template>
 <script>
-export default {
-    name: 'mainFooter'
-}
+  export default {
+    name: 'MainFooter',
+  }
 </script>
 <style lang="scss" scoped>
-.footer {
+  .footer {
     min-height: 50px;
-}
+  }
 </style>

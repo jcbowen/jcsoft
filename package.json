@@ -1,15 +1,16 @@
 {
   "name": "jcsoft",
   "version": "2.0.2",
-  "description": "test version",
   "private": false,
-  "main": "index.js",
+  "description": "test version",
+  "author": "bowen666",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "main": "index.js",
   "dependencies": {
     "axios": "^0.24.0",
     "core-js": "^3.19.3",
@@ -19,6 +20,7 @@
     "regenerator-runtime": "^0.13.9",
     "vue": "^2.6.11",
     "vue-router": "^3.5.1",
+    "vuetify": "^2.4.0",
     "vuex": "^3.6.2",
     "xlsx": "^0.17.4"
   },
@@ -41,8 +43,10 @@
     "stylelint": "^14.1.0",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-recess-order": "^3.0.0",
+    "vue-cli-plugin-vuetify": "^2.4.5",
     "vue-eslint-parser": "^8.0.1",
     "vue-template-compiler": "^2.6.12",
+    "vuetify-loader": "^1.7.0",
     "webpack": "^4.46.0"
   },
   "eslintConfig": {
@@ -64,15 +68,14 @@
     "last 2 versions",
     "not dead"
   ],
-  "author": "bowen666",
-  "license": "ISC",
-  "keywords": [
-    "jcsoft"
-  ],
+  "__npminstall_done": "Tue Apr 06 2021 21:46:29 GMT+0800 (中国标准时间)",
+  "_from": "jcsoft@0.2.3",
+  "_resolved": "https://registry.npm.taobao.org/jcsoft/download/jcsoft-0.2.3.tgz",
   "directories": {
     "example": "examples"
   },
-  "__npminstall_done": "Tue Apr 06 2021 21:46:29 GMT+0800 (中国标准时间)",
-  "_from": "jcsoft@0.2.3",
-  "_resolved": "https://registry.npm.taobao.org/jcsoft/download/jcsoft-0.2.3.tgz"
+  "keywords": [
+    "jcsoft"
+  ],
+  "license": "ISC"
 }

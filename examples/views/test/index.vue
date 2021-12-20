@@ -1,36 +1,34 @@
-<template>
-    <div class="Test">
-        <h1>组件测试</h1>
+<!--<template>
+  <div class="Test">
+    <h1>组件测试</h1>
 
-        <hr>
+    <hr />
 
-        <barcode v-bind:value="barcodeValue" :format="format">
-            Show this if the rendering fails.
-        </barcode>
-
-    </div>
-</template>
+    <barcode :format="format" :value="barcodeValue">
+      Show this if the rendering fails.
+    </barcode>
+  </div>
+</template>-->
 <script>
+  /*import VueBarcode from 'vue-barcode'
 
-import VueBarcode from 'vue-barcode';
-
-export default {
+  export default {
     name: 'Test',
     components: {
-        'barcode': VueBarcode
+      barcode: VueBarcode,
     },
     data() {
-        return {
-            barcodeValue: 'SL1617953309Of8',
-            format: 'CODE128',
-            width: '1',
-            height: '40',
-            displayValue: true,
-            flat: true,
-        }
+      return {
+        barcodeValue: 'SL1617953309Of8',
+        format: 'CODE128',
+        width: '1',
+        height: '40',
+        displayValue: true,
+        flat: true,
+      }
     },
     created() {
-        window.VM = this;
-    }
-}
+      window.VM = this
+    },
+  }*/
 </script>

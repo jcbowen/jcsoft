@@ -5,11 +5,11 @@
  */
 
 let getProto = Object.getPrototypeOf,
-    class2type = {},
-    toString = class2type.toString,
-    hasOwn = class2type.hasOwnProperty,
-    fnToString = hasOwn.toString,
-    ObjectFunctionString = fnToString.call(Object);
+  class2type = {},
+  toString = class2type.toString,
+  hasOwn = class2type.hasOwnProperty,
+  fnToString = hasOwn.toString,
+  ObjectFunctionString = fnToString.call(Object)
 
 /**
  * 循环，不区分数组/对象
@@ -20,24 +20,24 @@ let getProto = Object.getPrototypeOf,
  * @private
  */
 let _each = function (obj, fn) {
-    var key;
-    if (typeof fn !== 'function') return false;
-    obj = obj || [];
-    if (obj.constructor === Object) {
-        for (key in obj) {
-            if (fn.call(obj[key], key, obj[key])) break;
-        }
-    } else {
-        for (key = 0; key < obj.length; key++) {
-            if (fn.call(obj[key], key, obj[key])) break;
-        }
+  var key
+  if (typeof fn !== 'function') return false
+  obj = obj || []
+  if (obj.constructor === Object) {
+    for (key in obj) {
+      if (fn.call(obj[key], key, obj[key])) break
     }
-    return true;
-};
+  } else {
+    for (key = 0; key < obj.length; key++) {
+      if (fn.call(obj[key], key, obj[key])) break
+    }
+  }
+  return true
+}
 
 let Validate = function () {
-    let that = this;
-    that.config = {};
+  let that = this
+  that.config = {}
 }
 
 /**
@@ -46,20 +46,20 @@ let Validate = function () {
  * @returns {boolean}
  */
 Validate.prototype.isset = function () {
-    var a = arguments,
-        l = a.length,
-        i = 0,
-        undef;
-    if (l === 0) {
-        throw new Error("Empty isset")
+  var a = arguments,
+    l = a.length,
+    i = 0,
+    undef
+  if (l === 0) {
+    throw new Error('Empty isset')
+  }
+  while (i !== l) {
+    if (a[i] === undef || a[i] === null) {
+      return false
     }
-    while (i !== l) {
-        if (a[i] === undef || a[i] === null) {
-            return false
-        }
-        i++
-    }
-    return true
+    i++
+  }
+  return true
 }
 
 /**
@@ -69,19 +69,16 @@ Validate.prototype.isset = function () {
  * @returns {boolean}
  */
 Validate.prototype.isEmpty = function (mixed_var) {
-    var undef,
-        key,
-        i,
-        len;
-    var emptyValues = [undef, null, false, 0, "", "0"];
-    for (i = 0, len = emptyValues.length; i < len; i++) {
-        if (mixed_var === emptyValues[i]) return true
-    }
-    if (typeof mixed_var === "object") {
-        for (key in mixed_var) return false
-        return true
-    }
-    return false
+  var undef, key, i, len
+  var emptyValues = [undef, null, false, 0, '', '0']
+  for (i = 0, len = emptyValues.length; i < len; i++) {
+    if (mixed_var === emptyValues[i]) return true
+  }
+  if (typeof mixed_var === 'object') {
+    for (key in mixed_var) return false
+    return true
+  }
+  return false
 }
 
 /**
@@ -91,12 +88,12 @@ Validate.prototype.isEmpty = function (mixed_var) {
  * @returns {boolean}
  */
 Validate.prototype.isFunction = function (obj) {
-    // Support: Chrome <=57, Firefox <=52
-    // In some browsers, typeof returns "function" for HTML <object> elements
-    // (i.e., `typeof document.createElement( "object" ) === "function"`).
-    // We don't want to classify *any* DOM node as a function.
-    return typeof obj === "function" && typeof obj.nodeType !== "number";
-};
+  // Support: Chrome <=57, Firefox <=52
+  // In some browsers, typeof returns "function" for HTML <object> elements
+  // (i.e., `typeof document.createElement( "object" ) === "function"`).
+  // We don't want to classify *any* DOM node as a function.
+  return typeof obj === 'function' && typeof obj.nodeType !== 'number'
+}
 
 /**
  * 判断是否是数组
@@ -105,10 +102,10 @@ Validate.prototype.isFunction = function (obj) {
  * @returns {arg is any[]|boolean}
  */
 Validate.prototype.isArray = function (arg) {
-    if (typeof Array.isArray === 'undefined') {
-        return Object.prototype.toString.call(arg) === '[object Array]'
-    }
-    return Array.isArray(arg)
+  if (typeof Array.isArray === 'undefined') {
+    return Object.prototype.toString.call(arg) === '[object Array]'
+  }
+  return Array.isArray(arg)
 }
 
 /**
@@ -118,32 +115,33 @@ Validate.prototype.isArray = function (arg) {
  * @returns {boolean}
  */
 Validate.prototype.isPlainObject = function (obj) {
-    var proto,
-        Ctor;
+  var proto, Ctor
 
-    // Detect obvious negatives
-    // Use toString instead of jQuery.type to catch host objects
-    // 使用 toString 而不是jQuery.type来捕获宿主对象，这是因为type也是调用了toString方法，参见jQuery.type()
-    //jQuery.type = toType; //line 10291 toType方法前面已经介绍过
-    if (!obj || toString.call(obj) !== "[object Object]") {
-        return false;
-    }
+  // Detect obvious negatives
+  // Use toString instead of jQuery.type to catch host objects
+  // 使用 toString 而不是jQuery.type来捕获宿主对象，这是因为type也是调用了toString方法，参见jQuery.type()
+  //jQuery.type = toType; //line 10291 toType方法前面已经介绍过
+  if (!obj || toString.call(obj) !== '[object Object]') {
+    return false
+  }
 
-    //获取对象的原型
-    proto = getProto(obj);
+  //获取对象的原型
+  proto = getProto(obj)
 
-    // Objects with no prototype (e.g., `Object.create( null )`) are plain
-    // 如果一个对象是通过Object.create( null )来创建的话，那么它的原型为空，相比于用{}来创建的对象，它的开销也就更小。
-    // 所以如果我们需要一个 json对象仅用来存储参数，可以使用这个方法
-    if (!proto) {
-        return true;
-    }
+  // Objects with no prototype (e.g., `Object.create( null )`) are plain
+  // 如果一个对象是通过Object.create( null )来创建的话，那么它的原型为空，相比于用{}来创建的对象，它的开销也就更小。
+  // 所以如果我们需要一个 json对象仅用来存储参数，可以使用这个方法
+  if (!proto) {
+    return true
+  }
 
-    // Objects with prototype are plain iff they were constructed by a global Object function
-    // 如果一个对象是是由全局的Object函数来创建的，那么它是纯粹对象
-    Ctor = hasOwn.call(proto, "constructor") && proto.constructor;
-    return typeof Ctor === "function" && fnToString.call(Ctor) === ObjectFunctionString;
-};
+  // Objects with prototype are plain iff they were constructed by a global Object function
+  // 如果一个对象是是由全局的Object函数来创建的，那么它是纯粹对象
+  Ctor = hasOwn.call(proto, 'constructor') && proto.constructor
+  return (
+    typeof Ctor === 'function' && fnToString.call(Ctor) === ObjectFunctionString
+  )
+}
 
 /**
  * 判断元素是否存集合中
@@ -154,21 +152,21 @@ Validate.prototype.isPlainObject = function (obj) {
  * @returns {boolean}
  */
 Validate.prototype.inArray = function (find, collection, argStrict = false) {
-    let result = false;
-    _each(collection, function (ind, item) {
-        if (argStrict) {
-            if (find === item) {
-                result = true;
-                return false;
-            }
-        } else {
-            if (find == item) {
-                result = true;
-                return false;
-            }
-        }
-    });
-    return result;
+  let result = false
+  _each(collection, function (ind, item) {
+    if (argStrict) {
+      if (find === item) {
+        result = true
+        return false
+      }
+    } else {
+      if (find == item) {
+        result = true
+        return false
+      }
+    }
+  })
+  return result
 }
 
 /**
@@ -178,8 +176,8 @@ Validate.prototype.inArray = function (find, collection, argStrict = false) {
  * @returns {boolean}
  */
 Validate.prototype.isNumber = function (value) {
-    const reg = /^[0-9]*$/
-    return reg.test(value)
+  const reg = /^[0-9]*$/
+  return reg.test(value)
 }
 
 /**
@@ -189,8 +187,8 @@ Validate.prototype.isNumber = function (value) {
  * @returns {boolean}
  */
 Validate.prototype.isMoney = function (num) {
-    const reg = /^\d+(\.\d{1,2})?$/
-    return reg.test(num)
+  const reg = /^\d+(\.\d{1,2})?$/
+  return reg.test(num)
 }
 
 /**
@@ -202,19 +200,19 @@ Validate.prototype.isMoney = function (num) {
  * @returns {boolean}
  */
 Validate.prototype.isInt = function (n, iMin, iMax) {
-    if (!isFinite(n)) {
-        return false
-    }
-    if (!/^[+-]?\d+$/.test(n)) {
-        return false
-    }
-    if (iMin != undefined && parseInt(n) < parseInt(iMin)) {
-        return false
-    }
-    if (iMax != undefined && parseInt(n) > parseInt(iMax)) {
-        return false
-    }
-    return true
+  if (!isFinite(n)) {
+    return false
+  }
+  if (!/^[+-]?\d+$/.test(n)) {
+    return false
+  }
+  if (iMin != undefined && parseInt(n) < parseInt(iMin)) {
+    return false
+  }
+  if (iMax != undefined && parseInt(n) > parseInt(iMax)) {
+    return false
+  }
+  return true
 }
 
 /**
@@ -226,16 +224,16 @@ Validate.prototype.isInt = function (n, iMin, iMax) {
  * @returns {boolean}
  */
 Validate.prototype.isFinite = function (value, fMin, fMax) {
-    if (!isFinite(value)) {
-        return false
-    }
-    if (fMin != undefined && parseFloat(value) < parseFloat(fMin)) {
-        return false
-    }
-    if (fMax != undefined && parseFloat(value) > parseFloat(fMax)) {
-        return false
-    }
-    return true
+  if (!isFinite(value)) {
+    return false
+  }
+  if (fMin != undefined && parseFloat(value) < parseFloat(fMin)) {
+    return false
+  }
+  if (fMax != undefined && parseFloat(value) > parseFloat(fMax)) {
+    return false
+  }
+  return true
 }
 
 /**
@@ -245,7 +243,7 @@ Validate.prototype.isFinite = function (value, fMin, fMax) {
  * @returns {boolean}
  */
 Validate.prototype.isString = function (str) {
-    return typeof str === 'string' || str instanceof String
+  return typeof str === 'string' || str instanceof String
 }
 
 /**
@@ -255,18 +253,18 @@ Validate.prototype.isString = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isJson = function (str) {
-    if (typeof str === "string") {
-        try {
-            const obj = JSON.parse(str);
-            return !!(obj && typeof obj === "object");
-        } catch (e) {
-            console.error("$isJSON error：" + e);
-            return false;
-        }
-    } else {
-        return false;
+  if (typeof str === 'string') {
+    try {
+      const obj = JSON.parse(str)
+      return !!(obj && typeof obj === 'object')
+    } catch (e) {
+      console.error('$isJSON error：' + e)
+      return false
     }
-};
+  } else {
+    return false
+  }
+}
 
 /**
  * 判断是否中文字符串
@@ -275,8 +273,8 @@ Validate.prototype.isJson = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isChinese = function (str) {
-    const reg = /^[\u4E00-\u9FA5]{2,4}$/
-    return reg.test(str)
+  const reg = /^[\u4E00-\u9FA5]{2,4}$/
+  return reg.test(str)
 }
 
 /**
@@ -286,8 +284,8 @@ Validate.prototype.isChinese = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isEnglish = function (str) {
-    var reg = /^[A-Za-z]+$/;
-    return reg.test(str);
+  var reg = /^[A-Za-z]+$/
+  return reg.test(str)
 }
 
 /**
@@ -297,8 +295,8 @@ Validate.prototype.isEnglish = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isLowerCase = function (str) {
-    const reg = /^[a-z]+$/
-    return reg.test(str)
+  const reg = /^[a-z]+$/
+  return reg.test(str)
 }
 
 /**
@@ -308,8 +306,8 @@ Validate.prototype.isLowerCase = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isUpperCase = function (str) {
-    const reg = /^[A-Z]+$/
-    return reg.test(str)
+  const reg = /^[A-Z]+$/
+  return reg.test(str)
 }
 
 /**
@@ -319,8 +317,8 @@ Validate.prototype.isUpperCase = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isAlphabets = function (str) {
-    const reg = /^[A-Za-z]+$/
-    return reg.test(str)
+  const reg = /^[A-Za-z]+$/
+  return reg.test(str)
 }
 
 /**
@@ -330,8 +328,9 @@ Validate.prototype.isAlphabets = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isIP = function (ip) {
-    const reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
-    return reg.test(ip)
+  const reg =
+    /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+  return reg.test(ip)
 }
 
 /**
@@ -341,8 +340,9 @@ Validate.prototype.isIP = function (ip) {
  * @returns {boolean}
  */
 Validate.prototype.isPort = function (str) {
-    const reg = /^([0-9]|[1-9]\d|[1-9]\d{2}|[1-9]\d{3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/
-    return reg.test(str)
+  const reg =
+    /^([0-9]|[1-9]\d|[1-9]\d{2}|[1-9]\d{3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/
+  return reg.test(str)
 }
 
 /**
@@ -352,7 +352,7 @@ Validate.prototype.isPort = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isExternal = function (path) {
-    return /^(https?:|mailto:|tel:)/.test(path)
+  return /^(https?:|mailto:|tel:)/.test(path)
 }
 
 /**
@@ -362,8 +362,9 @@ Validate.prototype.isExternal = function (path) {
  * @returns {boolean}
  */
 Validate.prototype.isUrl = function (url) {
-    const reg = /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|shop|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/
-    return reg.test(url)
+  const reg =
+    /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|shop|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/
+  return reg.test(url)
 }
 
 /**
@@ -373,8 +374,8 @@ Validate.prototype.isUrl = function (url) {
  * @returns {boolean}
  */
 Validate.prototype.isName = function (value) {
-    const reg = /^[\u4e00-\u9fa5a-zA-Z0-9]+$/
-    return reg.test(value)
+  const reg = /^[\u4e00-\u9fa5a-zA-Z0-9]+$/
+  return reg.test(value)
 }
 
 /**
@@ -384,7 +385,11 @@ Validate.prototype.isName = function (value) {
  * @returns {boolean}
  */
 Validate.prototype.isPassword = function (str) {
-    return str.length >= 8 && str.length <= 16 && /(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,30}/.test(str)
+  return (
+    str.length >= 8 &&
+    str.length <= 16 &&
+    /(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,30}/.test(str)
+  )
 }
 
 /**
@@ -394,8 +399,9 @@ Validate.prototype.isPassword = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isTel = function (str) {
-    const reg = /^(400|800)([0-9\\-]{7,10})|(([0-9]{4}|[0-9]{3})(-| )?)?([0-9]{7,8})((-| |转)*([0-9]{1,4}))?$/
-    return reg.test(str)
+  const reg =
+    /^(400|800)([0-9\\-]{7,10})|(([0-9]{4}|[0-9]{3})(-| )?)?([0-9]{7,8})((-| |转)*([0-9]{1,4}))?$/
+  return reg.test(str)
 }
 
 /**
@@ -405,8 +411,8 @@ Validate.prototype.isTel = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isPhone = function (str) {
-    const reg = /^1\d{10}$/
-    return reg.test(str)
+  const reg = /^1\d{10}$/
+  return reg.test(str)
 }
 
 /**
@@ -416,8 +422,8 @@ Validate.prototype.isPhone = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isQQ = function (num) {
-    var reg = /^[1-9]{1}\d{4,11}$/;
-    return reg.test(num)
+  var reg = /^[1-9]{1}\d{4,11}$/
+  return reg.test(num)
 }
 
 /**
@@ -427,8 +433,9 @@ Validate.prototype.isQQ = function (num) {
  * @returns {boolean}
  */
 Validate.prototype.isIdCard = function (str) {
-    const reg = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
-    return reg.test(str)
+  const reg =
+    /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+  return reg.test(str)
 }
 
 /**
@@ -438,8 +445,8 @@ Validate.prototype.isIdCard = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isEmail = function (str) {
-    const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
-    return reg.test(str)
+  const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+  return reg.test(str)
 }
 
 /**
@@ -449,8 +456,8 @@ Validate.prototype.isEmail = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isZipcode = function (str) {
-    var reg = /^(\d){6}$/;
-    return reg.test(str)
+  var reg = /^(\d){6}$/
+  return reg.test(str)
 }
 
 /**
@@ -461,14 +468,14 @@ Validate.prototype.isZipcode = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.strExists = function (string = '', find = '') {
-    return !(string.indexOf(find) === -1);
+  return !(string.indexOf(find) === -1)
 }
 
 Validate.prototype.isReg = function (num) {
-    let reg = /^([a-zA-z_]{1})([\w]*)$/g;
-    return reg.test(num)
+  let reg = /^([a-zA-z_]{1})([\w]*)$/g
+  return reg.test(num)
 }
 
-let validate = new Validate();
+let validate = new Validate()
 
-export default validate;
+export default validate

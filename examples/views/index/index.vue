@@ -1,28 +1,20 @@
 <template>
-    <div class="index">
-        <h1>Jcsoft 组件汇总</h1>
-        <hr>
-    </div>
+  <div class="index">
+    <h1>Jcsoft 组件汇总</h1>
+    <hr />
+  </div>
 </template>
 <script>
-export default {
+  export default {
     name: 'Index',
     data() {
-        return {
-            code: '',
-        }
+      return {
+        code: '',
+      }
     },
-    created() {
-
-    },
-    mounted() {
-    },
+    created() {},
+    mounted() {},
     methods: {},
-}
+  }
 </script>
-<style lang="scss">
-.index {
-    margin: 0 auto;
-    max-width: 750px;
-}
-</style>
+<style lang="scss"></style>

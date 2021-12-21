@@ -34,10 +34,4 @@
   body {
     background-color: #fafafa;
   }
-
-  #app {
-    max-width: 99%;
-    width: 1080px;
-    margin: 0 auto;
-  }
 </style>

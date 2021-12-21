@@ -1,5 +1,6 @@
-src/assets
-src/icons
+examples/assets
+examples/icons
 public
 dist
 node_modules
+packages/utils/index.js

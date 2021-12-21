@@ -1,22 +1,11 @@
-<!--<template>
+<template>
   <div class="Test">
-    <h1>组件测试</h1>
-
-    <hr />
-
-    <barcode :format="format" :value="barcodeValue">
-      Show this if the rendering fails.
-    </barcode>
+    <v-alert type="success" />
   </div>
-</template>-->
+</template>
 <script>
-  /*import VueBarcode from 'vue-barcode'
-
   export default {
-    name: 'Test',
-    components: {
-      barcode: VueBarcode,
-    },
+    components: {},
     data() {
       return {
         barcodeValue: 'SL1617953309Of8',
@@ -30,5 +19,5 @@
     created() {
       window.VM = this
     },
-  }*/
+  }
 </script>

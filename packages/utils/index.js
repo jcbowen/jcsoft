@@ -152,11 +152,11 @@ Index.prototype.each = function (collection, predicate) {
   collection = collection || []
   if (collection.constructor === Object) {
     for (key in collection) {
-      if (predicate.call(collection[key], key, collection[key])) break
+      if (predicate.call(collection[key], collection[key], key)) break
     }
   } else {
     for (key = 0; key < collection.length; key++) {
-      if (predicate.call(collection[key], key, collection[key])) break
+      if (predicate.call(collection[key], collection[key], key)) break
     }
   }
   return that

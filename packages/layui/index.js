@@ -1,18 +1,10 @@
 // 导入组件，组件必须声明 name
-import LayuiCode from './modules/code'
+// import util from '../utils'
 
-const layui = [LayuiCode]
+const LayuiModules = require.context('./modules', true, /\.vue$/)
+let layui = []
+LayuiModules.keys().forEach((key) => {
+  layui.push(LayuiModules(key).default)
+})
 
 export default layui
-
-/*const Layui = require.context('./modules', true, /\.vue$/)
-console.log(321, layui)
-console.log(321, Layui)
-console.log(
-  123,
-  Layui.keys().map((item) => {
-    console.log(item)
-    return layui[item]
-  })
-)*/
-// export default Layui.keys().map(Layui)

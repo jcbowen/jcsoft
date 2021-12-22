@@ -1,23 +1,21 @@
 <template>
-  <div id="app">
-    <v-app>
-      <v-navigation-drawer v-model="drawer" app>
-        <!-- 左侧导航内容 -->
-        左侧导航内容
-      </v-navigation-drawer>
+  <v-app id="app">
+    <v-navigation-drawer v-model="drawer" app>
+      <!-- 左侧导航内容 -->
+      左侧导航内容
+    </v-navigation-drawer>
 
-      <v-app-bar app>
-        <v-app-bar-nav-icon @click="drawer = !drawer" />
-        <v-toolbar-title>
-          <header-navs />
-        </v-toolbar-title>
-      </v-app-bar>
+    <v-app-bar app>
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      <v-toolbar-title>
+        <header-navs />
+      </v-toolbar-title>
+    </v-app-bar>
 
-      <v-main>
-        <router-view />
-      </v-main>
-    </v-app>
-  </div>
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
 <script>

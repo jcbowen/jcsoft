@@ -1,14 +1,17 @@
 // import JcEditor from './JcEditor'
 // import xSpreadsheet from "./xspreadsheet";
 import layui from './layui'
+import vuetifyKits from './vuetifykits'
+
+export function jcsoft() {}
 
 // 存储组件列表（不支持直接注册为组件使用的，不在此处进行注册）
 const components = [
   /*JcEditor,
     xSpreadsheet,*/
   ...layui,
+  ...vuetifyKits,
 ]
-
 // 定义 install 方法，接收 Vue 作为参数。如果使用 use 注册插件，则所有的组件都将被注册
 const install = function (Vue) {
   // 判断是否安装
@@ -17,6 +20,10 @@ const install = function (Vue) {
   // 遍历注册全局组件
   components.forEach((component) => {
     Vue.component(component.name, component)
+
+    if (component.name === 'JcsoftLoading') {
+      Vue.prototype.$Loading = component
+    }
   })
 }
 
@@ -30,6 +37,7 @@ export default {
   install,
   // 以下是具体的组件列表
   /*JcEditor,
-    xSpreadsheet,*/
+      xSpreadsheet,*/
   ...layui,
+  ...vuetifyKits,
 }

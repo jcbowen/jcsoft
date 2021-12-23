@@ -1,68 +1,64 @@
+import store from '../../store'
+import validate from './validate'
+import util from './base'
+
 let Notice = function () {
   let that = this
+  that.index = 0
   that.config = {
     loadingText: '加载中...',
     messageDuration: 3000,
   }
+  that.cache = {}
 }
 
-/* 全局加载层 */
-Notice.prototype.loading = function (index, text) {
-  console.log(index, text)
-  /*let that = this
-  let loading
-  if (!index) {
-    loading = Loading.service({
-      lock: true,
-      text: text || that.config.loadingText,
-      background: 'hsla(0,0%,100%,.8)',
-    })
-  } else {
-    loading = Loading.service({
-      lock: true,
-      text: text || that.config.loadingText,
-      spinner: 'vab-loading-type' + index,
-      background: 'hsla(0,0%,100%,.8)',
-    })
-  }
-  return loading*/
-}
-/* 全局多彩加载层 */
-Notice.prototype.colorfullLoading = function (index, text) {
-  console.log(index, text)
-  /*let that = this
-  let loading
-  if (!index) {
-    loading = Loading.service({
-      lock: true,
-      text: text || that.config.loadingText,
-      spinner: 'dots-loader',
-      background: 'hsla(0,0%,100%,.8)',
-    })
-  } else {
-    switch (index) {
-      case 1:
-        index = 'dots'
+/**
+ * 全局加载层
+ * @param {Number} typeIndex
+ * @param {Object|String} opt
+ */
+Notice.prototype.load = function (typeIndex = 0, opt = {}) {
+  let that = this
+  if (!validate.isEmpty(opt)) {
+    switch (typeof opt) {
+      case 'string':
+      case 'number':
+        opt = {
+          text: opt,
+        }
         break
-      case 2:
-        index = 'gauge'
+      case 'object':
+        opt.text = opt.text || that.config.loadingText
         break
-      case 3:
-        index = 'inner-circles'
-        break
-      case 4:
-        index = 'plus'
-        break
+      default:
+        util.hint('notice.load 参数错误')
     }
-    loading = Loading.service({
-      lock: true,
-      text: text || that.config.loadingText,
-      spinner: index + '-loader',
-      background: 'hsla(0,0%,100%,.8)',
-    })
+  } else {
+    opt = {
+      text: that.config.loadingText,
+    }
   }
-  return loading*/
+  opt = util.extend(opt, {
+    typeIndex: typeIndex,
+  })
+  store.dispatch('notice/openLoading', opt).then(() => {})
+
+  that.index++
+  // 返回关闭loading的方法
+  return {
+    close: () => {
+      that.loadClose()
+    },
+  }
 }
+
+/**
+ * 关闭全局加载层
+ */
+Notice.prototype.loadClose = function () {
+  store.dispatch('notice/closeLoading').then(() => {})
+}
+
 /* 全局Message */
 Notice.prototype.message = function (message, type) {
   console.log(message, type)

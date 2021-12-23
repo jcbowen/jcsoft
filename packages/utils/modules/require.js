@@ -1,8 +1,9 @@
 import axios from 'axios'
 import qs from 'qs'
 
-import util from './index'
+import util from './base'
 import notice from './notice'
+import validate from './validate'
 
 let Require = function () {
   let that = this
@@ -124,7 +125,7 @@ Require.prototype.init = function () {
       const { data, config } = response
       const { code, msg } = data
       // 操作正常Code数组
-      const codeVerificationArray = util.validate.isArray(
+      const codeVerificationArray = validate.isArray(
         that.requireConfig.successCode
       )
         ? [...that.requireConfig.successCode]

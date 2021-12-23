@@ -3,4 +3,4 @@ examples/icons
 public
 dist
 node_modules
-packages/utils/index.js
+packages/utils/modules/base.js

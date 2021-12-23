@@ -15,6 +15,19 @@ let defaultLoadingOpt = {
   status: false,
   background: 'hsla(0, 0%, 100%, 0.8)',
 }
+let defaultMsgOpt = {
+  type: 'success',
+  message: '这是一条消息',
+  dismissible: true,
+  width: undefined,
+  maxWidth: '380px',
+  height: undefined,
+  maxHeight: undefined,
+  icon: undefined,
+  dark: false,
+  elevation: 2,
+  value: true, // 是否显示
+}
 const state = () => ({
   loading: {
     typeIndex: 0,
@@ -22,9 +35,13 @@ const state = () => ({
     status: false,
     background: 'hsla(0, 0%, 100%, 0.8)',
   },
+  message: {
+    pool: [defaultMsgOpt],
+  },
 })
 const getters = {
   loading: (state) => state.loading,
+  message: (state) => state.message,
 }
 
 const mutations = {

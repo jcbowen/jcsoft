@@ -46,7 +46,7 @@ const getters = {
 
 const mutations = {
   /**
-   * 打开loading页面
+   * 打开loading
    * @param  state
    * @param {string|object} opt 如果是字符串，那么传递的就是loading加载文字
    */
@@ -67,8 +67,27 @@ const mutations = {
     opt.status = true
     state.loading = opt
   },
+  /**
+   * 关闭loading
+   * @param state
+   */
   closeLoading: (state) => {
     state.loading.status = false
+  },
+  showMessage: (state, opt) => {
+    if (validate.isEmpty(opt.index))
+      return util.hint('store-notice-showMessage: index参数不能为空')
+    opt = util.extend(true, defaultMsgOpt, opt)
+    state.message.pool.push(opt)
+  },
+  closeMessage: (state, ind) => {
+    if (validate.isEmpty(ind)) return util.hint('showMessage: ind参数不能为空')
+    let newPool = []
+    util.each(state.message.pool, (item) => {
+      item.value = false
+      newPool.push(item)
+    })
+    state.message.pool = newPool
   },
 }
 const actions = {
@@ -77,6 +96,9 @@ const actions = {
   },
   closeLoading({ commit }) {
     commit('closeLoading')
+  },
+  showMessage({ commit }, opt) {
+    commit('showMessage', opt)
   },
 }
 export default { state, getters, mutations, actions }

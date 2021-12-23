@@ -2,13 +2,15 @@
 <template>
   <div class="JcsoftGlobal">
     <jcsoft-loading />
+    <jcsoft-message />
   </div>
 </template>
 <script>
   import JcsoftLoading from '../vuetifykits/JcsoftLoading/src/global'
+  import JcsoftMessage from '../vuetifykits/message/src/global'
   export default {
     name: 'JcsoftGlobal',
-    components: { JcsoftLoading },
+    components: { JcsoftMessage, JcsoftLoading },
     data() {
       return {}
     },

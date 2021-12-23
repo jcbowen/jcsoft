@@ -61,17 +61,14 @@ Notice.prototype.loadClose = function () {
 
 /* 全局Message */
 Notice.prototype.message = function (message, type) {
-  console.log(message, type)
-  /*let that = this
+  let that = this
 
-  return Message({
-    offset: 60,
-    showClose: true,
+  that.index++
+  store.dispatch('notice/showMessage', {
     message: message,
     type: type,
-    dangerouslyUseHTMLString: true,
-    duration: that.config.messageDuration,
-  })*/
+    index: that.index,
+  })
 }
 
 /* 全局Alert */

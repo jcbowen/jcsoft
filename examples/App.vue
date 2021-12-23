@@ -30,8 +30,8 @@
     </v-app-bar>
     <v-main class="grey lighten-4">
       <router-view />
+      <jcsoft-global />
     </v-main>
-    <jcsoft-global />
   </v-app>
 </template>
 

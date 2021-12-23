@@ -13,9 +13,8 @@
         :max-width="item.maxWidth"
         transition="scale-transition"
         :type="item.type"
-        :value="item.value"
+        :value="true"
         :width="item.width"
-        @toggle="test"
       >
         {{ item.message }}
       </v-alert>
@@ -32,6 +31,7 @@
     },
     computed: {
       messagePool: () => {
+        console.log(store.getters['notice/message'].pool)
         return store.getters['notice/message'].pool
       },
     },

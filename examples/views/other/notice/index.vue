@@ -27,44 +27,14 @@
             <v-card-text>
               <v-container>
                 <v-row dense>
-                  <v-col>
+                  <v-col v-for="(item, ind) in items" :key="ind">
                     <v-btn
-                      color="info"
+                      :color="item.type"
                       :disabled="loading"
                       :loading="loading"
-                      @click="loader = 'loading'"
+                      @click="callMsg(ind)"
                     >
-                      消息
-                    </v-btn>
-                  </v-col>
-                  <v-col>
-                    <v-btn
-                      color="success"
-                      :disabled="loading"
-                      :loading="loading"
-                      @click="loader = 'loading'"
-                    >
-                      成功
-                    </v-btn>
-                  </v-col>
-                  <v-col>
-                    <v-btn
-                      color="warning"
-                      :disabled="loading"
-                      :loading="loading"
-                      @click="loader = 'loading'"
-                    >
-                      警告
-                    </v-btn>
-                  </v-col>
-                  <v-col>
-                    <v-btn
-                      color="error"
-                      :disabled="loading"
-                      :loading="loading"
-                      @click="loader = 'loading'"
-                    >
-                      错误
+                      {{ item.title }}
                     </v-btn>
                   </v-col>
                   <v-spacer />
@@ -81,44 +51,14 @@
             <v-card-text>
               <v-container>
                 <v-row dense>
-                  <v-col>
+                  <v-col v-for="(item, ind) in items" :key="ind">
                     <v-btn
-                      color="info"
+                      :color="item.type"
                       :disabled="loading"
                       :loading="loading"
                       @click="loader = 'loading'"
                     >
-                      消息
-                    </v-btn>
-                  </v-col>
-                  <v-col>
-                    <v-btn
-                      color="success"
-                      :disabled="loading"
-                      :loading="loading"
-                      @click="loader = 'loading'"
-                    >
-                      成功
-                    </v-btn>
-                  </v-col>
-                  <v-col>
-                    <v-btn
-                      color="warning"
-                      :disabled="loading"
-                      :loading="loading"
-                      @click="loader = 'loading'"
-                    >
-                      警告
-                    </v-btn>
-                  </v-col>
-                  <v-col>
-                    <v-btn
-                      color="error"
-                      :disabled="loading"
-                      :loading="loading"
-                      @click="loader = 'loading'"
-                    >
-                      错误
+                      {{ item.title }}
                     </v-btn>
                   </v-col>
                   <v-spacer />
@@ -140,26 +80,36 @@
       return {
         loader: null,
         loading: false,
-        loading2: false,
-        loading3: false,
-        loading4: false,
-        loading5: false,
+        items: [
+          { type: 'info', title: '消息' },
+          { type: 'success', title: '成功' },
+          { type: 'warning', title: '警告' },
+          { type: 'error', title: '错误' },
+        ],
       }
     },
     watch: {
       loader() {
-        const l = this.loader
-        this[l] = !this[l]
-
-        setTimeout(() => (this[l] = false), 3000)
-
-        this.loader = null
+        // setTimeout(() => (this[l] = false), 3000)
       },
     },
     created() {
       window.VM = this
     },
     methods: {
+      callMsg(ind) {
+        if (typeof this.$options.methods['msg' + ind] === 'function') {
+          this.$options.methods['msg' + ind].call()
+        } else {
+          this.$utils.base.hint('callMsg：方法不存在')
+        }
+      },
+      msg0() {
+        console.log(123)
+      },
+      msg1() {
+        notice.message('good', 'success')
+      },
       openLoading(ind, opt) {
         return notice.load(ind, opt)
       },

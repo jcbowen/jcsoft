@@ -12,5 +12,4 @@ const files = require.context('./modules', false, /\.js$/)
 files.keys().forEach((key) => {
   modules[key.replace(/(modules|\/|\.|js)/g, '')] = files(key).default
 })
-console.log(modules)
 export default modules

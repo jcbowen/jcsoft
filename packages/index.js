@@ -2,6 +2,7 @@
 // import xSpreadsheet from "./xspreadsheet";
 import layui from './layui'
 import vuetifyKits from './vuetifykits'
+import global from './global/global'
 
 export function jcsoft() {}
 
@@ -9,6 +10,7 @@ export function jcsoft() {}
 const components = [
   /*JcEditor,
     xSpreadsheet,*/
+  global,
   ...layui,
   ...vuetifyKits,
 ]
@@ -38,6 +40,7 @@ export default {
   // 以下是具体的组件列表
   /*JcEditor,
       xSpreadsheet,*/
+  global,
   ...layui,
   ...vuetifyKits,
 }

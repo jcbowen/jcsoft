@@ -25,6 +25,16 @@ const constantRoutes = [
     },
   },
   {
+    path: '/other/notice',
+    name: 'otherNotice',
+    component: () => import('@/views/other/notice'),
+    meta: {
+      title: 'otherNotice',
+      icon: 'home',
+      affix: true,
+    },
+  },
+  {
     path: '/test',
     name: 'Test',
     component: () => import('@/views/test/index'),
@@ -54,5 +64,5 @@ const router = new VueRouter({
   }),
   routes: constantRoutes,
 })
-
+console.log(router)
 export default router

@@ -30,8 +30,8 @@
             active: false,
           },
           {
-            path: '/test',
-            title: '其他测试',
+            path: '/other/notice',
+            title: '通知',
             active: false,
           },
         ],

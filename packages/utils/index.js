@@ -6,7 +6,7 @@ let modules = {
   lodash: lodash,
 }
 // 仅在本地开发时将状态机放到工具包中，便于调试，生产环境不建议暴露工具包的状态机
-if (process.env.NODE_ENV === 'development') modules[store] = store
+if (process.env.NODE_ENV === 'development') modules['store'] = store
 
 const files = require.context('./modules', false, /\.js$/)
 files.keys().forEach((key) => {

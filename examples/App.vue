@@ -4,17 +4,16 @@
       <!-- 左侧导航内容 -->
       左侧导航内容
     </v-navigation-drawer>
-
     <v-app-bar app>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>
         <header-navs />
       </v-toolbar-title>
     </v-app-bar>
-
     <v-main>
       <router-view />
     </v-main>
+    <jcsoft-global />
   </v-app>
 </template>
 

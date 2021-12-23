@@ -53,7 +53,7 @@
       checkCurrentNav(path) {
         if (this.$utils.validate.isEmpty(path)) return
         let navs = []
-        this.$utils.each(this.navs, (item) => {
+        this.$utils.base.each(this.navs, (item) => {
           item.active = item.path === path
           navs.push(item)
         })

@@ -125,19 +125,6 @@ Notice.prototype.confirm = function (content, title, callback1, callback2) {
     })*/
 }
 
-/* 全局Notification */
-Notice.prototype.notify = function (message, title, type, position) {
-  console.log(message, title, type, position)
-  /*let that = this
-  return Notification({
-    title: title,
-    message: message,
-    position: position || 'top-right',
-    type: type || 'success',
-    duration: that.config.messageDuration,
-  })*/
-}
-
 let notice = new Notice()
 
 export default notice

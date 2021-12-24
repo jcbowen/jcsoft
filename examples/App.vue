@@ -29,8 +29,8 @@
       </v-toolbar-title>
     </v-app-bar>
     <v-main class="grey lighten-4">
-      <router-view />
       <jcsoft-global />
+      <router-view />
     </v-main>
   </v-app>
 </template>

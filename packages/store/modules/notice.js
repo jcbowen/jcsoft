@@ -16,17 +16,20 @@ let defaultLoadingOpt = {
   background: 'hsla(0, 0%, 100%, 0.8)',
 }
 let defaultMsgOpt = {
-  type: 'success',
-  message: '这是一条消息',
-  dismissible: true,
-  width: undefined,
-  maxWidth: '380px',
-  height: undefined,
-  maxHeight: undefined,
-  icon: undefined,
+  index: 0,
+  color: undefined,
   dark: false,
+  dense: true,
+  dismissible: true,
   elevation: 2,
+  height: undefined,
+  icon: undefined,
+  maxHeight: undefined,
+  maxWidth: '380px',
+  type: undefined,
   value: true, // 是否显示
+  width: undefined,
+  message: '这是一条消息',
 }
 const state = () => ({
   loading: {
@@ -36,7 +39,7 @@ const state = () => ({
     background: 'hsla(0, 0%, 100%, 0.8)',
   },
   message: {
-    pool: [defaultMsgOpt],
+    pool: [],
   },
 })
 const getters = {
@@ -75,19 +78,17 @@ const mutations = {
     state.loading.status = false
   },
   showMessage: (state, opt) => {
-    if (validate.isEmpty(opt.index))
+    if (opt.index !== 0 && validate.isEmpty(opt.index))
       return util.hint('store-notice-showMessage: index参数不能为空')
-    opt = util.extend(true, defaultMsgOpt, opt)
+    opt = util.extend({}, defaultMsgOpt, opt)
     state.message.pool.push(opt)
   },
   closeMessage: (state, ind) => {
-    if (validate.isEmpty(ind)) return util.hint('showMessage: ind参数不能为空')
-    let newPool = []
-    util.each(state.message.pool, (item) => {
-      item.value = false
-      newPool.push(item)
+    if (ind !== 0 && validate.isEmpty(ind))
+      return util.hint('store-notice-closeMessage: ind参数不能为空')
+    util.each(state.message.pool, (value, key) => {
+      if (ind === value.index) state.message.pool[key].value = false
     })
-    state.message.pool = newPool
   },
 }
 const actions = {
@@ -99,6 +100,9 @@ const actions = {
   },
   showMessage({ commit }, opt) {
     commit('showMessage', opt)
+  },
+  closeMessage({ commit }, ind) {
+    commit('closeMessage', ind)
   },
 }
 export default { state, getters, mutations, actions }

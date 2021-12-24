@@ -32,7 +32,7 @@
                       :color="item.type"
                       :disabled="loading"
                       :loading="loading"
-                      @click="callMsg(ind)"
+                      @click="callMsg(item)"
                     >
                       {{ item.title }}
                     </v-btn>
@@ -74,6 +74,7 @@
   </div>
 </template>
 <script>
+  import store from '../../../../packages/store'
   import notice from 'jcsoft/packages/utils/modules/notice'
   export default {
     data() {
@@ -86,6 +87,9 @@
           { type: 'warning', title: '警告' },
           { type: 'error', title: '错误' },
         ],
+        snackbar: false,
+        text: 'My timeout is set to 2000.',
+        timeout: 2000,
       }
     },
     watch: {
@@ -97,24 +101,17 @@
       window.VM = this
     },
     methods: {
-      callMsg(ind) {
-        if (typeof this.$options.methods['msg' + ind] === 'function') {
-          this.$options.methods['msg' + ind].call()
-        } else {
-          this.$utils.base.hint('callMsg：方法不存在')
-        }
-      },
-      msg0() {
-        console.log(123)
-      },
-      msg1() {
-        notice.message('good', 'success')
+      callMsg(item) {
+        notice.message(item.title, item.type)
       },
       openLoading(ind, opt) {
         return notice.load(ind, opt)
       },
       closeLoading() {
         notice.loadClose()
+      },
+      get() {
+        console.log(store.getters['notice/message'].pool)
       },
     },
   }

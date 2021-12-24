@@ -59,16 +59,35 @@ Notice.prototype.loadClose = function () {
   store.dispatch('notice/closeLoading').then(() => {})
 }
 
-/* 全局Message */
-Notice.prototype.message = function (message, type) {
+/**
+ * 全局message
+ * @param {string} message 消息
+ * @param {string|Object} option 字符串代表类型，对象代表参数
+ */
+Notice.prototype.message = function (message, option = {}) {
   let that = this
-
-  that.index++
-  store.dispatch('notice/showMessage', {
+  let ind = that.index++
+  let defaultOpt = {
     message: message,
-    type: type,
-    index: that.index,
-  })
+    index: ind,
+    time: that.config.messageDuration,
+  }
+
+  option =
+    typeof option === 'string'
+      ? util.extend(true, defaultOpt, {
+          type: option,
+        })
+      : util.extend(true, defaultOpt, option)
+
+  store.dispatch('notice/showMessage', option)
+
+  let timeout = util.intval(option.time)
+  if (timeout > 0) {
+    setTimeout(() => {
+      store.dispatch('notice/closeMessage', ind)
+    }, timeout)
+  }
 }
 
 /* 全局Alert */

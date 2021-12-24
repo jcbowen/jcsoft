@@ -45,7 +45,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="4">
+        <!-- <v-col cols="4">
           <v-card class="pa-2" elevation="3" flat outlined tile>
             <v-card-title>Notification Message 消息提示</v-card-title>
             <v-card-text>
@@ -68,13 +68,12 @@
               </v-container>
             </v-card-text>
           </v-card>
-        </v-col>
+        </v-col>-->
       </v-row>
     </v-container>
   </div>
 </template>
 <script>
-  import store from '../../../../packages/store'
   import notice from 'jcsoft/packages/utils/modules/notice'
   export default {
     data() {
@@ -87,31 +86,11 @@
           { type: 'warning', title: '警告' },
           { type: 'error', title: '错误' },
         ],
-        snackbar: false,
-        text: 'My timeout is set to 2000.',
-        timeout: 2000,
       }
-    },
-    watch: {
-      loader() {
-        // setTimeout(() => (this[l] = false), 3000)
-      },
-    },
-    created() {
-      window.VM = this
     },
     methods: {
       callMsg(item) {
         notice.message(item.title, item.type)
-      },
-      openLoading(ind, opt) {
-        return notice.load(ind, opt)
-      },
-      closeLoading() {
-        notice.loadClose()
-      },
-      get() {
-        console.log(store.getters['notice/message'].pool)
       },
     },
   }

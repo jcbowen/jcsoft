@@ -24,9 +24,14 @@
             title: '首页',
             active: true,
           },
-          {
+          /*{
             path: '/script',
             title: '脚本测试',
+            active: false,
+          },*/
+          {
+            path: '/other/loading',
+            title: '加载',
             active: false,
           },
           {

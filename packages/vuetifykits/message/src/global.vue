@@ -2,24 +2,34 @@
   <div class="JcsoftMessage">
     <v-scroll-y-reverse-transition group>
       <template v-for="(item, ind) in messagePool">
-        <v-alert
+        <div
           :key="ind"
-          :color="item.color"
-          :dark="item.dark"
-          :dense="item.dense"
-          :dismissible="item.dismissible"
-          :elevation="item.elevation"
-          :height="item.height"
-          :icon="item.icon"
-          :max-height="item.maxHeight"
-          :max-width="item.maxWidth"
-          transition="scale-transition"
-          :type="item.type"
-          :value="item.value"
-          :width="item.width"
+          :style="
+            item.outlined || item.text
+              ? 'background-color: #fff; border-radius: 4px'
+              : ''
+          "
         >
-          {{ item.message }}
-        </v-alert>
+          <v-alert
+            :color="item.color"
+            :dark="item.dark"
+            :dense="item.dense"
+            :dismissible="item.dismissible"
+            :elevation="item.elevation"
+            :height="item.height"
+            :icon="item.icon"
+            :max-height="item.maxHeight"
+            :max-width="item.maxWidth"
+            :outlined="item.outlined"
+            :text="item.text"
+            transition="scale-transition"
+            :type="item.type"
+            :value="item.value"
+            :width="item.width"
+          >
+            {{ item.message }}
+          </v-alert>
+        </div>
       </template>
     </v-scroll-y-reverse-transition>
   </div>

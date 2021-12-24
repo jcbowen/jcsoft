@@ -3,8 +3,8 @@
     <v-navigation-drawer v-model="drawer" app>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title class="text-h6">Application</v-list-item-title>
-          <v-list-item-subtitle>subtext</v-list-item-subtitle>
+          <v-list-item-title class="text-h6">Jcsoft</v-list-item-title>
+          <v-list-item-subtitle>开发工具包(UI/API)</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
 
@@ -43,11 +43,7 @@
     data() {
       return {
         drawer: null,
-        items: [
-          { title: 'Dashboard', icon: 'mdi-view-dashboard' },
-          { title: 'Photos', icon: 'mdi-image' },
-          { title: 'About', icon: 'mdi-help-box' },
-        ],
+        items: [{ title: '首页', icon: 'mdi-home' }],
       }
     },
   }

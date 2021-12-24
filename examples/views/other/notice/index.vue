@@ -2,7 +2,7 @@
   <div class="other-notice">
     <v-container>
       <v-row>
-        <v-col cols="4">
+        <v-col cols="12" md="4" sm="6">
           <v-card class="pa-2" elevation="3" flat outlined tile>
             <v-card-title>Alert 警告</v-card-title>
             <v-card-text>
@@ -21,7 +21,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="12" md="4" sm="6">
           <v-card class="pa-2" elevation="3" flat outlined tile>
             <v-card-title>Message 消息提示</v-card-title>
             <v-card-text>

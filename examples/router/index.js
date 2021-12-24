@@ -25,6 +25,16 @@ const constantRoutes = [
     },
   },
   {
+    path: '/other/loading',
+    name: 'otherLoading',
+    component: () => import('@/views/other/loading'),
+    meta: {
+      title: 'otherLoading',
+      icon: 'home',
+      affix: true,
+    },
+  },
+  {
     path: '/other/notice',
     name: 'otherNotice',
     component: () => import('@/views/other/notice'),

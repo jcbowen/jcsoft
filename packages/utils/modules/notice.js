@@ -1,13 +1,12 @@
 import store from '../../store'
-import validate from './validate'
 import util from './base'
 
 let Notice = function () {
   let that = this
   that.index = 0
   that.config = {
-    loadingText: '加载中...',
-    messageDuration: 3000,
+    loadingText: '正在加载中...',
+    messageDuration: 2000,
   }
   that.cache = {}
 }
@@ -19,31 +18,31 @@ let Notice = function () {
  */
 Notice.prototype.load = function (typeIndex = 0, opt = {}) {
   let that = this
-  if (!validate.isEmpty(opt)) {
-    switch (typeof opt) {
-      case 'string':
-      case 'number':
-        opt = {
-          text: opt,
-        }
-        break
-      case 'object':
-        opt.text = opt.text || that.config.loadingText
-        break
-      default:
-        util.hint('notice.load 参数错误')
-    }
-  } else {
-    opt = {
-      text: that.config.loadingText,
-    }
-  }
-  opt = util.extend(opt, {
+  let ind = that.index++
+
+  let defaultOpt = {
+    index: ind,
+    text: that.config.loadingText,
+    time: that.config.messageDuration,
     typeIndex: typeIndex,
-  })
+  }
+
+  opt =
+    typeof opt === 'string' || typeof opt === 'number'
+      ? util.extend(true, defaultOpt, {
+          text: opt,
+        })
+      : util.extend(true, defaultOpt, opt)
+
   store.dispatch('notice/openLoading', opt).then(() => {})
 
-  that.index++
+  let timeout = util.intval(opt.time)
+  if (timeout > 0) {
+    setTimeout(() => {
+      that.loadClose()
+    }, timeout)
+  }
+
   // 返回关闭loading的方法
   return {
     close: () => {
@@ -80,12 +79,12 @@ Notice.prototype.message = function (message, option = {}) {
         })
       : util.extend(true, defaultOpt, option)
 
-  store.dispatch('notice/showMessage', option)
+  store.dispatch('notice/showMessage', option).then(() => {})
 
   let timeout = util.intval(option.time)
   if (timeout > 0) {
     setTimeout(() => {
-      store.dispatch('notice/closeMessage', ind)
+      store.dispatch('notice/closeMessage', ind).then(() => {})
     }, timeout)
   }
 }

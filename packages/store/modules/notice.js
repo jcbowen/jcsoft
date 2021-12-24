@@ -9,23 +9,25 @@ import validate from '../../utils/modules/validate'
  *
  * @type {{background: string, text: string, typeIndex: number, status: boolean}}
  */
-let defaultLoadingOpt = {
+let defLoadingOpt = {
   typeIndex: 0,
   text: '正在加载中...',
   status: false,
   background: 'hsla(0, 0%, 100%, 0.8)',
 }
-let defaultMsgOpt = {
-  index: 0,
+let defMsgOpt = {
   color: undefined,
   dark: false,
   dense: true,
   dismissible: true,
-  elevation: 2,
+  elevation: 0,
   height: undefined,
   icon: undefined,
+  index: 0,
   maxHeight: undefined,
   maxWidth: '380px',
+  outlined: false,
+  text: false,
   type: undefined,
   value: true, // 是否显示
   width: undefined,
@@ -61,7 +63,7 @@ const mutations = {
     }
 
     // 传递的参数与默认值进行合并
-    opt = util.extend(true, defaultLoadingOpt, opt)
+    opt = util.extend({}, defLoadingOpt, opt)
 
     // 格式化typeIndex
     opt.typeIndex = util.intval(opt.typeIndex)
@@ -78,14 +80,10 @@ const mutations = {
     state.loading.status = false
   },
   showMessage: (state, opt) => {
-    if (opt.index !== 0 && validate.isEmpty(opt.index))
-      return util.hint('store-notice-showMessage: index参数不能为空')
-    opt = util.extend({}, defaultMsgOpt, opt)
+    opt = util.extend({}, defMsgOpt, opt)
     state.message.pool.push(opt)
   },
   closeMessage: (state, ind) => {
-    if (ind !== 0 && validate.isEmpty(ind))
-      return util.hint('store-notice-closeMessage: ind参数不能为空')
     util.each(state.message.pool, (value, key) => {
       if (ind === value.index) state.message.pool[key].value = false
     })

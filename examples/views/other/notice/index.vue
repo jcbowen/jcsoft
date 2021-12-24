@@ -81,6 +81,7 @@
         loader: null,
         loading: false,
         items: [
+          { type: undefined, title: '默认' },
           { type: 'info', title: '消息' },
           { type: 'success', title: '成功' },
           { type: 'warning', title: '警告' },

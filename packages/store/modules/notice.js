@@ -20,7 +20,7 @@ let defMsgOpt = {
   dark: false,
   dense: true,
   dismissible: true,
-  elevation: 0,
+  elevation: 3,
   height: undefined,
   icon: undefined,
   index: 0,

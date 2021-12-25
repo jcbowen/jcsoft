@@ -44,7 +44,7 @@
     },
     computed: {
       messagePool: () => {
-        return store.getters['notice/message'].pool
+        return store.getters['notice/message'].pool || []
       },
     },
   }

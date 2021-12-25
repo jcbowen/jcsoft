@@ -3,14 +3,16 @@
   <div class="JcsoftGlobal">
     <jcsoft-loading />
     <jcsoft-message />
+    <jcsoft-alert />
   </div>
 </template>
 <script>
   import JcsoftLoading from '../vuetifykits/JcsoftLoading/src/global'
   import JcsoftMessage from '../vuetifykits/message/src/global'
+  import JcsoftAlert from '../vuetifykits/alert/src/global'
   export default {
     name: 'JcsoftGlobal',
-    components: { JcsoftMessage, JcsoftLoading },
+    components: { JcsoftAlert, JcsoftMessage, JcsoftLoading },
     data() {
       return {}
     },

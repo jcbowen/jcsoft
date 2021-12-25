@@ -1,6 +1,3 @@
-/**
- * @description 异常捕获的状态拦截，请勿修改
- */
 import util from '../../utils/modules/base'
 
 /**
@@ -38,6 +35,19 @@ let defMsgOpt = {
   width: undefined,
   message: '这是一条消息',
 }
+
+/**
+ * alert默认参数
+ *
+ * @type {{background: string, text: string, typeIndex: number, value: boolean}}
+ */
+let defAlertOpt = {
+  index: 0,
+  title: '信息',
+  content: '',
+  typeIndex: 0,
+  value: true, // 是否显示
+}
 const state = () => ({
   loading: {
     pool: [],
@@ -45,10 +55,14 @@ const state = () => ({
   message: {
     pool: [],
   },
+  alert: {
+    pool: [],
+  },
 })
 const getters = {
   loading: (state) => state.loading,
   message: (state) => state.message,
+  alert: (state) => state.alert,
 }
 
 const mutations = {
@@ -86,6 +100,15 @@ const mutations = {
       if (ind === value.index) state.message.pool[key].value = false
     })
   },
+  openAlert: (state, opt) => {
+    opt = util.extend({}, defAlertOpt, opt)
+    state.alert.pool.push(opt)
+  },
+  closeAlert: (state, ind) => {
+    util.each(state.alert.pool, (value, key) => {
+      if (ind === value.index) state.alert.pool[key].value = false
+    })
+  },
 }
 const actions = {
   openLoading({ commit }, opt) {
@@ -99,6 +122,12 @@ const actions = {
   },
   closeMessage({ commit }, ind) {
     commit('closeMessage', ind)
+  },
+  openAlert({ commit }, opt) {
+    commit('openAlert', opt)
+  },
+  closeAlert({ commit }, ind) {
+    commit('closeAlert', ind)
   },
 }
 export default { state, getters, mutations, actions }

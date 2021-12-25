@@ -28,10 +28,10 @@ Notice.prototype.load = function (typeIndex = 0, opt = {}) {
 
   opt =
     typeof opt === 'string' || typeof opt === 'number'
-      ? util.extend(true, defaultOpt, {
+      ? util.extend({}, defaultOpt, {
           text: opt,
         })
-      : util.extend(true, defaultOpt, opt)
+      : util.extend({}, defaultOpt, opt)
 
   store.dispatch('notice/openLoading', opt).then(() => {})
 
@@ -73,10 +73,10 @@ Notice.prototype.message = function (message, option = {}) {
 
   option =
     typeof option === 'string' || typeof opt === 'number'
-      ? util.extend(true, defaultOpt, {
+      ? util.extend({}, defaultOpt, {
           type: option,
         })
-      : util.extend(true, defaultOpt, option)
+      : util.extend({}, defaultOpt, option)
 
   store.dispatch('notice/showMessage', option).then(() => {})
 
@@ -88,18 +88,41 @@ Notice.prototype.message = function (message, option = {}) {
   }
 }
 
-/* 全局Alert */
-Notice.prototype.alert = function (content, title, callback) {
-  console.log(content, title, callback)
-  /*return MessageBox.alert(content, title || '温馨提示', {
-      confirmButtonText: '确定',
-      dangerouslyUseHTMLString: true,
-      callback: (action) => {
-        if (callback) {
-          callback()
-        }
-      },
-    })*/
+/**
+ *
+ * @param content
+ * @param opt
+ * @param yes
+ * @returns {{close: close}}
+ */
+Notice.prototype.alert = function (content, opt = {}, yes = null) {
+  let that = this
+  let ind = that.index++
+  let defaultOpt = {
+    index: ind,
+    title: '信息',
+    content: content,
+    yes: yes,
+  }
+
+  opt =
+    typeof opt === 'function'
+      ? util.extend({}, defaultOpt, {
+          yes: opt,
+        })
+      : util.extend({}, defaultOpt, opt)
+
+  store.dispatch('notice/openAlert', opt).then(() => {})
+
+  return {
+    close: () => {
+      that.alertClose(ind)
+    },
+  }
+}
+
+Notice.prototype.alertClose = function (ind) {
+  store.dispatch('notice/closeAlert', ind).then(() => {})
 }
 
 /* 全局Confirm */

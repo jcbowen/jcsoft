@@ -2,19 +2,24 @@
  * @description 异常捕获的状态拦截，请勿修改
  */
 import util from '../../utils/modules/base'
-import validate from '../../utils/modules/validate'
 
 /**
  * loading默认参数
  *
- * @type {{background: string, text: string, typeIndex: number, status: boolean}}
+ * @type {{background: string, text: string, typeIndex: number, value: boolean}}
  */
 let defLoadingOpt = {
-  typeIndex: 0,
-  text: '正在加载中...',
-  status: false,
   background: 'hsla(0, 0%, 100%, 0.8)',
+  index: 0,
+  text: '正在加载中...',
+  type: 'overlay',
+  typeIndex: 0,
+  value: true, // 是否显示
 }
+/**
+ * message默认参数
+ * @type {{elevation: number, color: undefined, icon: undefined, index: number, type: undefined, message: string, dense: boolean, outlined: boolean, maxHeight: undefined, dark: boolean, dismissible: boolean, width: undefined, text: boolean, value: boolean, height: undefined, maxWidth: string}}
+ */
 let defMsgOpt = {
   color: undefined,
   dark: false,
@@ -35,10 +40,7 @@ let defMsgOpt = {
 }
 const state = () => ({
   loading: {
-    typeIndex: 0,
-    text: '正在加载中...',
-    status: false,
-    background: 'hsla(0, 0%, 100%, 0.8)',
+    pool: [],
   },
   message: {
     pool: [],
@@ -53,32 +55,28 @@ const mutations = {
   /**
    * 打开loading
    * @param  state
-   * @param {string|object} opt 如果是字符串，那么传递的就是loading加载文字
+   * @param {object} opt
    */
   openLoading(state, opt) {
-    if (typeof opt === 'string' && !validate.isEmpty(opt)) {
-      opt = {
-        text: opt,
-      }
-    }
-
     // 传递的参数与默认值进行合并
     opt = util.extend({}, defLoadingOpt, opt)
 
     // 格式化typeIndex
     opt.typeIndex = util.intval(opt.typeIndex)
 
-    // 打开loading层
-    opt.status = true
-    state.loading = opt
+    state.loading.pool.push(opt)
+  },
+  closeLoading: (state, ind) => {
+    util.each(state.loading.pool, (value, key) => {
+      if (ind === value.index) state.loading.pool[key].value = false
+    })
   },
   /**
-   * 关闭loading
+   * 唤出消息
+   *
    * @param state
+   * @param {object} opt
    */
-  closeLoading: (state) => {
-    state.loading.status = false
-  },
   showMessage: (state, opt) => {
     opt = util.extend({}, defMsgOpt, opt)
     state.message.pool.push(opt)
@@ -93,8 +91,8 @@ const actions = {
   openLoading({ commit }, opt) {
     commit('openLoading', opt)
   },
-  closeLoading({ commit }) {
-    commit('closeLoading')
+  closeLoading({ commit }, ind) {
+    commit('closeLoading', ind)
   },
   showMessage({ commit }, opt) {
     commit('showMessage', opt)

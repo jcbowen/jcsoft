@@ -1,16 +1,24 @@
 <template>
   <div class="JcsoftLoading">
-    <v-dialog v-model="loadingStatus" fullscreen>
-      <v-container
-        class="jcsoft-loading"
-        fill-height
-        fluid
-        :style="'background-color: ' + loadingBackground"
-      >
-        <v-layout align-center column justify-center>
-          <v-card v-if="loadingIndex === 1" color="primary" dark width="300px">
+    <v-fade-transition group>
+      <template v-for="(item, ind) in loadingPool">
+        <v-overlay
+          v-if="item.type === 'overlay'"
+          :key="ind"
+          class="jcsoft-loading"
+          :color="item.background"
+          :opacity="1"
+          :style="item.typeIndex !== 1 ? 'text-align: center' : ''"
+          :value="item.value"
+        >
+          <v-card
+            v-if="item.typeIndex === 1"
+            color="primary"
+            dark
+            width="300px"
+          >
             <v-card-text>
-              {{ loadingText }}
+              {{ item.text }}
               <v-progress-linear class="mb-0" color="white" indeterminate />
             </v-card-text>
           </v-card>
@@ -19,12 +27,42 @@
             <p
               class="jcsoft-loading-text grey--text text--darken-2 text-body-1"
             >
-              {{ loadingText }}
+              {{ item.text }}
             </p>
           </template>
-        </v-layout>
-      </v-container>
-    </v-dialog>
+        </v-overlay>
+        <v-dialog v-else :key="ind" v-model="item.value" fullscreen>
+          <v-container
+            class="jcsoft-loading"
+            fill-height
+            fluid
+            :style="'background-color: ' + item.background"
+          >
+            <v-layout align-center column justify-center>
+              <v-card
+                v-if="item.typeIndex === 1"
+                color="primary"
+                dark
+                width="300px"
+              >
+                <v-card-text>
+                  {{ item.text }}
+                  <v-progress-linear class="mb-0" color="white" indeterminate />
+                </v-card-text>
+              </v-card>
+              <template v-else>
+                <v-progress-circular color="primary" indeterminate size="48" />
+                <p
+                  class="jcsoft-loading-text grey--text text--darken-2 text-body-1"
+                >
+                  {{ item.text }}
+                </p>
+              </template>
+            </v-layout>
+          </v-container>
+        </v-dialog>
+      </template>
+    </v-fade-transition>
   </div>
 </template>
 
@@ -36,19 +74,8 @@
       return {}
     },
     computed: {
-      loadingIndex: () => {
-        return store.getters['notice/loading'].typeIndex || 0
-      },
-      loadingStatus: () => {
-        return store.getters['notice/loading'].status || false
-      },
-      loadingText: () => {
-        return store.getters['notice/loading'].text || '正在加载中...'
-      },
-      loadingBackground: () => {
-        return (
-          store.getters['notice/loading'].background || 'hsla(0, 0%, 100%, 0.8)'
-        )
+      loadingPool: () => {
+        return store.getters['notice/loading'].pool || []
       },
     },
   }

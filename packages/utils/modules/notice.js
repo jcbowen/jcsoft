@@ -6,7 +6,7 @@ let Notice = function () {
   that.index = 0
   that.config = {
     loadingText: '正在加载中...',
-    messageDuration: 2000,
+    messageDuration: 3000,
   }
   that.cache = {}
 }
@@ -19,7 +19,6 @@ let Notice = function () {
 Notice.prototype.load = function (typeIndex = 0, opt = {}) {
   let that = this
   let ind = that.index++
-
   let defaultOpt = {
     index: ind,
     text: that.config.loadingText,
@@ -39,14 +38,14 @@ Notice.prototype.load = function (typeIndex = 0, opt = {}) {
   let timeout = util.intval(opt.time)
   if (timeout > 0) {
     setTimeout(() => {
-      that.loadClose()
+      that.loadClose(ind)
     }, timeout)
   }
 
-  // 返回关闭loading的方法
+  // 返回关闭当前loading的方法
   return {
     close: () => {
-      that.loadClose()
+      that.loadClose(ind)
     },
   }
 }
@@ -54,8 +53,8 @@ Notice.prototype.load = function (typeIndex = 0, opt = {}) {
 /**
  * 关闭全局加载层
  */
-Notice.prototype.loadClose = function () {
-  store.dispatch('notice/closeLoading').then(() => {})
+Notice.prototype.loadClose = function (ind) {
+  store.dispatch('notice/closeLoading', ind).then(() => {})
 }
 
 /**
@@ -67,13 +66,13 @@ Notice.prototype.message = function (message, option = {}) {
   let that = this
   let ind = that.index++
   let defaultOpt = {
-    message: message,
     index: ind,
+    message: message,
     time: that.config.messageDuration,
   }
 
   option =
-    typeof option === 'string'
+    typeof option === 'string' || typeof opt === 'number'
       ? util.extend(true, defaultOpt, {
           type: option,
         })
@@ -93,35 +92,35 @@ Notice.prototype.message = function (message, option = {}) {
 Notice.prototype.alert = function (content, title, callback) {
   console.log(content, title, callback)
   /*return MessageBox.alert(content, title || '温馨提示', {
-    confirmButtonText: '确定',
-    dangerouslyUseHTMLString: true,
-    callback: (action) => {
-      if (callback) {
-        callback()
-      }
-    },
-  })*/
+      confirmButtonText: '确定',
+      dangerouslyUseHTMLString: true,
+      callback: (action) => {
+        if (callback) {
+          callback()
+        }
+      },
+    })*/
 }
 
 /* 全局Confirm */
 Notice.prototype.confirm = function (content, title, callback1, callback2) {
   console.log(content, title, callback1, callback2)
   /*return MessageBox.confirm(content, title || '温馨提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    closeOnClickModal: false,
-    type: 'warning',
-  })
-    .then(() => {
-      if (callback1) {
-        callback1()
-      }
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      closeOnClickModal: false,
+      type: 'warning',
     })
-    .catch(() => {
-      if (callback2) {
-        callback2()
-      }
-    })*/
+      .then(() => {
+        if (callback1) {
+          callback1()
+        }
+      })
+      .catch(() => {
+        if (callback2) {
+          callback2()
+        }
+      })*/
 }
 
 let notice = new Notice()

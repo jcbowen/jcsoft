@@ -6,18 +6,10 @@
           <v-card class="pa-2" elevation="3" flat outlined tile>
             <v-card-title>Alert 警告</v-card-title>
             <v-card-text>
-              <v-alert dense dismissible outlined text type="success">
-                成功提示的文案
-              </v-alert>
-              <v-alert dense dismissible outlined text type="info">
-                消息提示的文案
-              </v-alert>
-              <v-alert dense dismissible outlined text type="warning">
-                警告提示的文案
-              </v-alert>
-              <v-alert dense dismissible outlined text type="error">
-                错误提示的文案
-              </v-alert>
+              <v-alert dense dismissible type="success">成功提示的文案</v-alert>
+              <v-alert dense dismissible type="info">消息提示的文案</v-alert>
+              <v-alert dense dismissible type="warning">警告提示的文案</v-alert>
+              <v-alert dense dismissible type="error">错误提示的文案</v-alert>
             </v-card-text>
           </v-card>
         </v-col>

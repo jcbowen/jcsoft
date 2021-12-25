@@ -9,13 +9,10 @@
       >
         <v-card>
           <v-card-title v-if="item.title">{{ item.title }}</v-card-title>
-
           <v-card-text>
             {{ item.content }}
           </v-card-text>
-
           <v-divider />
-
           <v-card-actions>
             <v-spacer />
             <v-btn color="primary" text @click="yes(item.index, item.yes)">

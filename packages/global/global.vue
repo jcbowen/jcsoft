@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-  import JcsoftLoading from '../vuetifykits/JcsoftLoading/src/global'
+  import JcsoftLoading from '../vuetifykits/loading/src/global'
   import JcsoftMessage from '../vuetifykits/message/src/global'
   import JcsoftAlert from '../vuetifykits/alert/src/global'
   export default {

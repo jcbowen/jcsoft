@@ -1,5 +1,6 @@
 // import JcEditor from './JcEditor'
 // import xSpreadsheet from "./xspreadsheet";
+import utils from './utils'
 import layui from './layui'
 import vuetifyKits from './vuetifykits'
 import global from './global/global'
@@ -27,6 +28,8 @@ const install = function (Vue) {
       Vue.prototype.$Loading = component
     }
   })
+
+  Vue.prototype.$jcUtils = utils
 }
 
 // 判断是否是直接引入文件

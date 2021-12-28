@@ -1,9 +1,9 @@
 {
   "name": "jcsoft",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "private": false,
   "description": "dev version",
-  "author": "bowen666",
+  "author": "jcbowen",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

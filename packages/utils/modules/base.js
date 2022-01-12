@@ -1275,10 +1275,10 @@ Base.prototype.htmlspecialchars = function (e, E, T, _) {
   )
 }
 Base.prototype.htmlencode = function (sStr) {
-  return php.htmlspecialchars(sStr)
+  return this.htmlspecialchars(sStr)
 }
 Base.prototype.htmldecode = function (sStr) {
-  return php.htmlspecialchars_decode(sStr)
+  return this.htmlspecialchars_decode(sStr)
 }
 /**
  * 获取屏幕类型，根据当前屏幕大小，返回 0 - 3 的值

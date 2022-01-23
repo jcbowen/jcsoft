@@ -275,7 +275,7 @@ Base.prototype.loadjs = function (apps) {
         config.modules[item] = url
       } else {
         //缓存
-        ;(function poll() {
+        (function poll() {
           if (++timeout > (config.timeout * 1000) / 4) {
             return error(item + ' is not a valid module')
           }

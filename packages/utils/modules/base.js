@@ -168,7 +168,7 @@ Base.prototype.each = function (collection, predicate) {
  * @param apps 可以是config.module中定义的模块，也可以直接填写外链
  * @returns {Base}
  */
-Base.prototype.loadjs = function (apps) {
+Base.prototype.loadJs = function (apps) {
   let that = this,
     config = that.config
 

@@ -193,7 +193,7 @@ Base.prototype.loadjs = function (apps) {
         ) {
           config.modules[item] = url
           head.removeChild(node)
-          ;(function poll() {
+          (function poll() {
             if (++timeout > (config.timeout * 1000) / 4) {
               reject(e, url)
               return error(item + ' is not a valid module')

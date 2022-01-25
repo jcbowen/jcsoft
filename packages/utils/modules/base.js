@@ -168,7 +168,7 @@ Base.prototype.each = function (collection, predicate) {
  * @param apps 可以是config.module中定义的模块，也可以直接填写外链
  * @returns {Base}
  */
-Base.prototype.loadjs = function (apps) {
+Base.prototype.loadJs = function (apps) {
   let that = this,
     config = that.config
 
@@ -193,7 +193,7 @@ Base.prototype.loadjs = function (apps) {
         ) {
           config.modules[item] = url
           head.removeChild(node)
-          ;(function poll() {
+          (function poll() {
             if (++timeout > (config.timeout * 1000) / 4) {
               reject(e, url)
               return error(item + ' is not a valid module')
@@ -275,7 +275,7 @@ Base.prototype.loadjs = function (apps) {
         config.modules[item] = url
       } else {
         //缓存
-        ;(function poll() {
+        (function poll() {
           if (++timeout > (config.timeout * 1000) / 4) {
             return error(item + ' is not a valid module')
           }

@@ -193,13 +193,13 @@ Base.prototype.loadJs = function (apps) {
         ) {
           config.modules[item] = url
           head.removeChild(node)
-          (function poll() {
-            if (++timeout > (config.timeout * 1000) / 4) {
-              reject(e, url)
-              return error(item + ' is not a valid module')
-            }
-            onCallback()
-          })()
+              (function poll() {
+                if (++timeout > (config.timeout * 1000) / 4) {
+                  reject(e, url)
+                  return error(item + ' is not a valid module')
+                }
+                onCallback()
+              })()
         }
       }
 
@@ -216,8 +216,8 @@ Base.prototype.loadJs = function (apps) {
         (/^\{\/\}/.test(item)
           ? ''
           : /^\{\/\}/.test(that.modules[item])
-          ? ''
-          : config.base || '') +
+            ? ''
+            : config.base || '') +
         (that.modules[item] || item) +
         '.js'
 
@@ -328,15 +328,16 @@ Base.prototype.link = function (href, callBack, cssName) {
   if (typeof callBack !== 'function')
     return that
 
-    //轮询css是否加载完毕
-  ;(function poll() {
+      //轮询css是否加载完毕
+      ;
+  (function poll() {
     if (++timeout > (that.config.timeout * 1000) / 100) {
       return error(href + ' timeout')
     }
     parseInt(that.getStyle(document.getElementById(id), 'width')) === 1994
       ? (function () {
-          callBack()
-        })()
+        callBack()
+      })()
       : setTimeout(poll, 100)
   })()
 
@@ -374,11 +375,11 @@ Base.prototype.img = function (src) {
  * @param style
  */
 Base.prototype.lazyimg = function ({
-  elem = 'img',
-  scrollElem = '',
-  lazyAttr = 'jc-src',
-  style = {},
-}) {
+                                     elem = 'img',
+                                     scrollElem = '',
+                                     lazyAttr = 'jc-src',
+                                     style = {},
+                                   }) {
   let that = this
 
   let index = 0,
@@ -402,8 +403,8 @@ Base.prototype.lazyimg = function ({
   // if (setScrollElementStyle) {
   // 判断是否已经设置了 maxHeight, overflowY; 如果没有设置则自动设置
   /*if (!(that.intval(scrollElem.style.maxHeight) > 0)) {
-        scrollElem.style.maxHeight = (document.documentElement.clientHeight || window.innerHeight) + 'px';
-    }*/
+   scrollElem.style.maxHeight = (document.documentElement.clientHeight || window.innerHeight) + 'px';
+   }*/
   // scrollElem.style.overflowY !== 'scroll' && (scrollElem.style.overflowY = 'scroll');
   // }
 
@@ -413,8 +414,8 @@ Base.prototype.lazyimg = function ({
         end = start + height,
         elemTop = notDocument
           ? (function () {
-              return item.offsetTop - scrollElem.offsetTop + start
-            })()
+            return item.offsetTop - scrollElem.offsetTop + start
+          })()
           : item.offsetTop // item.scrollTop /item.offsetTop
 
       /* 始终只加载在当前屏范围内的图片 */
@@ -461,8 +462,8 @@ Base.prototype.lazyimg = function ({
           let item = that.lazyimg.elem[i],
             elemTop = notDocument
               ? (function () {
-                  return item.offsetTop - scrollElem.offsetTop + start
-                })()
+                return item.offsetTop - scrollElem.offsetTop + start
+              })()
               : item.offsetTop
 
           await show(item, height)
@@ -509,7 +510,7 @@ Base.prototype.data = function (table, settings, storage) {
     return delete storage[table]
   }
 
-  settings = typeof settings === 'object' ? settings : { key: settings }
+  settings = typeof settings === 'object' ? settings : {key: settings}
 
   let data
   try {
@@ -597,7 +598,7 @@ Base.prototype.compare = function (curV, reqV) {
     while (
       position < minLength &&
       (diff = parseInt(arr1[position]) - parseInt(arr2[position])) === 0
-    ) {
+      ) {
       position++
     }
     diff = diff !== 0 ? diff : arr1.length - arr2.length
@@ -630,24 +631,24 @@ Base.prototype.numberToChinese = function (
   let len = str.length - 1,
     chineseArray = isInt
       ? [
-          '',
-          '十',
-          '百',
-          '千',
-          '万',
-          '十',
-          '百',
-          '千',
-          '亿',
-          '十',
-          '百',
-          '千',
-          '万',
-          '十',
-          '百',
-          '千',
-          '亿',
-        ]
+        '',
+        '十',
+        '百',
+        '千',
+        '万',
+        '十',
+        '百',
+        '千',
+        '亿',
+        '十',
+        '百',
+        '千',
+        '万',
+        '十',
+        '百',
+        '千',
+        '亿',
+      ]
       : ['分', '角'],
     numArray = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']
 
@@ -712,7 +713,8 @@ Base.prototype.time = function () {
  * @returns {string|number}
  */
 Base.prototype.microtime = function (get_as_float) {
-  let now, s
+  let now,
+    s
   if (typeof performance !== 'undefined' && performance.now) {
     now = (performance.now() + performance.timing.navigationStart) / 1000
     if (get_as_float) {
@@ -744,7 +746,8 @@ Base.prototype.microtime = function (get_as_float) {
  */
 Base.prototype.date = function (format, timestamp) {
   var that = this
-  var jsdate, f
+  var jsdate,
+    f
   var txt_words = [
     'Sun',
     'Mon',
@@ -950,10 +953,10 @@ Base.prototype.strtotime = function (text, now) {
     fail = false
   if (!text) return fail
   text = text
-    .replace(/^\s+|\s+$/g, '')
-    .replace(/\s{2,}/g, ' ')
-    .replace(/[\t\r\n]/g, '')
-    .toLowerCase()
+  .replace(/^\s+|\s+$/g, '')
+  .replace(/\s{2,}/g, ' ')
+  .replace(/[\t\r\n]/g, '')
+  .toLowerCase()
   match = text.match(
     /^(\d{1,4})([\-\.\/\:])(\d{1,2})([\-\.\/\:])(\d{1,4})(?:\s(\d{1,2}):(\d{2})?:?(\d{2})?)?(?:\s([A-Z]+)?)?$/
   )
@@ -1147,7 +1150,7 @@ Base.prototype.strtotime = function (text, now) {
     return (parsed / 1000) | 0
   }
   date = now ? new Date(now * 1000) : new Date()
-  days = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 }
+  days = {sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6}
   ranges = {
     yea: 'FullYear',
     mon: 'Month',
@@ -1244,7 +1247,7 @@ Base.prototype.htmlspecialchars_decode = function (e, E) {
   return (
     E & t.ENT_HTML_QUOTE_SINGLE && (e = e.replace(/&#0*39;/g, "'")),
     r || (e = e.replace(/&quot;/g, '"')),
-    (e = e.replace(/&amp;/g, '&'))
+      (e = e.replace(/&amp;/g, '&'))
   )
 }
 Base.prototype.htmlspecialchars = function (e, E, T, _) {
@@ -1253,7 +1256,7 @@ Base.prototype.htmlspecialchars = function (e, E, T, _) {
     a = !1
   ;('undefined' == typeof E || null === E) && (E = 2),
     (e = e.toString()),
-    _ !== !1 && (e = e.replace(/&/g, '&amp;')),
+  _ !== !1 && (e = e.replace(/&/g, '&amp;')),
     (e = e.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
   var N = {
     ENT_NOQUOTES: 0,
@@ -1271,7 +1274,7 @@ Base.prototype.htmlspecialchars = function (e, E, T, _) {
   return (
     E & N.ENT_HTML_QUOTE_SINGLE && (e = e.replace(/'/g, '&#039;')),
     a || (e = e.replace(/"/g, '&quot;')),
-    e
+      e
   )
 }
 Base.prototype.htmlencode = function (sStr) {
@@ -1281,17 +1284,20 @@ Base.prototype.htmldecode = function (sStr) {
   return this.htmlspecialchars_decode(sStr)
 }
 /**
- * 获取屏幕类型，根据当前屏幕大小，返回 0 - 3 的值
+ * 获取屏幕类型，根据当前屏幕大小，返回 0 - 4 的值
  * 0: 低于768px的屏幕
  * 1：768px到992px之间的屏幕
  * 2：992px到1200px之间的屏幕
  * 3：高于1200px的屏幕
+ * 4：高于1920px的屏幕
  *
  * @returns {number}
  */
 Base.prototype.screen = function () {
-  var width = document.body.clientWidth
-  if (width > 1200) {
+  let width = document.body.clientWidth
+  if (width > 1920) {
+    return 4 //超大屏幕
+  } else if (width > 1200) {
     return 3 //大屏幕
   } else if (width > 992) {
     return 2 //中屏幕
@@ -1350,7 +1356,9 @@ Base.prototype.function_exists = function (func_name) {
  */
 Base.prototype.range = function (low, high, step) {
   var matrix = []
-  var inival, endval, plus
+  var inival,
+    endval,
+    plus
   var walker = step || 1
   var chars = false
   if (!isNaN(low) && !isNaN(high)) {
@@ -1428,7 +1436,10 @@ Base.prototype.rand = function (min, max) {
  * @returns {number}
  */
 Base.prototype.round = function (value, precision, mode) {
-  var m, f, isHalf, sgn
+  var m,
+    f,
+    isHalf,
+    sgn
   precision |= 0
   m = Math.pow(10, precision)
   value *= m
@@ -1643,12 +1654,12 @@ Base.prototype.utf8_decode = function (str_data) {
 Base.prototype.urlencode = function (str) {
   str = (str + '').toString()
   return encodeURIComponent(str)
-    .replace(/!/g, '%21')
-    .replace(/'/g, '%27')
-    .replace(/\(/g, '%28')
-    .replace(/\)/g, '%29')
-    .replace(/\*/g, '%2A')
-    .replace(/%20/g, '+')
+  .replace(/!/g, '%21')
+  .replace(/'/g, '%27')
+  .replace(/\(/g, '%28')
+  .replace(/\)/g, '%29')
+  .replace(/\*/g, '%2A')
+  .replace(/%20/g, '+')
 }
 
 /**
@@ -1659,10 +1670,10 @@ Base.prototype.urlencode = function (str) {
 Base.prototype.urldecode = function (str) {
   return decodeURIComponent(
     (str + '')
-      .replace(/%(?![\da-f]{2})/gi, function () {
-        return '%25'
-      })
-      .replace(/\+/g, '%20')
+    .replace(/%(?![\da-f]{2})/gi, function () {
+      return '%25'
+    })
+    .replace(/\+/g, '%20')
   )
 }
 
@@ -1937,7 +1948,11 @@ Base.prototype.md5 = function (string) {
     return (b << a) | (b >>> (32 - a))
   }
   var H = function (k, b) {
-    var V, a, d, x, c
+    var V,
+      a,
+      d,
+      x,
+      c
     d = k & 2147483648
     x = b & 2147483648
     V = k & 1073741824

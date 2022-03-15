@@ -140,7 +140,7 @@ Base.prototype.extend = function () {
 /**
  * 循环
  *
- * @desc 类似forEach，但不区分数组和对象
+ * @description 类似forEach，但不区分数组和对象
  * @param {Array|Object} collection 用来循环的集合
  * @param {Function} predicate 断言函数
  * @returns {Base}
@@ -160,6 +160,67 @@ Base.prototype.each = function (collection, predicate) {
     }
   }
   return that
+}
+
+/**
+ * 数据转树形结构
+ *
+ * @description 根据数据中的parent_id把数据整理为树形结构，下级将会被放到children中
+ * @param {Object[]} data
+ * @returns {Object[]}
+ */
+Base.prototype.translateDataToTree = function (data) {
+  const parent = data.filter((value) =>
+      validate.isEmpty(value.parent_id)
+  )
+  const children = data.filter(
+      (value) => !validate.isEmpty(value.parent_id)
+  )
+  const translator = (parent, children) => {
+    parent.forEach((parent) => {
+      children.forEach((current, index) => {
+        if (current.parent_id === parent.id) {
+          const temp = JSON.parse(JSON.stringify(children))
+          temp.splice(index, 1)
+          translator([current], temp)
+          typeof parent.children !== 'undefined'
+              ? parent.children.push(current)
+              : (parent.children = [current])
+        }
+      })
+    })
+  }
+  translator(parent, children)
+  return parent
+}
+
+/**
+ * 树形结构转数据
+ *
+ * @description 根据数据中的children把数据整理为一维数组
+ * @param {Object[]} tree
+ * @returns {Object[]}
+ */
+Base.prototype.translateTreeToData = function (tree) {
+  const result = []
+  tree.forEach((item) => {
+    const loop = (tree) => {
+      const treeData = JSON.parse(JSON.stringify(tree))
+
+      !validate.isEmpty(treeData) &&
+      delete treeData.children
+
+      result.push(...treeData)
+      const child = tree.children
+      if (!validate.isEmpty(child)) {
+        for (let i = 0; i < child.length; i++) {
+          loop(child[i])
+        }
+      }
+    }
+    loop(item)
+  })
+  return result
 }
 
 /**

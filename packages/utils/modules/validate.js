@@ -206,10 +206,10 @@ Validate.prototype.isInt = function (n, iMin, iMax) {
   if (!/^[+-]?\d+$/.test(n)) {
     return false
   }
-  if (iMin != undefined && parseInt(n) < parseInt(iMin)) {
+  if (iMin !== undefined && parseInt(n) < parseInt(iMin)) {
     return false
   }
-  if (iMax != undefined && parseInt(n) > parseInt(iMax)) {
+  if (iMax !== undefined && parseInt(n) > parseInt(iMax)) {
     return false
   }
   return true
@@ -227,10 +227,10 @@ Validate.prototype.isFinite = function (value, fMin, fMax) {
   if (!isFinite(value)) {
     return false
   }
-  if (fMin != undefined && parseFloat(value) < parseFloat(fMin)) {
+  if (fMin !== undefined && parseFloat(value) < parseFloat(fMin)) {
     return false
   }
-  if (fMax != undefined && parseFloat(value) > parseFloat(fMax)) {
+  if (fMax !== undefined && parseFloat(value) > parseFloat(fMax)) {
     return false
   }
   return true
@@ -253,7 +253,7 @@ Validate.prototype.isString = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.isJson = function (str) {
-  if (typeof str === 'string') {
+  if (this.isString(str)) {
     try {
       const obj = JSON.parse(str)
       return !!(obj && typeof obj === 'object')
@@ -386,6 +386,7 @@ Validate.prototype.isName = function (value) {
  */
 Validate.prototype.isPassword = function (str) {
   return (
+    this.isString(str) &&
     str.length >= 8 &&
     str.length <= 16 &&
     /(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,30}/.test(str)
@@ -468,7 +469,11 @@ Validate.prototype.isZipcode = function (str) {
  * @returns {boolean}
  */
 Validate.prototype.strExists = function (string = '', find = '') {
-  return !(string.indexOf(find) === -1)
+  return (
+    this.isString(string) &&
+    this.isString(find) &&
+    !(string.indexOf(find) === -1)
+  )
 }
 
 Validate.prototype.isReg = function (num) {

@@ -11,7 +11,9 @@
   --jcsoft-color-gray: #666;
 }
 
-.jcsoft {
+$class-prefix: "jcsoft";
+
+.#{$class-prefix} {
   &-code {
     padding: 2px 4px;
     font-size: 90%;
@@ -21,38 +23,136 @@
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   }
 
-  &-word-aux {
-    color: #999;
+  // 定义一段文本区域（如文章），该区域内的特殊标签（如a、li、em等）将会进行相应处理
+  &-text {
+    line-height: 1.6;
     font-size: 14px;
-    line-height: 24px;
-    padding: 0 5px;
+    color: #666;
+
+    // 单行文本溢出省略
+    &-elip {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-weight: 500;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 30px;
+    }
+
+    h2 {
+      font-size: 24px;
+    }
+
+    h3 {
+      font-size: 18px;
+    }
+
+    a {
+      &:not(.#{$class-prefix}-btn) {
+        color: #01AAED;
+      }
+
+      &:not(.#{$class-prefix}-btn):hover {
+        text-decoration: underline;
+      }
+    }
+
+    ul {
+      padding: 5px 0 5px 15px;
+    }
+
+    ul li {
+      margin-top: 5px;
+      list-style-type: disc;
+    }
+
+    em,
+    .#{$class-prefix}-word-aux {
+      color: #999 !important;
+      padding-left: 5px !important;
+      padding-right: 5px !important;
+      line-height: 24px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    p:first-child {
+      margin-top: 0;
+    }
   }
 
-  &-bg-red {
-    background-color: var(--jcsoft-color-red) !important;
+  /* 字体大小及颜色 */
+  &-font {
+    &-12 {font-size: 12px !important;;}
+
+    &-14 {font-size: 14px !important;}
+
+    &-16 {font-size: 16px !important;}
+
+    &-18 {font-size: 18px !important;}
+
+    &-20 {font-size: 20px !important;}
+
+    &-red {color: #FF5722 !important;}
+
+    /*赤*/
+    &-orange {color: #FFB800 !important;}
+
+    /*橙*/
+    &-green {color: #009688 !important;}
+
+    /*绿*/
+    &-cyan {color: #2F4056 !important;}
+
+    /*青*/
+    &-blue {color: #01AAED !important;}
+
+    /*蓝*/
+    &-black {color: #000 !important;}
+
+    /*黑*/
+    &-gray {color: #c2c2c2 !important;}
+
+    /*灰*/
   }
 
-  &-bg-orange {
-    background-color: var(--jcsoft-color-orange) !important;
+  /* 小徽章 */
+  &-badge,
+  &-badge-dot,
+  &-badge-rim {position: relative; display: inline-block; padding: 0 6px; font-size: 12px; text-align: center; background-color: #FF5722; color: #fff; border-radius: 2px;}
+
+  &-badge {height: 18px; line-height: 18px;}
+
+  &-badge-dot {width: 8px; height: 8px; padding: 0; border-radius: 50%;}
+
+  &-badge-rim {height: 18px; line-height: 18px; border-width: 1px; border-style: solid; background-color: #fff; color: #666;}
+
+  // 背景色
+  &-bg {
+    &-red {background-color: var(--jcsoft-color-red) !important;}
+
+    &-orange {background-color: var(--jcsoft-color-orange) !important;}
+
+    &-green {background-color: var(--jcsoft-color-green) !important;}
+
+    &-cyan {background-color: var(--jcsoft-color-cyan) !important;}
+
+    &-blue {background-color: var(--jcsoft-color-blue) !important;}
+
+    &-black {background-color: var(--jcsoft-color-black) !important;}
+
+    &-gray {background-color: var(--jcsoft-color-gray) !important;}
   }
 
-  &-bg-green {
-    background-color: var(--jcsoft-color-green) !important;
-  }
-
-  &-bg-cyan {
-    background-color: var(--jcsoft-color-cyan) !important;
-  }
-
-  &-bg-blue {
-    background-color: var(--jcsoft-color-blue) !important;
-  }
-
-  &-bg-black {
-    background-color: var(--jcsoft-color-black) !important;
-  }
-
-  &-bg-gray {
-    background-color: var(--jcsoft-color-gray) !important;
-  }
+  /* 边框 */
+  &-badge-rim {border-color: #eee;}
 }

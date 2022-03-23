@@ -1,8 +1,8 @@
 {
   "name": "jcsoft",
-  "version": "2.3.3",
+  "version": "2.4.1",
   "private": false,
-  "description": "dev version",
+  "description": "自用开发工具包",
   "author": "jcbowen",
   "scripts": {
     "serve": "vue-cli-service serve",

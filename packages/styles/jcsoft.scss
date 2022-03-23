@@ -1,9 +1,58 @@
 /**
  * @description 全局样式
  */
+:root {
+  --jcsoft-color-red: #FF5722;
+  --jcsoft-color-orange: #FFB800;
+  --jcsoft-color-green: #009688;
+  --jcsoft-color-cyan: #2F4056;
+  --jcsoft-color-blue: #1E9FFF;
+  --jcsoft-color-black: #393D4;
+  --jcsoft-color-gray: #666;
+}
 
 .jcsoft {
+  &-code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: var(--jcsoft-color-green);
+    background-color: #f9f2f4;
+    border-radius: 4px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  }
+
   &-word-aux {
     color: #999;
+    font-size: 14px;
+    line-height: 24px;
+    padding: 0 5px;
+  }
+
+  &-bg-red {
+    background-color: var(--jcsoft-color-red) !important;
+  }
+
+  &-bg-orange {
+    background-color: var(--jcsoft-color-orange) !important;
+  }
+
+  &-bg-green {
+    background-color: var(--jcsoft-color-green) !important;
+  }
+
+  &-bg-cyan {
+    background-color: var(--jcsoft-color-cyan) !important;
+  }
+
+  &-bg-blue {
+    background-color: var(--jcsoft-color-blue) !important;
+  }
+
+  &-bg-black {
+    background-color: var(--jcsoft-color-black) !important;
+  }
+
+  &-bg-gray {
+    background-color: var(--jcsoft-color-gray) !important;
   }
 }

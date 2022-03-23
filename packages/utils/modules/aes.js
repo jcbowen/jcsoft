@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js'
+import validate from './validate'
 
 let AES = function () {
   let that = this
@@ -13,6 +14,8 @@ let AES = function () {
 let aes = new AES()
 
 AES.prototype.encrypt = function (str, key, iv) {
+  if (!validate.isString(str)) str = str.toString()
+  if (str.length < 1) return ''
   let that = this
   key = CryptoJS.enc.Utf8.parse(key || that.key)
   iv = CryptoJS.enc.Utf8.parse(iv || that.iv)
@@ -20,6 +23,8 @@ AES.prototype.encrypt = function (str, key, iv) {
   return encrypted.toString()
 }
 AES.prototype.decrypt = function (str, key, iv) {
+  if (!validate.isString(str)) str = str.toString()
+  if (str.length < 1) return ''
   let that = this
   key = CryptoJS.enc.Utf8.parse(key || that.key)
   iv = CryptoJS.enc.Utf8.parse(iv || that.iv)

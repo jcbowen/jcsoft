@@ -3,10 +3,8 @@ import App from './App.vue'
 import router from './router'
 
 import vuetify from '@/plugins/vuetify'
-import utils from 'jcsoft/packages/utils/index'
 import jcsoft from 'jcsoft/packages'
-
-Vue.prototype.$utils = utils
+import 'jcsoft/packages/styles/jcsoft.scss'
 Vue.use(jcsoft)
 
 if (process.env.NODE_ENV === 'development') {

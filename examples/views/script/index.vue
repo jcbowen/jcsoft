@@ -23,7 +23,7 @@
     created() {},
     mounted() {
       window.VM = this
-      window.util = this.$utils
+      window.util = this.$jcUtils
     },
     methods: {},
   }

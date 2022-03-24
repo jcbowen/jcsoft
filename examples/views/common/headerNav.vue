@@ -56,9 +56,9 @@
         return this.$router.push(path)
       },
       checkCurrentNav(path) {
-        if (this.$utils.validate.isEmpty(path)) return
+        if (this.$jcUtils.validate.isEmpty(path)) return
         let navs = []
-        this.$utils.base.each(this.navs, (item) => {
+        this.$jcUtils.base.each(this.navs, (item) => {
           item.active = item.path === path
           navs.push(item)
         })

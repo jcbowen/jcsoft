@@ -1,4 +1,4 @@
-// import JcEditor from './JcEditor'
+// import JcsoftEditor from './editor'
 // import xSpreadsheet from "./xspreadsheet";
 import utils from './utils'
 import layui from './layui'
@@ -14,6 +14,7 @@ const components = [
   global,
   ...layui,
   ...vuetifyKits,
+  // JcsoftEditor,
 ]
 // 定义 install 方法，接收 Vue 作为参数。如果使用 use 注册插件，则所有的组件都将被注册
 const install = function (Vue) {
@@ -25,7 +26,7 @@ const install = function (Vue) {
     Vue.component(component.name, component)
 
     if (component.name === 'JcsoftLoading') {
-      Vue.prototype.$Loading = component
+      Vue.prototype.$jcLoad = component
     }
   })
 
@@ -46,4 +47,5 @@ export default {
   global,
   ...layui,
   ...vuetifyKits,
+  // JcsoftEditor,
 }

@@ -1,30 +1,18 @@
 <template>
   <div class="Test">
-    <!--    <jcsoft-loading text="123" />-->
-    <jcsoft-message />
+    <jcsoft-editor />
   </div>
 </template>
 <script>
-  import store from 'jcsoft/packages/store'
-  import JcsoftMessage from '../../../packages/vuetifykits/message/src/global'
+  import JcsoftEditor from 'jcsoft/packages/editor/src/main'
   export default {
-    components: { JcsoftMessage },
+    components: { JcsoftEditor },
     data() {
       return {}
     },
     created() {
       window.VM = this
     },
-    methods: {
-      openLoading() {
-        store.dispatch('notice/openLoading')
-      },
-      closeLoading() {
-        store.dispatch('notice/closeLoading')
-      },
-      get() {
-        console.log(store.getters['notice/loading'])
-      },
-    },
+    methods: {},
   }
 </script>

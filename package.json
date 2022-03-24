@@ -1,6 +1,6 @@
 {
   "name": "jcsoft",
-  "version": "2.4.3",
+  "version": "2.5.1",
   "private": false,
   "description": "自用开发工具包",
   "author": "jcbowen",
@@ -12,6 +12,7 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^0.24.0",
     "core-js": "^3.19.3",
     "crypto-js": "^4.1.1",
@@ -22,6 +23,7 @@
     "regenerator-runtime": "^0.13.9",
     "sass": "^1.32.8",
     "sass-loader": "^10.1.1",
+    "tinymce": "^5.10.3",
     "vue": "^2.6.11",
     "vue-router": "^3.5.1",
     "vuetify": "^2.4.0",
@@ -38,7 +40,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.2.0",
     "fibers": "^5.0.0",
-    "node-sass": "^5.0.0",
+    "node-sass": "^7.0.0",
     "prettier": "^2.5.1",
     "style-loader": "^2.0.0",
     "stylelint": "^14.1.0",

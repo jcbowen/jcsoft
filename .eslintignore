@@ -4,3 +4,5 @@ public
 dist
 node_modules
 packages/utils/modules/base.js
+packages/editor/plugins
+*.min.js

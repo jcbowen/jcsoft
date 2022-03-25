@@ -39,6 +39,11 @@
             title: '通知',
             active: false,
           },
+          {
+            path: '/editor',
+            title: '富文本编辑器',
+            active: false,
+          },
         ],
       }
     },

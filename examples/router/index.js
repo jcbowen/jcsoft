@@ -45,6 +45,16 @@ const constantRoutes = [
     },
   },
   {
+    path: '/editor',
+    name: 'editor',
+    component: () => import('@/views/editor'),
+    meta: {
+      title: 'TinyMce',
+      icon: 'home',
+      affix: true,
+    },
+  },
+  {
     path: '/test',
     name: 'Test',
     component: () => import('@/views/test/index'),

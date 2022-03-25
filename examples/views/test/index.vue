@@ -1,12 +1,9 @@
 <template>
-  <div class="Test">
-    <jcsoft-editor />
-  </div>
+  <div class="Test">123</div>
 </template>
 <script>
-  import JcsoftEditor from 'jcsoft/packages/editor'
   export default {
-    components: { JcsoftEditor },
+    components: {},
     data() {
       return {}
     },

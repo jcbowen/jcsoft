@@ -24,11 +24,11 @@
             title: '首页',
             active: true,
           },
-          /*{
+          {
             path: '/script',
             title: '脚本测试',
             active: false,
-          },*/
+          },
           {
             path: '/other/loading',
             title: '加载',
@@ -49,6 +49,12 @@
     },
     beforeMount() {
       this.checkCurrentNav(this.$route.path)
+      if (process.env.NODE_ENV === 'development')
+        this.navs.push({
+          path: '/test',
+          title: '测试',
+          active: false,
+        })
     },
     methods: {
       go(path) {

@@ -43,7 +43,7 @@
     "node-sass": "^7.0.0",
     "prettier": "^2.5.1",
     "style-loader": "^2.0.0",
-    "stylelint": "^14.1.0",
+    "stylelint": "^14.6.0",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-recess-order": "^3.0.0",
     "vue-cli-plugin-vuetify": "^2.4.5",
@@ -72,13 +72,15 @@
     "not dead"
   ],
   "__npminstall_done": "Tue Apr 06 2021 21:46:29 GMT+0800 (中国标准时间)",
-  "_from": "jcsoft@0.2.3",
+  "_from": "jcsoft@2.5.1",
   "_resolved": "https://registry.npm.taobao.org/jcsoft/download/jcsoft-0.2.3.tgz",
   "directories": {
     "example": "examples"
   },
   "keywords": [
-    "jcsoft"
+    "jcsoft",
+    "jiuchet",
+    "jcbowen"
   ],
   "license": "ISC"
 }

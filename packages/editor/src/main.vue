@@ -1,11 +1,18 @@
 <template>
   <div class="JcsoftEditor">
-    <h1>tinymce</h1>
-    <editor id="tinymce" v-model="tinymceHtml" :init="init" />
+    <editor
+      v-model="myValue"
+      :disabled="disabled"
+      :init="init"
+      @onClick="onClick"
+    />
   </div>
 </template>
 
 <script>
+  import validate from '../../utils/modules/validate'
+  import * as $require from '../../utils/modules/require'
+
   import tinymce from 'tinymce/tinymce'
   import Editor from '@tinymce/tinymce-vue'
 
@@ -14,18 +21,40 @@
 
   // 载入全部插件
   let tinymcePlugins = require.context('tinymce/plugins', true, /index\.js$/)
+  // 不需要载入的插件
+  let filterPlugins = [
+    'anchor',
+    'bbcode',
+    'code',
+    'colorpicker',
+    'contextmenu',
+    'emoticons',
+    'fullpage',
+    'fullscreen',
+    'help',
+    'importcss',
+    'media',
+    'noneditable',
+    'paste',
+    'quickbars',
+    'save',
+    'spellchecker',
+    'tabfocus',
+    'textcolor',
+    'toc',
+  ]
   tinymcePlugins.keys().forEach((key) => {
-    tinymcePlugins(key)
+    const pathArr = key.split('/')
+    if (!validate.inArray(pathArr[1], filterPlugins)) {
+      tinymcePlugins(key)
+    }
   })
 
-  // let hookPlugins = require.context('../plugins', true, /plugin\.min\.js$/)
-  // hookPlugins.keys().forEach((key) => {
-  // hookPlugins(key)
-  // })
-  // import '../plugins/formatpainter/plugin.min'
+  let hookPlugins = require.context('../plugins', true, /plugin\.min\.js$/)
+  hookPlugins.keys().forEach((key) => {
+    hookPlugins(key)
+  })
 
-  import validate from '../../utils/modules/validate'
-  import * as $require from '../../utils/modules/require'
   export default {
     name: 'JcsoftEditor',
     components: {
@@ -71,12 +100,8 @@
       plugins: {
         type: [String, Array],
         default: () => {
-          // return 'directionality lists image table wordcount'
-          return [
-            'advlist autolink lists link image charmap print preview anchor',
-            'searchreplace visualblocks code fullscreen',
-            'insertdatetime media table paste code help wordcount',
-          ]
+          // code undo redo restoredraft | formatpainter removeformat | bold italic underline strikethrough hr forecolor backcolor link | alignleft aligncenter alignright alignjustify | outdent indent indent2em lineheight bullist numlist | blockquote subscript superscript | table image media2 codesample pageembed | styleselect fontselect fontsizeselect | cut copy paste pastetext | axupimgs preview print | help2'
+          return 'directionality lists image table wordcount'
         },
       },
       menubar: {
@@ -87,13 +112,10 @@
       toolbar: {
         type: [String, Array],
         default: () => {
-          return 'undo redo | formatselect | bold italic backcolor | \
-             alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help'
           //code undo redo restoredraft | formatpainter removeformat | bold italic underline strikethrough hr forecolor backcolor link | alignleft aligncenter alignright alignjustify | outdent indent indent2em lineheight bullist numlist | blockquote subscript superscript | table image media2 codesample pageembed | styleselect fontselect fontsizeselect | cut copy paste pastetext | axupimgs preview print | help2'
-          // return [
-          //   'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
-          // ]
+          return [
+            'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent',
+          ]
         },
       },
       toolbarMode: {
@@ -187,7 +209,7 @@
     },
     data() {
       return {
-        tinymceHtml: '请输入内容',
+        myValue: '',
         init: {
           base_url: this.baseUrl,
           cache_suffix: '?v=20210127',
@@ -286,6 +308,9 @@
         this.$emit('modelEvent', newValue)
         this.$emit('input', newValue)
       },
+    },
+    beforeCreate() {
+      this.$emit('Editor', tinymce)
     },
     mounted() {
       this.$nextTick(() => {

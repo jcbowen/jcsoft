@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-  import JcsoftEditor from 'jcsoft/packages/editor/src/main'
+  import JcsoftEditor from 'jcsoft/packages/editor'
   export default {
     components: { JcsoftEditor },
     data() {

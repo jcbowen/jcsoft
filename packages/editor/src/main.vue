@@ -11,7 +11,7 @@
 
 <script>
   import validate from '../../utils/modules/validate'
-  import * as $require from '../../utils/modules/require'
+  // import * as $require from '../../utils/modules/require'
 
   import tinymce from 'tinymce/tinymce'
   import Editor from '@tinymce/tinymce-vue'
@@ -206,6 +206,44 @@
         type: Boolean,
         default: true,
       },
+      imagesUploadHandler: {
+        type: Function,
+        default: (blobInfo, success, failure) => {
+          // if (this.images_upload_url === '') {
+          // 直接转换为base64图片输出
+          const img = 'data:image/jpeg;base64,' + blobInfo.base64()
+          if (img) {
+            success(img)
+          } else {
+            failure('上传失败')
+          }
+          /*} else {
+            var formData = new FormData()
+            formData.append('upload_type', 'image')
+            formData.append('file', blobInfo.blob(), blobInfo.filename())
+            $require({
+              url: this.imagesUploadUrl,
+              method: 'post',
+              data: formData,
+            })
+              .then((res) => {
+                const codeVerificationArray = validate.isArray(this.successCode)
+                  ? [...this.successCode]
+                  : [...[this.successCode]]
+                if (codeVerificationArray.includes(res.code)) {
+                  success(res.data['url'])
+                } else {
+                  // console.error('tinymce: ' + res.msg);
+                  failure(res.msg)
+                }
+              })
+              .catch((err) => {
+                console.log(err)
+                failure('网络错误')
+              })
+          }*/
+        },
+      },
     },
     data() {
       return {
@@ -249,37 +287,7 @@
           images_upload_url: this.images_upload_url,
           images_upload_credentials: this.images_upload_credentials, // 是否携带cookie
           images_upload_handler: (blobInfo, success, failure) => {
-            if (this.images_upload_url === '') {
-              // 直接转换为base64图片输出
-              const img = 'data:image/jpeg;base64,' + blobInfo.base64()
-              success(img)
-            } else {
-              var formData = new FormData()
-              formData.append('upload_type', 'image')
-              formData.append('file', blobInfo.blob(), blobInfo.filename())
-              $require({
-                url: this.imagesUploadUrl,
-                method: 'post',
-                data: formData,
-              })
-                .then((res) => {
-                  const codeVerificationArray = validate.isArray(
-                    this.successCode
-                  )
-                    ? [...this.successCode]
-                    : [...[this.successCode]]
-                  if (codeVerificationArray.includes(res.code)) {
-                    success(res.data['url'])
-                  } else {
-                    // console.error('tinymce: ' + res.msg);
-                    failure(res.msg)
-                  }
-                })
-                .catch((err) => {
-                  console.log(err)
-                  failure('网络错误')
-                })
-            }
+            return this.imagesUploadHandler(blobInfo, success, failure)
           },
           video_template_callback: function (data) {
             return `

@@ -429,7 +429,7 @@ Base.prototype.img = function (src) {
 /**
  * 图片懒加载
  *
- * @description 通过修改Dom属性实现，vue不建议使用
+ * @description 通过修改Dom属性实现，一般用于富文本编辑器输出内容的图片懒加载
  * @param elem
  * @param scrollElem
  * @param lazyAttr
@@ -673,7 +673,7 @@ Base.prototype.compare = function (curV, reqV) {
 }
 
 /**
- * 人民币数值转大写
+ * 人民币数值转中文大写
  *
  * @param {number|string} str 人民币数值
  * @param {boolean} isInt
@@ -995,11 +995,11 @@ Base.prototype.date = function (format, timestamp) {
 /**
  * 将字符时间转换为秒级时间戳
  *
- * @param {string|number} text 时间戳
+ * @param {string|number} str 时间戳
  * @param now
  * @returns {boolean|number}
  */
-Base.prototype.strtotime = function (text, now) {
+Base.prototype.strtotime = function (str, now) {
   var parsed,
     match,
     today,
@@ -1012,13 +1012,13 @@ Base.prototype.strtotime = function (text, now) {
     regex,
     i,
     fail = false
-  if (!text) return fail
-  text = text
+  if (!str) return fail
+  str = str
   .replace(/^\s+|\s+$/g, '')
   .replace(/\s{2,}/g, ' ')
   .replace(/[\t\r\n]/g, '')
   .toLowerCase()
-  match = text.match(
+  match = str.match(
     /^(\d{1,4})([\-\.\/\:])(\d{1,2})([\-\.\/\:])(\d{1,4})(?:\s(\d{1,2}):(\d{2})?:?(\d{2})?)?(?:\s([A-Z]+)?)?$/
   )
   if (match && match[2] === match[4]) {
@@ -1202,12 +1202,12 @@ Base.prototype.strtotime = function (text, now) {
       }
     }
   }
-  if (text === 'now') {
+  if (str === 'now') {
     return now === null || isNaN(now)
       ? (new Date().getTime() / 1000) | 0
       : now | 0
   }
-  if (!isNaN((parsed = Date.parse(text)))) {
+  if (!isNaN((parsed = Date.parse(str)))) {
     return (parsed / 1000) | 0
   }
   date = now ? new Date(now * 1000) : new Date()
@@ -1273,7 +1273,7 @@ Base.prototype.strtotime = function (text, now) {
     '|thursday|thu\\.?|friday|fri\\.?|saturday|sat\\.?)'
   regex =
     '([+-]?\\d+\\s' + times + '|' + '(last|next)\\s' + times + ')(\\sago)?'
-  match = text.match(new RegExp(regex, 'gi'))
+  match = str.match(new RegExp(regex, 'gi'))
   if (!match) {
     return fail
   }
@@ -1375,7 +1375,7 @@ Base.prototype.screen = function () {
  * @param {number} radix 可选。表示要解析的数字的基数。该值介于 2 ~ 36 之间。
  * @returns {number|number}
  */
-Base.prototype.intval = function (mixed_var, radix) {
+Base.prototype.intval = function (mixed_var, radix = 10) {
   var tmp
   var type = typeof mixed_var
   if (type === 'boolean') {
@@ -1453,18 +1453,18 @@ Base.prototype.range = function (low, high, step) {
 /**
  * 剥去字符串中的 HTML 标签
  *
- * @param input 必需。规定要检查的字符串。
- * @param allowed 可选。规定允许的标签。这些标签不会被删除。
+ * @param str 必需。规定要检查的字符串。
+ * @param allowable_tags 可选。规定允许的标签。这些标签不会被删除。
  * @returns {*}
  */
-Base.prototype.strip_tags = function (input, allowed) {
-  allowed = (
-    ((allowed || '') + '').toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []
+Base.prototype.strip_tags = function (str, allowable_tags) {
+  allowable_tags = (
+    ((allowable_tags || '') + '').toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []
   ).join('')
   var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
     commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi
-  return input.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {
-    return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : ''
+  return str.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {
+    return allowable_tags.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : ''
   })
 }
 
@@ -1489,43 +1489,6 @@ Base.prototype.rand = function (min, max) {
 }
 
 /**
- * 对浮点数进行四舍五入
- *
- * @param value
- * @param precision
- * @param mode
- * @returns {number}
- */
-Base.prototype.round = function (value, precision, mode) {
-  var m,
-    f,
-    isHalf,
-    sgn
-  precision |= 0
-  m = Math.pow(10, precision)
-  value *= m
-  sgn = (value > 0) | -(value < 0)
-  isHalf = value % 1 === 0.5 * sgn
-  f = Math.floor(value)
-  if (isHalf) {
-    switch (mode) {
-      case 'PHP_ROUND_HALF_DOWN':
-        value = f + (sgn < 0)
-        break
-      case 'PHP_ROUND_HALF_EVEN':
-        value = f + (f % 2) * sgn
-        break
-      case 'PHP_ROUND_HALF_ODD':
-        value = f + !(f % 2)
-        break
-      default:
-        value = f + (sgn > 0)
-    }
-  }
-  return (isHalf ? value : Math.round(value)) / m
-}
-
-/**
  * 字符串 转小写
  * @param {string} str
  * @returns {string}
@@ -1541,15 +1504,6 @@ Base.prototype.strtolower = function (str) {
  */
 Base.prototype.strtoupper = function (str) {
   return (str + '').toUpperCase()
-}
-
-/**
- * 返回变量的浮点值
- * @param mixed_var
- * @returns {string}
- */
-Base.prototype.floatval = function (mixed_var) {
-  return parseFloat(mixed_var) || 0
 }
 
 /**
@@ -1577,22 +1531,68 @@ Base.prototype.base_convert = function (number, frombase, tobase) {
 }
 
 /**
- * 向下舍入为最接近的整数
+ * 对浮点数进行四舍五入
  *
- * @param value
+ * @param number
+ * @param precision
+ * @param mode
  * @returns {number}
  */
-Base.prototype.floor = function (value) {
-  return Math.floor(value)
+Base.prototype.round = function (number, precision, mode) {
+  var m,
+    f,
+    isHalf,
+    sgn
+  precision |= 0
+  m = Math.pow(10, precision)
+  number *= m
+  sgn = (number > 0) | -(number < 0)
+  isHalf = number % 1 === 0.5 * sgn
+  f = Math.floor(number)
+  if (isHalf) {
+    switch (mode) {
+      case 'PHP_ROUND_HALF_DOWN':
+        number = f + (sgn < 0)
+        break
+      case 'PHP_ROUND_HALF_EVEN':
+        number = f + (f % 2) * sgn
+        break
+      case 'PHP_ROUND_HALF_ODD':
+        number = f + !(f % 2)
+        break
+      default:
+        number = f + (sgn > 0)
+    }
+  }
+  return (isHalf ? number : Math.round(number)) / m
+}
+
+/**
+ * @description 将变量转换为浮点数类型, 同php中的floatval()
+ * @param mixed_var
+ * @returns {string}
+ */
+Base.prototype.floatval = function (mixed_var) {
+  return parseFloat(mixed_var) || 0
+}
+
+/**
+ * 向下舍入为最接近的整数
+ *
+ * @param number
+ * @returns {number}
+ */
+Base.prototype.floor = function (number) {
+  return Math.floor(number)
 }
 
 /**
  * 向上舍入为最接近的整数
- * @param value
+ * @param number
  * @returns {number}
  */
-Base.prototype.ceil = function (value) {
-  return Math.ceil(value)
+Base.prototype.ceil = function (number) {
+  return Math.ceil(number)
 }
 
 /**

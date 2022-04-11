@@ -462,7 +462,7 @@ Validate.prototype.isZipcode = function (str) {
 }
 
 /**
- * 判断字符串中是否包含字符
+ * 判断字符串中是否包含指定字符
  *
  * @param string
  * @param find

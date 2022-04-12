@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d0d8387"],{"79c2":function(e,t,n){"use strict";n.r(t);var c=function(){var e=this,t=e.$createElement;e._self._c;return e._m(0)},r=[function(){var e=this,t=e.$createElement,n=e._self._c||t;return n("div",{staticClass:"index"},[n("h1",[e._v("Jcsoft 组件汇总")]),n("hr")])}],a={name:"Index",data(){return{code:""}},created(){},mounted(){},methods:{}},s=a,u=n("2877"),d=Object(u["a"])(s,c,r,!1,null,null,null);t["default"]=d.exports}}]);
-//# sourceMappingURL=chunk-2d0d8387.941feefc.js.map

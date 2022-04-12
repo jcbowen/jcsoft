@@ -5,6 +5,7 @@ import vuetifyKits from './vuetifykits'
 import global from './global/global'
 import JcsoftEditor from './editor'
 import JcsoftDraggable from 'vuedraggable'
+JcsoftDraggable.name = 'JcsoftDraggable'
 
 export function jcsoft() {}
 
@@ -49,4 +50,5 @@ export default {
   ...layui,
   ...vuetifyKits,
   JcsoftEditor,
+  JcsoftDraggable,
 }

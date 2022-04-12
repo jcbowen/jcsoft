@@ -1,6 +1,6 @@
 {
   "name": "jcsoft",
-  "version": "2.5.5",
+  "version": "2.6.1",
   "private": false,
   "description": "自用开发工具包",
   "author": "jcbowen",
@@ -26,6 +26,7 @@
     "tinymce": "^5.10.3",
     "vue": "^2.6.11",
     "vue-router": "^3.5.1",
+    "vuedraggable": "^2.24.3",
     "vuetify": "^2.4.0",
     "vuex": "^3.6.2",
     "xlsx": "^0.17.4"

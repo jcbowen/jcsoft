@@ -109,6 +109,14 @@
         // 'file edit view insert format tools table'
         default: false,
       },
+      entities: {
+        type: String,
+        default: '160,nbsp,162,cent,8364,euro,163,pound',
+      },
+      entity_encoding: {
+        type: String,
+        default: 'named',
+      },
       toolbar: {
         type: [String, Array],
         default: () => {
@@ -267,6 +275,7 @@
           // , my_toolbar_sticky_top: 0 // 工具栏粘连顶部时，和顶部的间距
           branding: false, // 品牌化显示
           menubar: this.menubar, // 顶部工具栏
+          entities: this.entities, // 转义字符
           entity_encoding: this.entity_encoding, //处理实体/字符的转换方式
           fontsize_formats: this.fontsize_formats,
           powerpaste_allow_local_images: true,

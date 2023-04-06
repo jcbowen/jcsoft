@@ -270,7 +270,7 @@
           toolbar: this.toolbar,
           toolbar_mode: this.toolbarMode, // 工具栏模式
           toolbar_sticky: this.toolbarSticky,
-          toolbarStickyOffset: this.toolbarStickyOffset, // 工具栏粘连顶部时，和顶部的间距
+          toolbar_sticky_offset: this.toolbarStickyOffset, // 工具栏粘连顶部时，和顶部的间距
           branding: false, // 品牌化显示
           menubar: this.menubar, // 顶部工具栏
           entities: this.entities, // 转义字符

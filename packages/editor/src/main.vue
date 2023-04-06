@@ -130,6 +130,10 @@
         type: Boolean,
         default: false,
       },
+      toolbarStickyOffset: {
+        type: Number,
+        default: 0,
+      },
       entityEncoding: {
         type: String,
         default: 'named',
@@ -266,9 +270,7 @@
           toolbar: this.toolbar,
           toolbar_mode: this.toolbarMode, // 工具栏模式
           toolbar_sticky: this.toolbarSticky,
-          // , toolbar_sticky: false // 工具栏粘连顶部(官方的，不确认是否兼容的情况下，保持关闭)
-          // , my_toolbar_sticky: true // 工具栏粘连顶部（自主封装的写法）
-          // , my_toolbar_sticky_top: 0 // 工具栏粘连顶部时，和顶部的间距
+          toolbarStickyOffset: this.toolbarStickyOffset, // 工具栏粘连顶部时，和顶部的间距
           branding: false, // 品牌化显示
           menubar: this.menubar, // 顶部工具栏
           entities: this.entities, // 转义字符

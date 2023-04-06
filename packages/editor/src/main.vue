@@ -113,10 +113,6 @@
         type: String,
         default: '160,nbsp,162,cent,8364,euro,163,pound',
       },
-      entity_encoding: {
-        type: String,
-        default: 'named',
-      },
       toolbar: {
         type: [String, Array],
         default: () => {
@@ -140,7 +136,7 @@
       },
       fontsizeFormats: {
         type: [String, Array],
-        default: '8pt 10pt 12pt 14pt 16pt 18pt 20pt 24pt 36pt',
+        default: '8px 10px 12px 14px 16px 18px 20px 24px 36px',
       },
       contextmenu: {
         type: [String, Array],
@@ -226,30 +222,30 @@
             failure('上传失败')
           }
           /*} else {
-            var formData = new FormData()
-            formData.append('upload_type', 'image')
-            formData.append('file', blobInfo.blob(), blobInfo.filename())
-            $require({
-              url: this.imagesUploadUrl,
-              method: 'post',
-              data: formData,
+          var formData = new FormData()
+          formData.append('upload_type', 'image')
+          formData.append('file', blobInfo.blob(), blobInfo.filename())
+          $require({
+            url: this.imagesUploadUrl,
+            method: 'post',
+            data: formData,
+          })
+            .then((res) => {
+              const codeVerificationArray = validate.isArray(this.successCode)
+                ? [...this.successCode]
+                : [...[this.successCode]]
+              if (codeVerificationArray.includes(res.code)) {
+                success(res.data['url'])
+              } else {
+                // console.error('tinymce: ' + res.msg);
+                failure(res.msg)
+              }
             })
-              .then((res) => {
-                const codeVerificationArray = validate.isArray(this.successCode)
-                  ? [...this.successCode]
-                  : [...[this.successCode]]
-                if (codeVerificationArray.includes(res.code)) {
-                  success(res.data['url'])
-                } else {
-                  // console.error('tinymce: ' + res.msg);
-                  failure(res.msg)
-                }
-              })
-              .catch((err) => {
-                console.log(err)
-                failure('网络错误')
-              })
-          }*/
+            .catch((err) => {
+              console.log(err)
+              failure('网络错误')
+            })
+        }*/
         },
       },
     },
@@ -258,7 +254,7 @@
         myValue: '',
         init: {
           base_url: this.baseUrl,
-          cache_suffix: '?v=20210127',
+          cache_suffix: '?v=20230406',
 
           language_url: `${this.baseUrl}/langs/zh_CN.js`,
           language: 'zh_CN',
@@ -268,33 +264,33 @@
           width: this.width,
           plugins: this.plugins,
           toolbar: this.toolbar,
-          toolbar_mode: this.toolbar_mode, // 工具栏模式
-          toolbar_sticky: this.toolbar_sticky,
+          toolbar_mode: this.toolbarMode, // 工具栏模式
+          toolbar_sticky: this.toolbarSticky,
           // , toolbar_sticky: false // 工具栏粘连顶部(官方的，不确认是否兼容的情况下，保持关闭)
           // , my_toolbar_sticky: true // 工具栏粘连顶部（自主封装的写法）
           // , my_toolbar_sticky_top: 0 // 工具栏粘连顶部时，和顶部的间距
           branding: false, // 品牌化显示
           menubar: this.menubar, // 顶部工具栏
           entities: this.entities, // 转义字符
-          entity_encoding: this.entity_encoding, //处理实体/字符的转换方式
-          fontsize_formats: this.fontsize_formats,
+          entity_encoding: this.entityEncoding, //处理实体/字符的转换方式
+          fontsize_formats: this.fontsizeFormats,
           powerpaste_allow_local_images: true,
           powerpaste_word_import: 'prompt',
           powerpaste_html_import: 'prompt',
           contextmenu: this.contextmenu, // 上下文菜单
           contextmenu_never_use_native: true,
-          content_css: this.content_css
-            ? this.content_css
+          content_css: this.contentCss
+            ? this.contentCss
             : `${this.baseUrl}/skins/content/default/content.css`,
-          color_map: this.color_map,
+          color_map: this.colorMap,
           extended_valid_elements:
             'i[class|style],#p[class|style|vj-options],iframe[name|class|src|width|height|style|frameborder=0|title|align|onmouseover|onmouseout|onload|onload],span[style|class],br', //扩展有效元素
           elementpath: true, //显示元素路径
           auto_focus: false, // 渲染结束后自动焦点
           typeahead_urls: true, // 输入网址判断
 
-          images_upload_url: this.images_upload_url,
-          images_upload_credentials: this.images_upload_credentials, // 是否携带cookie
+          images_upload_url: this.imagesUploadUrl,
+          images_upload_credentials: this.imagesUploadCredentials, // 是否携带cookie
           images_upload_handler: (blobInfo, success, failure) => {
             return this.imagesUploadHandler(blobInfo, success, failure)
           },

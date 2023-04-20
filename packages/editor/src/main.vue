@@ -1,7 +1,7 @@
 <template>
   <div class="JcsoftEditor">
     <editor
-      v-model="myValue"
+      v-model="content"
       :disabled="disabled"
       :init="init"
       @onClick="onClick"
@@ -255,7 +255,7 @@
     },
     data() {
       return {
-        myValue: '',
+        content: '',
         init: {
           base_url: this.baseUrl,
           cache_suffix: '?v=20230406',
@@ -316,10 +316,13 @@
       }
     },
     watch: {
-      value(newValue) {
-        this.myValue = newValue
+      value: {
+        handler(newValue) {
+          this.content = newValue
+        },
+        immediate: true,
       },
-      myValue(newValue) {
+      content(newValue) {
         this.$emit('modelEvent', newValue)
         this.$emit('input', newValue)
       },
@@ -340,7 +343,7 @@
       },
       // 可以添加一些自己的自定义事件，如清空内容
       clear() {
-        this.myValue = ''
+        this.content = ''
       },
     },
   }

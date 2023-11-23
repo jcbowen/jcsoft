@@ -1,7 +1,7 @@
 // import xSpreadsheet from "./xspreadsheet";
 import utils from './utils'
 import layui from './layui'
-import vuetifyKits from './vuetifykits'
+// import vuetifyKits from './vuetifykits'
 import global from './global/global'
 import JcsoftEditor from './editor'
 import JcsoftDraggable from 'vuedraggable'
@@ -14,7 +14,7 @@ const components = [
   // xSpreadsheet,
   global,
   ...layui,
-  ...vuetifyKits,
+  // ...vuetifyKits,
   JcsoftEditor,
   JcsoftDraggable,
 ]
@@ -48,7 +48,7 @@ export default {
   // xSpreadsheet,
   global,
   ...layui,
-  ...vuetifyKits,
+  // ...vuetifyKits,
   JcsoftEditor,
   JcsoftDraggable,
 }

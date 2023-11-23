@@ -14,7 +14,7 @@
 
 <script>
   export default {
-    name: 'Script',
+    name: 'ScriptIndex',
     components: {},
     data() {
       return {

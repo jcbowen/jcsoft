@@ -290,6 +290,7 @@
           elementpath: true, //显示元素路径
           auto_focus: false, // 渲染结束后自动焦点
           typeahead_urls: true, // 输入网址判断
+          convert_urls: false, // 强制转换url
 
           images_upload_url: this.imagesUploadUrl,
           images_upload_credentials: this.imagesUploadCredentials, // 是否携带cookie
